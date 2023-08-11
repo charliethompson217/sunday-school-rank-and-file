@@ -1,0 +1,10 @@
+{
+  "resourceName": "sundaySchoolPlayers",
+  "tableName": "sundaySchoolPlayers",
+  "partitionKey": {
+    "fieldName": "playerId",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

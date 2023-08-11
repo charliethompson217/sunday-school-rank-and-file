@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/player/{playerId}": {
+      "name": "/player/{playerId}",
+      "lambdaFunction": "playerLambda",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

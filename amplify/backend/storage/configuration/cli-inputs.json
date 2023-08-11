@@ -1,0 +1,14 @@
+{
+  "resourceName": "configuration",
+  "tableName": "configuration",
+  "partitionKey": {
+    "fieldName": "ClientId",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "Timestamp",
+    "fieldType": "number"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

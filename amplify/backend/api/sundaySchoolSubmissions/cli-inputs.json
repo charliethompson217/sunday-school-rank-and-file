@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/submission/{team}": {
+      "name": "/submission/{team}",
+      "lambdaFunction": "sundaySchoolSubmissionsLambda",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

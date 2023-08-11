@@ -1,0 +1,14 @@
+{
+  "resourceName": "submissions",
+  "tableName": "submissions",
+  "partitionKey": {
+    "fieldName": "team",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "Timestamp",
+    "fieldType": "number"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}
