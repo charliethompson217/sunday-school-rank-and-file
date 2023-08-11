@@ -1,4 +1,4 @@
-Built with rectjs and amazon webservices, this is a webapp for managing player's picks for a rank and file pool.
+Built with rectjs and amazon web services, this is a webapp for managing player's picks for a rank and file pool.
 
 Unlike other pools, participants do not rank each and every game. Instead, the pool is divided into a “Rank” portion and a “File” portion. Players rank only Sunday games—the “Rank.” Participants also predict the winner of the Monday Night Football (“MNF”) games—the “File.”
 
