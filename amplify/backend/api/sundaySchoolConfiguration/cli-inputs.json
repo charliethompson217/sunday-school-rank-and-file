@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/configuration/{operation}": {
+      "name": "/configuration/{operation}",
+      "lambdaFunction": "sundaySchoolConfigurationLambda",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -5,7 +5,12 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
-    "sundaySchoolAdmin": {
+    "ssAdmin": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
+    "sundaySchoolConfiguration": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
@@ -16,6 +21,17 @@ export type AmplifyDependentResourcesAttributes = {
       "RootUrl": "string"
     }
   },
+  "auth": {
+    "andrewform6dffb2eb": {
+      "AppClientID": "string",
+      "AppClientIDWeb": "string",
+      "IdentityPoolId": "string",
+      "IdentityPoolName": "string",
+      "UserPoolArn": "string",
+      "UserPoolId": "string",
+      "UserPoolName": "string"
+    }
+  },
   "function": {
     "playerLambda": {
       "Arn": "string",
@@ -24,7 +40,14 @@ export type AmplifyDependentResourcesAttributes = {
       "Name": "string",
       "Region": "string"
     },
-    "sundaySchoolAdminLambda": {
+    "ssAdminLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "sundaySchoolConfigurationLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

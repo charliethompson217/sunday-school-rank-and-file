@@ -35,32 +35,6 @@ def handler(event, context):
             },
             'body': json.dumps('Picks inserted secsesfully!')
         }
-    elif method == 'GET':
-        print(team)
-        response = table.query(
-            KeyConditionExpression='team = :tid',
-            ExpressionAttributeValues={
-                ':tid': team
-            },
-            ScanIndexForward=False,
-            Limit=1
-        )
-        if 'Items' in response:
-            most_recent_entry = response['Items'][0]
-            print(most_recent_entry)
-            if 'Timestamp' in most_recent_entry:
-                most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
-            return {
-                'statusCode': 200,
-                'headers': {
-                    'Access-Control-Allow-Headers': '*',
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                },
-                'body': json.dumps(most_recent_entry)
-            }
-        else:
-            print("No entries found.")
     return {
         'statusCode': 200,
         'headers': {
@@ -68,5 +42,5 @@ def handler(event, context):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
         },
-        'body': json.dumps('Hello from your new Amplify Python lambda!')
+        'body': json.dumps('Acess Denied!')
     }

@@ -1,16 +1,21 @@
 .App{
+  font-family: Arial, Helvetica, sans-serif;
+  margin-bottom: 5%;
+}
+
+.FormContainer{
   margin-left: 10%;
   font-family: Arial, Helvetica, sans-serif;
 }
 
-p{
+.FormContainer p{
   padding-bottom: 20px;
 }
-span{
+.FormContainer span{
   color: black;
 }
 .picks-form-nav button{
-  background-color: rgb(17, 81, 255);
+  background-color: rgb(6, 6, 111);
   border: none;
   color: white;
   padding: 15px 32px;
@@ -45,14 +50,14 @@ span{
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgb(240, 240, 240);
+  background-color: rgb(231, 223, 217);
   border: 1px solid #ccc;
   cursor: pointer;
   padding-bottom: 10px;
 }
 
 .option-button.selected {
-  background-color: rgb(17, 81, 255);
+  background-color: rgb(6, 6, 111);
 }
 .option-button.selected span{
   color: white;
@@ -65,7 +70,7 @@ span{
 }
 
 .ranked-ranks label {
-  background-color:  rgb(17, 81, 255);
+  background-color:  rgb(6, 6, 111);
   color: rgb(255,255,255);
   padding: 3px;
   border: none;
@@ -86,14 +91,14 @@ span{
 
 .ranked-ranks li {
   padding: 10px;
-  background-color: #f0f0f0;
+  background-color: rgb(231, 223, 217);
   cursor: pointer;
   transition: transform 0.3s ease-in-out;
   border-radius: 12px;
 }
 
 .ranked-ranks li.dragged {
-  background-color:  rgb(17, 81, 255);
+  background-color:  rgb(6, 6, 111);
   opacity: 0.7;
   color: white;
 }
@@ -129,11 +134,61 @@ span{
   border: 1px solid black;
   padding: 8px;
 }
+.navbar-offset-container{
+  margin-top: 70px;
+}
 
-
-
+.rules h2{
+  text-decoration: underline;
+}
+.rules{
+  margin-left: 5%;
+  margin-right: 5%;
+  max-width: 900px;
+  margin-bottom: 10%;
+  
+}
+.italic-text{
+  font-style: italic;
+}
+.bold-text{
+  font-weight: bold;
+}
+.indented-text{
+  margin-left: 25px;
+}
+.underline-text{
+  text-decoration: underline;
+}
+.complimentary-close {
+  float: right;
+}
+.main-logo{
+  display: flex;
+  justify-content: center;
+}
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.end-of-form ul{
+  list-style: none;
+}
+.PlayerEditor-input-wrapper input{
+  background-color: rgb(220, 187, 160);
+}
+.SignIn, .SignUp{
+  margin-left: 5%;
+  margin-top: 5%;
+}
+.SignIn input, .SignUp input{
+  font-size: large;
+  margin-bottom: 10px;
+}
 /*
-Mobile CSS
+Mobile specific CSS
 */
 
 
@@ -143,33 +198,33 @@ Mobile CSS
 
 
 @media (max-width: 1000px) {
-  .App{
+  .FormContainer{
     margin-left: 5%;
     margin-right: 5%;
     margin-bottom: 20%;
     font-family: Arial, Helvetica, sans-serif;
   }
-  h1{
+  .FormContainer h1{
     font-size: 70px;
   }
-  h3{
+  .FormContainer h3{
     font-size: 50px;
   }
-  select{
+  .FormContainer select{
     font-size: 30px;
   }
-  p{
+  .FormContainer p{
     padding-bottom: 20px;
     font-size: 30px;
   }
-  form{
+  .FormContainer form{
     font-size: 20px;
   }
-  span{
+  .FormContainer span{
     color: black;
   }
   .picks-form-nav button{
-    background-color: rgb(17, 81, 255);
+    background-color: rgb(6, 6, 111);
     border: none;
     color: white;
     padding: 15px 32px;
@@ -201,14 +256,14 @@ Mobile CSS
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgb(240, 240, 240);
+    background-color: rgb(231, 223, 217);
     border: 1px solid #ccc;
     cursor: pointer;
     padding-bottom: 10px;
   }
   
   .option-button.selected {
-    background-color: rgb(17, 81, 255);
+    background-color: rgb(6, 6, 111);
   }
   .option-button.selected span{
     color: white;
@@ -221,7 +276,7 @@ Mobile CSS
   }
   
   .ranked-ranks label {
-    background-color:  rgb(17, 81, 255);
+    background-color:  rgb(6, 6, 205);
     color: rgb(255,255,255);
     padding: 3px;
     border: none;
@@ -243,10 +298,10 @@ Mobile CSS
   
   .ranked-ranks li {
     padding: 30px;
-    background-color: #f0f0f0;
+    background-color:  rgb(231, 223, 217);
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
-    border-radius: 12px;
+    border-radius: 50px;
   }
   
   .ranked-ranks li.dragged {
@@ -261,5 +316,32 @@ Mobile CSS
   }
   .warning{
     color: red;
+  }
+  .navbar-offset-container{
+    margin-top: 200px;
+  }
+  .complimentary-close {
+    font-size: 25px;
+  }
+  .countdown-container{
+    font-size: 30px;
+  }
+  .Results{
+    font-size: xx-large;
+  }
+  .SubmissionInstructions{
+    font-size: xx-large;
+  }
+  .SignIn input, .SignUp input{
+    font-size: xx-large;
+  }
+  .SignIn, .SignUp{
+    margin-left: 5%;
+    margin-top: 10%;
+    font-size: xx-large;
+    max-width: 50%;
+  }
+  .SignIn button, .SignUp button{
+    font-size: xx-large;
   }
 }

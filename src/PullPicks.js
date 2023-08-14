@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import './App.css';
 
@@ -20,7 +20,7 @@ export default function PullPicks() {
     const fetchConfigId = async () => {
       setCurrentConfigId([]);
       try {
-        const response = await API.get('sundaySchoolAdmin', '/admin/get-matchups');
+        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
         const {Timestamp: fetchedTimestamp} = response;
         setCurrentConfigId(fetchedTimestamp);
       } catch (error) {
@@ -30,7 +30,13 @@ export default function PullPicks() {
     const fetchPlayers = async () => {
       setPlayers([]);
       try {
-        const response = await API.get('playerApi', '/player/get-players');
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const response = await API.get('ssAdmin', '/admin/get-players',{
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          },
+        });
         const sortedPlayers = [...response].sort(compareByTeamName);
         setPlayers(sortedPlayers);
       } catch (error) {
@@ -44,8 +50,13 @@ export default function PullPicks() {
     setPlayerPicks([]);
     const fetchPicksForPlayer = async (teamName) => {
       try {
-        const teamWithoutSpaces = teamName.split(' ').join('');
-        const response = await API.get('sundaySchoolSubmissions', `/submission/${teamWithoutSpaces}`);
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const response = await API.get('ssAdmin', `/admin/${teamName}`,{
+          headers: {
+            Authorization: `Bearer ${idToken}`
+          },
+        });
         setPlayerPicks((prevPlayerPicks) => [...prevPlayerPicks, response]);
       } catch (error) {
         console.error('Error fetching players:', error);

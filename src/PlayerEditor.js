@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 
 Amplify.configure(awsExports);
@@ -8,6 +8,7 @@ const PlayerEditor = () => {
   const [players, setPlayers] = useState([]);
   const [newPlayerName, setNewPlayerName] = useState('');
   const [newPlayerEmail, setNewPlayerEmail] = useState('');
+  const [warning, setWarning] = useState("");
 
   const compareByTeamName = (a, b) => {
     if (a.teamName < b.teamName) return -1;
@@ -17,7 +18,13 @@ const PlayerEditor = () => {
 
   useEffect( () => {
     const fetchPlayers = async () => {
-      const response = await API.get('playerApi', '/player/get-players');
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const response = await API.get('ssAdmin', '/admin/get-players',{
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
+      });
       const sortedPlayers = [...response].sort(compareByTeamName);
     setPlayers(sortedPlayers);
     }
@@ -33,23 +40,44 @@ const PlayerEditor = () => {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
       counter += 1;
     }
+    for(const player of players){
+      if(result===player.playerId){
+        return makeId(length);
+      }
+    }
     return result;
   }
 
   const handleAddPlayer = async () => {
+    if(newPlayerName.includes(' ')){
+      setWarning("Team Name cannot inclue spaces, you can use a hyphen!");
+      return;
+    }
+    for(const player of players){
+      if(player.teamName===newPlayerName){
+        setWarning("Name already taken!");
+        return;
+      }
+    }
+    setWarning("");
     if (newPlayerName.trim() !== '') {
       const newId = makeId(7);
-      const response = await API.post('playerApi', `/player/${newId}`,{
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const response = await API.post('ssAdmin', `/admin/add-player`,{
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
         body: {
+          playerId: newId,
           email: newPlayerEmail,
           teamName: newPlayerName,
         }
       });
       console.log(response);
-      const teamWithoutSpaces = newPlayerName.split(' ').join('');
-      const response2 = await API.post('sundaySchoolSubmissions', `/submission/${teamWithoutSpaces}`, {
+      const response2 = await API.post('sundaySchoolSubmissions', `/submission/${newId}`, {
         body: {
-          team: teamWithoutSpaces,
+          team: newPlayerName,
           configId: "1",
         }
       });
@@ -62,8 +90,14 @@ const PlayerEditor = () => {
 
   const handleRemovePlayer = async (oldPlayer) => {
     if (window.confirm(`Are you sure you want to delete ${oldPlayer.teamName}? This action cannot be undone!`)) {
-      const response = await API.del('playerApi', `/player/${oldPlayer.playerId}`,{
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const response = await API.del('ssAdmin', `/admin/delete-player`,{
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
         body: {
+          playerId: oldPlayer.playerId,
           Timestamp: oldPlayer.Timestamp,
         }
       });
@@ -92,19 +126,35 @@ const PlayerEditor = () => {
     setPlayers(updatedPlayers);
   };
   const handlePushEdits = async (player) => {
+    if(player.teamName.includes(' ')){
+      setWarning("Team Name cannot inclue spaces, you can use a hyphen!");
+      return;
+    }
+    for(const otherplayer of players){
+      if(otherplayer.teamName===player.teamName&&otherplayer.playerId!==player.playerId){
+        setWarning("Name already taken!");
+        return;
+      }
+    }
+    setWarning("");
     if (window.confirm(`Are you sure you want to edit ${player.teamName}? If this player has already submitted their picks this week, these picks will no longer be asociated with the curent week's matchups!`)) {
-      const response = await API.put('playerApi', `/player/${player.playerId}`,{
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const response = await API.put('ssAdmin', `/admin/edit-player`,{
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
         body: {
+          playerId: player.playerId,
           email: player.email,
           teamName: player.teamName,
           Timestamp: player.Timestamp,
         }
       });
       console.log(response);
-      const teamWithoutSpaces = player.teamName.split(' ').join('');
-      const response2 = await API.post('sundaySchoolSubmissions', `/submission/${teamWithoutSpaces}`, {
+      const response2 = await API.post('sundaySchoolSubmissions', `/submission/${player.playerId}`, {
         body: {
-          team: teamWithoutSpaces,
+          team: player.teamName,
           configId: "1",
         }
       });
@@ -148,10 +198,10 @@ const PlayerEditor = () => {
               <button onClick={() => handlePushEdits(player)}>Push Edits</button>
               <button onClick={() => handleRemovePlayer(player)}>Remove</button>
             </div>
-
           </li>
         ))}
       </ul>
+      <p className='warning'>{warning}</p>
       <div>
         <input
           type="text"
@@ -166,6 +216,7 @@ const PlayerEditor = () => {
           onChange={e => setNewPlayerEmail(e.target.value)}
         />
         <button onClick={handleAddPlayer}>Add Player</button>
+        
       </div>
     </div>
   );

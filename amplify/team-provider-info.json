@@ -9,27 +9,33 @@
       "UnauthRoleName": "amplify-andrewform-dev-222655-unauthRole",
       "StackName": "amplify-andrewform-dev-222655",
       "StackId": "arn:aws:cloudformation:us-east-2:245802128258:stack/amplify-andrewform-dev-222655/e19b3460-34c9-11ee-9649-0a02ba9fb47b",
-      "AmplifyAppId": "di6rvaijnlkof"
+      "AmplifyAppId": "di6rvaijnlkof",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-andrewform-dev-222655-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "function": {
-        "sundaySchoolAdminLambda": {
-          "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/sundaySchoolAdminLambda-42346b2b374849737170-build.zip"
-        },
         "sundaySchoolSubmissionsLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/sundaySchoolSubmissionsLambda-692b61663375596d6d48-build.zip"
+          "s3Key": "amplify-builds/sundaySchoolSubmissionsLambda-42594d5a792b52684b67-build.zip"
         },
         "playerLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/playerLambda-43635944642b4271366c-build.zip"
+          "s3Key": "amplify-builds/playerLambda-6b596e2b516a732b2f4a-build.zip"
+        },
+        "sundaySchoolConfigurationLambda": {
+          "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
+          "s3Key": "amplify-builds/sundaySchoolConfigurationLambda-51477751424476315579-build.zip"
+        },
+        "ssAdminLambda": {
+          "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
+          "s3Key": "amplify-builds/ssAdminLambda-444457556674736e3670-build.zip"
         }
       },
       "api": {
-        "sundaySchoolAdmin": {},
         "sundaySchoolSubmissions": {},
-        "playerApi": {}
+        "playerApi": {},
+        "sundaySchoolConfiguration": {},
+        "ssAdmin": {}
       },
       "storage": {
         "configuration": {},
@@ -41,6 +47,9 @@
           "appId": "di6rvaijnlkof",
           "type": "manual"
         }
+      },
+      "auth": {
+        "andrewform6dffb2eb": {}
       }
     }
   }

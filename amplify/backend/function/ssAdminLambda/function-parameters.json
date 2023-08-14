@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "storage": {
+      "configuration": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "submissions": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "sundaySchoolPlayers": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "auth": {
+      "andrewform6dffb2eb": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

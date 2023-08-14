@@ -14,7 +14,7 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
-    "sundaySchoolAdmin": {
+    "ssAdmin": {
       "dependsOn": [
         {
           "attributes": [
@@ -22,7 +22,21 @@
             "Arn"
           ],
           "category": "function",
-          "resourceName": "sundaySchoolAdminLambda"
+          "resourceName": "ssAdminLambda"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "sundaySchoolConfiguration": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "sundaySchoolConfigurationLambda"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -43,6 +57,34 @@
       "service": "API Gateway"
     }
   },
+  "auth": {
+    "andrewform6dffb2eb": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
   "function": {
     "playerLambda": {
       "build": true,
@@ -60,7 +102,48 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "sundaySchoolAdminLambda": {
+    "ssAdminLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "configuration"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "submissions"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "sundaySchoolPlayers"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "andrewform6dffb2eb"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "sundaySchoolConfigurationLambda": {
       "build": true,
       "dependsOn": [
         {
@@ -126,19 +209,35 @@
         }
       ]
     },
-    "AMPLIFY_function_sundaySchoolAdminLambda_deploymentBucketName": {
+    "AMPLIFY_function_ssAdminLambda_deploymentBucketName": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "sundaySchoolAdminLambda"
+          "resourceName": "ssAdminLambda"
         }
       ]
     },
-    "AMPLIFY_function_sundaySchoolAdminLambda_s3Key": {
+    "AMPLIFY_function_ssAdminLambda_s3Key": {
       "usedBy": [
         {
           "category": "function",
-          "resourceName": "sundaySchoolAdminLambda"
+          "resourceName": "ssAdminLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolConfigurationLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolConfigurationLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolConfigurationLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolConfigurationLambda"
         }
       ]
     },

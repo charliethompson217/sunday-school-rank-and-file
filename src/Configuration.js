@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import { API, Amplify, Auth } from 'aws-amplify';
 import Papa from 'papaparse';
 import awsExports from './aws-exports';
 
@@ -15,14 +15,19 @@ export default function Configuration() {
 
     const sendToServer = async (rankMatchups, fileMatchups) => {
     try {
-        const response = await API.post('sundaySchoolAdmin', '/admin/upload-matchups', {
-        body: {
-            ClientId: 'matchups',
-            week: week,
-            closeTime: new Date(dateTime).toISOString(),
-            rankMatchups: rankMatchups,
-            fileMatchups: fileMatchups,
-        }
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const response = await API.post('ssAdmin', '/admin/upload-matchups', {
+            headers: {
+                Authorization: `Bearer ${idToken}`
+            },
+            body: {
+                ClientId: 'matchups',
+                week: week,
+                closeTime: new Date(dateTime).toISOString(),
+                rankMatchups: rankMatchups,
+                fileMatchups: fileMatchups,
+            }
         });
         console.log('matchups uploaded:', response);
     } catch (error) {

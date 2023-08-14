@@ -14,6 +14,7 @@ Amplify.configure(awsExports);
 const FormContainer = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(false);
+  const [closeTime, setCloseTime] = useState("")
   const [configId, setConfigId] = useState("");
   const [week, setWeek] = useState("Week");
   const [rankMatchups, setRankMatchups] = useState([]);
@@ -29,15 +30,6 @@ const FormContainer = () => {
   const location = useLocation();
   let arr = location.pathname.split("/");
 
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      const response = await API.get('playerApi', '/player/get-players');
-      const teamNames = response.map(team => team.teamName);
-      const sortedTeams = [...teamNames].sort();
-      setTeams(["Chose Team", ...sortedTeams]);
-    }
-    fetchPlayers();
-  }, []);
   async function isDateTimeBeforeCurrentUTC(inputDateTimeString) {
     try {
       const response = await fetch('https://worldtimeapi.org/api/ip');
@@ -50,19 +42,31 @@ const FormContainer = () => {
       return false;
     }
   }
+
+  useEffect( () => {
+    const fetchPlayers = async () => {
+      const response = await API.get('playerApi', '/player/get-players');
+      const teamNames = response.map(team => team.teamName);
+      const sortedTeams = [...teamNames].sort();
+      setTeams(["Chose Team", ...sortedTeams]);
+    }
+    fetchPlayers();
+  }, []);
+  
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
-        const response = await API.get('sundaySchoolAdmin', '/admin/get-matchups');
+        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
         const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedTimestamp} = response;
         setRankMatchups(fetchedRankMatchups);
         setFileMatchups(fetchedFileMatchups);
         setWeek(fetchedWeek);
         setConfigId(fetchedTimestamp);
+        setCloseTime(fetchedCloseTime);
         const isBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(fetchedCloseTime);
         if (isBeforeCurrentUTC) {
-          setWarning(`The deadline has passed to submit picks for ${fetchedWeek}`);
-          setIsClosed(isBeforeCurrentUTC);
+          setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
+          setIsClosed(true);
         } else {
           setWarning("");
         }
@@ -117,12 +121,21 @@ const FormContainer = () => {
   const handleTeamChange = (team) => {
     setTeam(team);
   };
-  
-  const nextStep = () => {
-    if(currentStep === 1) {
-      if(isClosed){
-        return;
+  useEffect( () => {
+    const checkTime = async () => {
+      const isBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(closeTime);
+      if (isBeforeCurrentUTC) {
+        setWarning(`The deadline has passed to submit picks for ${week}.`);
+        setIsClosed(true);
+      } else {
+        setWarning("");
       }
+    }
+    checkTime();
+  }, [currentStep, closeTime, week]);
+  const nextStep = () => {
+    if(isClosed){
+      return;
     }
     if (currentStep === 1) {
       if (team==="Chose Team") {
@@ -148,14 +161,16 @@ const FormContainer = () => {
   
   const sendToServer = async () => {
     try {
-      let customerID = arr.slice(-1)[0];
-      const response = await API.post('sundaySchoolSubmissions', `/submission/${customerID}`, {
+      let playerID = arr.slice(-1)[0];
+      let fixedRanks = [...rankedRanks];
+      fixedRanks.reverse();
+      const response = await API.post('sundaySchoolSubmissions', `/submission/${playerID}`, {
         body: {
           team: team,
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
-          rankedRanks: JSON.stringify(fixRankedRanks(rankedRanks)),
+          rankedRanks: JSON.stringify(fixRankedRanks(fixedRanks)),
           filePicks: JSON.stringify(filePicks),
         }
       });
@@ -173,7 +188,11 @@ const FormContainer = () => {
   }
   const handleSubmit = (event) => {
     event.preventDefault();
-    rankedRanks.reverse();
+    if(isClosed){
+      setWarning(`The deadline has passed to submit picks for ${week}.`);
+      return;
+    }
+    
     if (currentStep === 4) {
       const hasIncompleteValues = filePicks.some(pick => pick.value === null);
       if (hasIncompleteValues) {
@@ -187,7 +206,7 @@ const FormContainer = () => {
   };
 
   return (
-    <div>
+    <div className='FormContainer'>
       <h1>Sunday School {week}</h1>
       <form onSubmit={handleSubmit}>
         <CurrentStepComponent
