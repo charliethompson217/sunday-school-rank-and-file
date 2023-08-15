@@ -1,4 +1,5 @@
 import json
+import os
 import boto3
 import time
 
@@ -8,7 +9,9 @@ def handler(event, context):
     print('received event:')
     print(event)
     method = event['httpMethod']
-    table = dynamodb.Table('configuration-dev')
+    env = os.environ.get('ENV')
+    table_name = f'configuration-{env}'
+    table = dynamodb.Table(table_name)
     if method == 'GET':
         client_id = "matchups"
         response = table.query(

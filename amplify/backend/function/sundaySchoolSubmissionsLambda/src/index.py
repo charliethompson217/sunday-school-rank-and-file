@@ -1,4 +1,5 @@
 import json
+import os
 import boto3
 import time
 
@@ -10,7 +11,9 @@ def handler(event, context):
     method = event['httpMethod']
     path_parameters = event['pathParameters']
     team = path_parameters['team']
-    table = dynamodb.Table('submissions-dev')
+    env = os.environ.get('ENV')
+    table_name = f'submissions-{env}'
+    table = dynamodb.Table(table_name)
     if method == 'POST':
         print(team)
         timestamp = int(time.time())

@@ -193,6 +193,70 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_playerLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "playerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_playerLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "playerLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_ssAdminLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ssAdminLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_ssAdminLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ssAdminLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolConfigurationLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolConfigurationLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolConfigurationLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolConfigurationLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolSubmissionsLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolSubmissionsLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolSubmissionsLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolSubmissionsLambda"
+        }
+      ]
+    },
     "AMPLIFY_hosting_amplifyhosting_appId": {
       "usedBy": [
         {

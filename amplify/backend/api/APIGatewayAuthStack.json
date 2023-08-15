@@ -11,16 +11,16 @@
     "env": {
       "Type": "String"
     },
-    "sundaySchoolSubmissions": {
+    "playerApi": {
       "Type": "String"
     },
-    "playerApi": {
+    "ssAdmin": {
       "Type": "String"
     },
     "sundaySchoolConfiguration": {
       "Type": "String"
     },
-    "ssAdmin": {
+    "sundaySchoolSubmissions": {
       "Type": "String"
     }
   },

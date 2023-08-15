@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 import boto3
 import time
 
@@ -18,11 +19,13 @@ def handler(event, context):
     decoded_payload = base64.b64decode(payload + "===").decode()
     payload_json = json.loads(decoded_payload)
     groups = payload_json.get('cognito:groups', [])
+    env = os.environ.get('ENV')
     is_admin = 'Admin' in groups
     if is_admin:
         if method == 'POST':
             if(action == "upload-matchups"):
-                table = dynamodb.Table('configuration-dev')
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
                 timestamp = int(time.time())
                 body = json.loads(event['body'])
                 item = {
@@ -48,7 +51,8 @@ def handler(event, context):
                     'body': json.dumps('Matchups Updated!')
                 }
             if(action == "add-player"):
-                table = dynamodb.Table('sundaySchoolPlayers-dev')
+                table_name = f'sundaySchoolPlayers-{env}'
+                table = dynamodb.Table(table_name)
                 timestamp = int(time.time())
                 body = json.loads(event['body'])
                 item = {
@@ -69,7 +73,8 @@ def handler(event, context):
                 }
         elif method == 'PUT':
             if(action == "edit-player"):
-                table = dynamodb.Table('sundaySchoolPlayers-dev')
+                table_name = f'sundaySchoolPlayers-{env}'
+                table = dynamodb.Table(table_name)
                 body = json.loads(event['body'])
                 newTeamName = body.get('teamName')
                 newEmail = body.get('email')
@@ -96,7 +101,8 @@ def handler(event, context):
                 }
         elif method == 'DELETE':
             if(action == "delete-player"):
-                table = dynamodb.Table('sundaySchoolPlayers-dev')
+                table_name = f'sundaySchoolPlayers-{env}'
+                table = dynamodb.Table(table_name)
                 body = json.loads(event['body'])
                 playerId = body.get('playerId')
                 response = table.delete_item(
@@ -115,7 +121,8 @@ def handler(event, context):
                 }
         elif method == 'GET':
             if(action == "get-players"):
-                table = dynamodb.Table('sundaySchoolPlayers-dev')
+                table_name = f'sundaySchoolPlayers-{env}'
+                table = dynamodb.Table(table_name)
                 response = table.scan()
                 players = response['Items']
                 for player in players:
@@ -131,7 +138,8 @@ def handler(event, context):
                     'body': json.dumps(players)
                 }
             else:
-                table = dynamodb.Table('submissions-dev')
+                table_name = f'submissions-{env}'
+                table = dynamodb.Table(table_name)
                 response = table.query(
                     KeyConditionExpression='team = :tid',
                     ExpressionAttributeValues={

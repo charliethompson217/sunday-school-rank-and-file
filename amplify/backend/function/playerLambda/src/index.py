@@ -1,4 +1,5 @@
 import json
+import os
 import boto3
 import time
 
@@ -10,7 +11,9 @@ def handler(event, context):
     method = event['httpMethod']
     path_parameters = event['pathParameters']
     playerId = path_parameters['playerId']
-    table = dynamodb.Table('sundaySchoolPlayers-dev')
+    env = os.environ.get('ENV')
+    table_name = f'sundaySchoolPlayers-{env}'
+    table = dynamodb.Table(table_name)
     if method == 'GET':
         print(playerId)
         response = table.scan()

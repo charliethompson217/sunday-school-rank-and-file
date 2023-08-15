@@ -16,19 +16,19 @@
       "function": {
         "sundaySchoolSubmissionsLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/sundaySchoolSubmissionsLambda-42594d5a792b52684b67-build.zip"
+          "s3Key": "amplify-builds/sundaySchoolSubmissionsLambda-4e38397062784a2f3842-build.zip"
         },
         "playerLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/playerLambda-6b596e2b516a732b2f4a-build.zip"
+          "s3Key": "amplify-builds/playerLambda-4e304b69565870442f38-build.zip"
         },
         "sundaySchoolConfigurationLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/sundaySchoolConfigurationLambda-51477751424476315579-build.zip"
+          "s3Key": "amplify-builds/sundaySchoolConfigurationLambda-57454454497537366c2f-build.zip"
         },
         "ssAdminLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/ssAdminLambda-444457556674736e3670-build.zip"
+          "s3Key": "amplify-builds/ssAdminLambda-506275323771665a3853-build.zip"
         },
         "sundaySchoolPlayers": {},
         "configuration": {},
@@ -67,17 +67,30 @@
       "UnauthRoleName": "amplify-andrewform-prod-02432-unauthRole",
       "StackName": "amplify-andrewform-prod-02432",
       "StackId": "arn:aws:cloudformation:us-east-2:245802128258:stack/amplify-andrewform-prod-02432/a2e4ecb0-3b23-11ee-91bd-06077dd4d6b5",
-      "AmplifyAppId": "di6rvaijnlkof"
+      "AmplifyAppId": "di6rvaijnlkof",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-andrewform-prod-02432-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
         "andrewform6dffb2eb": {}
       },
       "function": {
-        "playerLambda": {},
-        "ssAdminLambda": {},
-        "sundaySchoolConfigurationLambda": {},
-        "sundaySchoolSubmissionsLambda": {},
+        "playerLambda": {
+          "deploymentBucketName": "amplify-andrewform-prod-02432-deployment",
+          "s3Key": "amplify-builds/playerLambda-4e304b69565870442f38-build.zip"
+        },
+        "ssAdminLambda": {
+          "deploymentBucketName": "amplify-andrewform-prod-02432-deployment",
+          "s3Key": "amplify-builds/ssAdminLambda-506275323771665a3853-build.zip"
+        },
+        "sundaySchoolConfigurationLambda": {
+          "deploymentBucketName": "amplify-andrewform-prod-02432-deployment",
+          "s3Key": "amplify-builds/sundaySchoolConfigurationLambda-57454454497537366c2f-build.zip"
+        },
+        "sundaySchoolSubmissionsLambda": {
+          "deploymentBucketName": "amplify-andrewform-prod-02432-deployment",
+          "s3Key": "amplify-builds/sundaySchoolSubmissionsLambda-4e38397062784a2f3842-build.zip"
+        },
         "sundaySchoolPlayers": {},
         "configuration": {},
         "submissions": {},
@@ -88,6 +101,17 @@
           "appId": "di6rvaijnlkof",
           "type": "manual"
         }
+      },
+      "api": {
+        "playerApi": {},
+        "ssAdmin": {},
+        "sundaySchoolConfiguration": {},
+        "sundaySchoolSubmissions": {}
+      },
+      "storage": {
+        "configuration": {},
+        "submissions": {},
+        "sundaySchoolPlayers": {}
       }
     }
   }
