@@ -5,7 +5,7 @@ import PlayerEditor from './PlayerEditor';
 
 export default function Admin() {
   return (
-    <div>
+    <div >
       <h1>Admin</h1>
       <Configuration></Configuration>
       <PullPicks></PullPicks>
