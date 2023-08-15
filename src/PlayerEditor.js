@@ -6,8 +6,9 @@ Amplify.configure(awsExports);
 
 const PlayerEditor = () => {
   const [players, setPlayers] = useState([]);
-  const [newPlayerName, setNewPlayerName] = useState('');
+  const [newTeamName, setNewTeamName] = useState('');
   const [newPlayerEmail, setNewPlayerEmail] = useState('');
+  const [newFullName, setNewFullName] = useState('');
   const [warning, setWarning] = useState("");
 
   const compareByTeamName = (a, b) => {
@@ -49,18 +50,18 @@ const PlayerEditor = () => {
   }
 
   const handleAddPlayer = async () => {
-    if(newPlayerName.includes(' ')){
+    if(newTeamName.includes(' ')){
       setWarning("Team Name cannot inclue spaces, you can use a hyphen!");
       return;
     }
     for(const player of players){
-      if(player.teamName===newPlayerName){
+      if(player.teamName===newTeamName){
         setWarning("Name already taken!");
         return;
       }
     }
     setWarning("");
-    if (newPlayerName.trim() !== '') {
+    if (newTeamName.trim() !== '') {
       const newId = makeId(7);
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
@@ -71,19 +72,20 @@ const PlayerEditor = () => {
         body: {
           playerId: newId,
           email: newPlayerEmail,
-          teamName: newPlayerName,
+          teamName: newTeamName,
+          fullName: newFullName,
         }
       });
       console.log(response);
       const response2 = await API.post('sundaySchoolSubmissions', `/submission/${newId}`, {
         body: {
-          team: newPlayerName,
+          team: newTeamName,
           configId: "1",
         }
       });
       console.log(response2);
-      setPlayers([...players, { playerId: newId, teamName: newPlayerName, email: newPlayerEmail}]);
-      setNewPlayerName('');
+      setPlayers([...players, { playerId: newId, teamName: newTeamName, email: newPlayerEmail}]);
+      setNewTeamName('');
       setNewPlayerEmail('');
     }
   };
@@ -107,7 +109,7 @@ const PlayerEditor = () => {
     }
   };
 
-  const handleEditPlayerName = async (oldPlayer, newName) => {
+  const handleEditTeamName = async (oldPlayer, newName) => {
     const updatedPlayers = players.map(player => {
       if (player.playerId === oldPlayer.playerId) {
         return { ...player, teamName: newName };
@@ -116,10 +118,19 @@ const PlayerEditor = () => {
     });
     setPlayers(updatedPlayers);
   };
-  const handleEditPlayerEmail = async (oldPlayer, newEmail) => {
+  const handleEditEmail = async (oldPlayer, newEmail) => {
     const updatedPlayers = players.map(player => {
       if (player.playerId === oldPlayer.playerId) {
         return { ...player, email: newEmail };
+      }
+      return player;
+    });
+    setPlayers(updatedPlayers);
+  };
+  const handleEditFullName = async (oldPlayer, newFullName) => {
+    const updatedPlayers = players.map(player => {
+      if (player.playerId === oldPlayer.playerId) {
+        return { ...player, fullName: newFullName };
       }
       return player;
     });
@@ -149,6 +160,7 @@ const PlayerEditor = () => {
           email: player.email,
           teamName: player.teamName,
           Timestamp: player.Timestamp,
+          fullName: player.fullName,
         }
       });
       console.log(response);
@@ -176,7 +188,7 @@ const PlayerEditor = () => {
               <input
                 type="text"
                 value={player.teamName}
-                onChange={e => handleEditPlayerName(player, e.target.value)}
+                onChange={e => handleEditTeamName(player, e.target.value)}
               />
             </div>
 
@@ -185,7 +197,15 @@ const PlayerEditor = () => {
               <input
                 type="text"
                 value={player.email}
-                onChange={e => handleEditPlayerEmail(player, e.target.value)}
+                onChange={e => handleEditEmail(player, e.target.value)}
+              />
+            </div>
+            <div className="PlayerEditor-input-wrapper">
+              <label>Full Name:</label>
+              <input
+                type="text"
+                value={player.fullName}
+                onChange={e => handleEditFullName(player, e.target.value)}
               />
             </div>
 
@@ -205,15 +225,21 @@ const PlayerEditor = () => {
       <div>
         <input
           type="text"
-          placeholder="Enter player name"
-          value={newPlayerName}
-          onChange={e => setNewPlayerName(e.target.value)}
+          placeholder="Team Name"
+          value={newTeamName}
+          onChange={e => setNewTeamName(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Enter player email"
+          placeholder="Email"
           value={newPlayerEmail}
           onChange={e => setNewPlayerEmail(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={newFullName}
+          onChange={e => setNewFullName(e.target.value)}
         />
         <button onClick={handleAddPlayer}>Add Player</button>
         
