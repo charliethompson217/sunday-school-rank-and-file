@@ -8,13 +8,16 @@ import RankRanks from './RankRanks';
 import FilePicks from './FilePicks';
 import EndOfForm from './EndOfForm';
 import './App.css';
+import Countdown from './Countdown';
 
 Amplify.configure(awsExports);
 
 const FormContainer = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(false);
-  const [closeTime, setCloseTime] = useState("")
+  const [counterUpdated, setCounterUpdated] = useState(false);
+  const [closeTime, setCloseTime] = useState("");
+  const [countDownTime, setCountDownTime] = useState("");
   const [configId, setConfigId] = useState("");
   const [week, setWeek] = useState("Week");
   const [rankMatchups, setRankMatchups] = useState([]);
@@ -42,6 +45,18 @@ const FormContainer = () => {
       return false;
     }
   }
+  async function isDateTimePlus10MinutesBeforeCurrentUTC(inputDateTimeString) {
+    try {
+      const response = await fetch('https://worldtimeapi.org/api/ip');
+      const data = await response.json();
+      const currentUTCTime = new Date(data.utc_datetime).getTime();
+      const inputDate = new Date(inputDateTimeString).getTime();
+      return inputDate+600000 < currentUTCTime;
+    } catch (error) {
+      console.error('Error fetching UTC time:', error);
+      return false;
+    }
+  }
 
   useEffect( () => {
     const fetchPlayers = async () => {
@@ -63,6 +78,7 @@ const FormContainer = () => {
         setWeek(fetchedWeek);
         setConfigId(fetchedTimestamp);
         setCloseTime(fetchedCloseTime);
+        setCountDownTime(fetchedCloseTime);
         const isBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(fetchedCloseTime);
         if (isBeforeCurrentUTC) {
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
@@ -123,7 +139,13 @@ const FormContainer = () => {
   };
   useEffect( () => {
     const checkTime = async () => {
-      const isBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(closeTime);
+      const isInitalCloseBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(closeTime);
+      if(!counterUpdated&&isInitalCloseBeforeCurrentUTC){
+        const newCounterTime = new Date(countDownTime).getTime()+600000;
+        setCountDownTime(newCounterTime);
+        setCounterUpdated(true);
+      }
+      const isBeforeCurrentUTC = await isDateTimePlus10MinutesBeforeCurrentUTC(closeTime);
       if (isBeforeCurrentUTC) {
         setWarning(`The deadline has passed to submit picks for ${week}.`);
         setIsClosed(true);
@@ -132,7 +154,7 @@ const FormContainer = () => {
       }
     }
     checkTime();
-  }, [currentStep, closeTime, week]);
+  }, [currentStep, closeTime, week, counterUpdated, countDownTime]);
   const nextStep = () => {
     if(isClosed){
       return;
@@ -208,6 +230,7 @@ const FormContainer = () => {
   return (
     <div className='FormContainer'>
       <h1>Sunday School {week}</h1>
+      <Countdown targetDate={countDownTime}></Countdown>
       <form onSubmit={handleSubmit}>
         <CurrentStepComponent
           team={team}
