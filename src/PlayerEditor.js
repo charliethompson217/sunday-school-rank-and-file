@@ -173,12 +173,41 @@ const PlayerEditor = () => {
       console.log(response2);
     }
   };
-
+  const generateCsvData = () => {
+    let csvData = '';
+    csvData += 'PlayerId,Team Name,Full Name,Email';
+    csvData += '\n';
+    players.forEach((player) => {
+      const id = player.playerId;
+      const team = player.teamName;
+      const name = player.fullName;
+      const email = player.email;
+      csvData += `${id},`;
+      csvData += `${team},`;
+      csvData += `${name},`;
+      csvData += `${email},`;
+      csvData += '\n';
+    })
+    return csvData;
+  };
+  const downloadPlayerCSV = () => {
+    const csvData = generateCsvData();
+    if (csvData) {
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'players.csv';
+      link.click();
+    }
+  };
 
   return (
     <div className='PlayerEditor'>
       <h2>Player Editor</h2>
-      <p>(Does not affect previous weeks' picks, but if the player has already submitted their picks this week, these picks will no longer be asociated with the curent week's matchups)</p>
+      <div>
+        <button onClick={downloadPlayerCSV}>Download CSV</button>
+      </div>
+      <p>(If the player has already submitted their picks this week, these picks will no longer be asociated with the curent week's matchups)</p>
       <ul>
         {players.map(player => (
           <li key={player.playerId}>
