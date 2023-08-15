@@ -24,6 +24,8 @@ yarn-debug.log*
 yarn-error.log*
 
 #amplify-do-not-edit-begin
+amplify/backend/api/APIGatewayAuthStack.json
+amplify/team-provider-info.json
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
