@@ -59,7 +59,8 @@ def handler(event, context):
                     'playerId': body.get('playerId'),
                     'Timestamp': timestamp,
                     'teamName': body.get('teamName'),
-                    'email': body.get('email')
+                    'email': body.get('email'),
+                    'fullName': body.get('fullName'),
                 }
                 table.put_item(Item=item)
                 return {
@@ -79,14 +80,17 @@ def handler(event, context):
                 newTeamName = body.get('teamName')
                 newEmail = body.get('email')
                 playerId = body.get('playerId')
+                newFullName = body.get('fullName')
                 response = table.update_item(
                     Key={
                         'playerId': playerId,
                     },
-                    UpdateExpression='SET teamName = :name, email = :email',
+                    UpdateExpression='SET teamName = :teamName, email = :email, fullName = :fullName',
                     ExpressionAttributeValues={
-                        ':name': newTeamName,
+                        ':teamName': newTeamName,
                         ':email': newEmail,
+                        ':fullName': newFullName,
+
                     },
                     ReturnValues='UPDATED_NEW'
                 )

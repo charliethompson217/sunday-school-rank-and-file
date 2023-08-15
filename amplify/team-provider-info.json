@@ -28,7 +28,7 @@
         },
         "ssAdminLambda": {
           "deploymentBucketName": "amplify-andrewform-dev-222655-deployment",
-          "s3Key": "amplify-builds/ssAdminLambda-506275323771665a3853-build.zip"
+          "s3Key": "amplify-builds/ssAdminLambda-65376866476170543942-build.zip"
         },
         "sundaySchoolPlayers": {},
         "configuration": {},
