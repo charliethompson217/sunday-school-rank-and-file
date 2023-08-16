@@ -31,10 +31,10 @@ export default function Navbar() {
     return (
         <nav ref={navbarRef} className={`navbar ${isMenuOpen ? 'open' : ''}`}>
             <div className="navbar-container">
-                <div className="navbar-brand">
+                <Link to={"/"} className="navbar-brand">
                     <img src={logo} alt="Logo" />
                     <h1 className="unbold">Sunday School Rank and File</h1>
-                </div>
+                </Link>
                 <button className="menu-button" onClick={toggleMenu}>
                     <span className="menu-icon"></span>
                 </button>
