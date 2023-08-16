@@ -1,44 +1,44 @@
 .countdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+.countdown-item {
+  text-align: center;
+  margin: 0 10px;
+}
+
+.countdown-value {
+  font-weight: bold;
+}
+
+.countdown-label {
+  font-size: 12px;
+}
+@media (max-width: 1000px) {
+  .countdown {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: 100px;
   }
   
   .countdown-item {
     text-align: center;
-    margin: 0 10px;
+    margin: 0 20px;
   }
   
   .countdown-value {
     font-weight: bold;
+    font-size: 80px;
   }
   
   .countdown-label {
-    font-size: 12px;
+    font-size: 20px;
   }
-  @media (max-width: 1000px) {
-    .countdown {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 100px;
-    }
-    
-    .countdown-item {
-      text-align: center;
-      margin: 0 20px;
-    }
-    
-    .countdown-value {
-      font-weight: bold;
-      font-size: 80px;
-    }
-    
-    .countdown-label {
-      font-size: 20px;
-    }
-    .homeLogo{
-      width: 800px;
-    }
+  .homeLogo{
+    width: 800px;
   }
+}

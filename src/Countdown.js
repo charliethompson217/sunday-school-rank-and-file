@@ -17,10 +17,10 @@ const Countdown = ({ targetDate }) => {
     };
   }, [targetDate]);
 
-  const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+  const days = Math.max(0, Math.floor(remainingTime / (1000 * 60 * 60 * 24)));
+  const hours = Math.max(0, Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+  const minutes = Math.max(0, Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60)));
+  const seconds = Math.max(0, Math.floor((remainingTime % (1000 * 60)) / 1000));
 
   return (
     <div className="countdown">
