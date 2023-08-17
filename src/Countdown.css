@@ -27,18 +27,16 @@
   
   .countdown-item {
     text-align: center;
-    margin: 0 20px;
+    
   }
   
   .countdown-value {
     font-weight: bold;
-    font-size: 80px;
+    font-size: xx-large;
+    margin: 0 10px;
   }
   
   .countdown-label {
-    font-size: 20px;
-  }
-  .homeLogo{
-    width: 800px;
+    font-size: medium;
   }
 }

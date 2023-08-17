@@ -158,10 +158,10 @@ export default function Rules() {
                 years of fun. Good luck to all!
                 </p>
                 <p className='complimentary-close'>
-                <span className='underline-text'>Glenn Thompson</span><br></br>
-                Commissioner<br></br>
-                thompson.glenn3672@gmail.com<br></br>
-                (937) 559-9950<br></br>
+                  <span className='underline-text'>Glenn Thompson</span><br></br>
+                  Commissioner<br></br>
+                  thompson.glenn3672@gmail.com<br></br>
+                  (937) 559-9950<br></br>
                 </p>
             </div>
         </div>

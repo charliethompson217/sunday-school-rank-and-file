@@ -201,26 +201,26 @@ Mobile specific CSS
 
 @media (max-width: 1000px) {
   .FormContainer{
-    margin-left: 5%;
-    margin-right: 5%;
+    margin-left: 2%;
+    margin-right: 2%;
     margin-bottom: 20%;
     font-family: Arial, Helvetica, sans-serif;
   }
   .FormContainer h1{
-    font-size: 70px;
+    font-size: x-large;
   }
   .FormContainer h3{
-    font-size: 50px;
+    font-size: large;
   }
   .FormContainer select{
-    font-size: 30px;
+    font-size: medium;
   }
   .FormContainer p{
     padding-bottom: 20px;
-    font-size: 30px;
+    font-size: medium;
   }
   .FormContainer form{
-    font-size: 20px;
+    font-size: medium;
   }
   .FormContainer span{
     color: black;
@@ -233,7 +233,7 @@ Mobile specific CSS
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 30px;
+    font-size: medium;
     border-radius: 12px;
     margin-left: 10px;
   }
@@ -241,17 +241,17 @@ Mobile specific CSS
   .QuestionWithTwoButtons{
     margin-bottom: 20px;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 30px;
+    font-size: medium;
   }
   
   .QuestionWithTwoButtons button{
     border: none;
-    font-size: 30px;
+    font-size: small;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    border-radius: 40px;
-    width: 390px;
+    border-radius: 20px;
+    width: 175px;
   }
   
   .option-button {
@@ -271,7 +271,7 @@ Mobile specific CSS
     color: white;
   }
   .option-button img {
-    height: 150px;
+    height: 50px;
     margin: 0 auto;
     padding: 0px;
     
@@ -295,15 +295,15 @@ Mobile specific CSS
     width: fit-content; 
     margin: 0 ; 
     text-align: left;
-    font-size: 40px;
+    font-size: medium;
   }
   
   .ranked-ranks li {
-    padding: 30px;
+    padding: 15px;
     background-color:  rgb(231, 223, 217);
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
-    border-radius: 50px;
+    border-radius: 30px;
   }
   
   .ranked-ranks li.dragged {
@@ -320,31 +320,22 @@ Mobile specific CSS
     color: red;
   }
   .navbar-offset-container{
-    margin-top: 200px;
+    margin-top: 80px;
   }
-  .complimentary-close {
-    font-size: 25px;
+  .home-screen{
+    align-items: center;
   }
-  .countdown-container{
-    font-size: 30px;
+  .main-logo img{
+    width: 85%;
   }
-  .Results{
-    font-size: xx-large;
+  .home-screen h1{
+    font-size: x-large;
   }
-  .SubmissionInstructions{
-    font-size: xx-large;
-  }
-  .SignIn input, .SignUp input{
-    font-size: xx-large;
-  }
+
   .SignIn, .SignUp{
     margin-left: 5%;
     margin-top: 10%;
-    font-size: xx-large;
     max-width: 50%;
-  }
-  .SignIn button, .SignUp button{
-    font-size: xx-large;
   }
 
 }

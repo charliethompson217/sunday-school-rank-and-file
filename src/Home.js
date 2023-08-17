@@ -9,12 +9,14 @@ export default function Home() {
     <>
         <Navbar></Navbar>
         <div className='navbar-offset-container'>
-          <div className="main-logo">
-            <img className="homeLogo" src={logo} alt="Logo" />
-          </div>
-          <div className="countdown-container">
-            <h1>2023-24 Season Kicks Off in:</h1>
-            <Countdown targetDate={targetDate} />
+          <div className='home-screen'>
+            <div className="main-logo">
+              <img className="homeLogo" src={logo} alt="Logo" />
+            </div>
+            <div className="countdown-container">
+              <h1>2023-24 Season Kicks Off in:</h1>
+              <Countdown targetDate={targetDate} />
+            </div>
           </div>
         </div>
     </>
