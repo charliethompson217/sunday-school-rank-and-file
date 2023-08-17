@@ -33,8 +33,8 @@ export default function Navbar() {
             <div className="navbar-container">
                 <Link to={"/"} className="navbar-brand">
                     <img src={logo} alt="Logo" />
-                    <h1 className="unbold">Sunday School Rank and File</h1>
                 </Link>
+                <h1 className="unbold">Sunday School Rank and File</h1>
                 <button className="menu-button" onClick={toggleMenu}>
                     <span className="menu-icon"></span>
                 </button>
