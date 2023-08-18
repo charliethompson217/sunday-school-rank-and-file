@@ -17,7 +17,7 @@ export default function Configuration() {
     try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.post('ssAdmin', '/admin/upload-matchups', {
+        await API.post('ssAdmin', '/admin/upload-matchups', {
             headers: {
                 Authorization: `Bearer ${idToken}`
             },
@@ -29,7 +29,6 @@ export default function Configuration() {
                 fileMatchups: fileMatchups,
             }
         });
-        console.log('matchups uploaded:', response);
     } catch (error) {
         console.error('Error uploading matchups:', error);
     }

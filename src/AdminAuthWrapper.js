@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Auth, Amplify } from 'aws-amplify';
-import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Admin from './Admin';
 import jwtDecode from 'jwt-decode';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
-export default function AuthWrapper() {
+export default function AdminAuthWrapper() {
     const [user, setUser] = useState(null);
     const checkAuthState = async () => {
         try {
@@ -41,9 +40,9 @@ export default function AuthWrapper() {
         if (user.isAdmin) {
           return (
             <>
-                <button onClick={handleSignOut}>Sign Out</button>
-                <Admin />
-                
+              <h1>Admin</h1>
+              <button onClick={handleSignOut}>Sign Out</button>
+              <Admin />
             </>
           );
         } else {
@@ -60,8 +59,7 @@ export default function AuthWrapper() {
 
     return (
     <div className=''>
-        <SignIn onSignIn={checkAuthState} />
-        <SignUp onSignUp={checkAuthState} />
+        <SignIn/>
     </div>
     )
 }

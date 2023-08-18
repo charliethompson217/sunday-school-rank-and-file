@@ -97,7 +97,7 @@ export default function PullPicks() {
   const generateCsvData = (playerPicks) => {
     let csvData = '';
     csvData += '\n';
-    csvData += 'playerId,Team,';
+    csvData += 'Full Name,Team-Name,';
     for (let i = 1; i <= 16; i++) {
       csvData += `Game ${i},`;
     }
@@ -112,8 +112,8 @@ export default function PullPicks() {
     playerPicks.forEach((picks) => {
       if (picks.configId === currentConfigId) {
         const team = picks.team || '';
-        const playerId = picks.playerId || '';
-        csvData += `${playerId},`;
+        const fullName = picks.fullName || '';
+        csvData += `${fullName},`;
         csvData += `${team},`;
   
         const rankedPicks = parseJsonString(picks.rankPicks) || [];

@@ -34,15 +34,18 @@ export default function Navbar() {
                 <Link to={"/"} className="navbar-brand">
                     <img src={logo} alt="Logo" />
                 </Link>
-                <h1 className="unbold">Sunday School Rank and File</h1>
+                <Link to={"/"}>
+                    <h1 className="unbold">Sunday School Rank and File</h1>
+                </Link>
                 <button className="menu-button" onClick={toggleMenu}>
                     <span className="menu-icon"></span>
                 </button>
                 <ul className="navbar-menu">
-                    <li><Link to={"/"} className="lighter-text">Home</Link></li>
-                    <li><Link to={"/rules"}>Rules</Link></li>
-                    <li><Link to={"/results"}>Picks & Results</Link></li>
                     <li><Link to={"/submitpicks"}>Submit Picks</Link></li>
+                    <li><Link to={"/results"}>Picks & Results</Link></li>
+                    <li><Link to={"/account"}>Account</Link></li>
+                    <li><Link to={"/rules"}>Rules</Link></li>
+                    
                 </ul>
             </div>
         </nav>

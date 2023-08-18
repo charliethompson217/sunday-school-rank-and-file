@@ -31,7 +31,6 @@
     margin-right: 10px;
 }
 
-
 .menu-button {
     background-color: transparent;
     padding: 0;
@@ -97,6 +96,13 @@
 }
 h1.unbold {
   font-weight: normal;
+  color: white;
+  text-decoration: none;
+}
+
+a{
+  color: white;
+  text-decoration: none;
 }
 
 @media (max-width: 1000px){
@@ -108,6 +114,8 @@ h1.unbold {
   }
   .unbold{
     font-size: larger;
+    color: white;
+    text-decoration: none;
   }
 }
   

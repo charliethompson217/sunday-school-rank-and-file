@@ -181,11 +181,11 @@
 .PlayerEditor-input-wrapper input{
   background-color: rgb(220, 187, 160);
 }
-.SignIn, .SignUp{
+.SignIn, .SignUp, .Forgotpassword{
   margin-left: 5%;
   margin-top: 5%;
 }
-.SignIn input, .SignUp input{
+.SignIn input, .SignUp input, .Forgotpassword input{
   font-size: large;
   margin-bottom: 10px;
 }
@@ -332,10 +332,9 @@ Mobile specific CSS
     font-size: x-large;
   }
 
-  .SignIn, .SignUp{
+  .SignIn, .SignUp, .Forgotpassword{
     margin-left: 5%;
     margin-top: 10%;
-    max-width: 50%;
   }
 
 }

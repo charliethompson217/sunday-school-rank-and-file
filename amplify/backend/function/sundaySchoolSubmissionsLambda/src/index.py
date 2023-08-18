@@ -20,6 +20,7 @@ def handler(event, context):
         body = json.loads(event['body'])
         item = {
             'team': body.get('team'),
+            'fullName': body.get('fullName'),
             'playerId': team,
             'Timestamp': timestamp,
             'week': body.get('week'),

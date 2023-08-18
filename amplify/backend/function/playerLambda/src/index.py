@@ -23,6 +23,8 @@ def handler(event, context):
                 player['Timestamp']=str(player['Timestamp'])
             if 'email' in player:
                 del player['email']
+            if 'fullname' in player:
+                del player['fullname']
         return {
             'statusCode': 200,
             'headers': {
@@ -31,6 +33,26 @@ def handler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
             'body': json.dumps(players)
+        }
+    if method == 'POST':
+        timestamp = int(time.time())
+        body = json.loads(event['body'])
+        item = {
+            'playerId': body.get('playerId'),
+            'Timestamp': timestamp,
+            'teamName': body.get('teamName'),
+            'email': body.get('email'),
+            'fullName': body.get('fullName'),
+        }
+        table.put_item(Item=item)
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps('Player Added!')
         }
     return {
         'statusCode': 200,

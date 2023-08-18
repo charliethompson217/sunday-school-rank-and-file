@@ -4,12 +4,15 @@ import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import { API, Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 import FormContainer from './FormContainer';
-import AuthWrapper from './AuthWrapper';
+import AdminAuthWrapper from './AdminAuthWrapper';
 import Home from './Home';
 import Rules from './Rules'
 import NotFound from './NotFound';
 import Results from './Results';
-import SubmissionInstructions from './SubmissionInstructions';
+import SubmissionAuthWrapper from './SubmissionAuthWrapper';
+import Forgotpassword from './Forgotpassword';
+import VerifyEmail from './VerifyEmail';
+import AccountAuthWrapper from './AccountAuthWrapper';
 
 Amplify.configure(awsExports);
 
@@ -34,13 +37,13 @@ function App() {
         <Route path="/*" element={<NotFound/>}/>
         <Route path="/home" element={<Home/>}/>
         <Route path="/" element={<Home/>}/>
-        <Route path="/admin" element={<AuthWrapper/>}/>
+        <Route path="/admin" element={<AdminAuthWrapper/>}/>
         <Route path="/rules" element={<Rules/>}/>
         <Route path="/results" element={<Results/>}/>
-        <Route path="/submitpicks/*" element={<SubmissionInstructions/>}/>
-        {players.map(player => (
-          <Route key={player.playerId} path={`/submitpicks/${player.playerId}`} element={<FormContainer />} />
-        ))}
+        <Route path="/forgotpassword" element={<Forgotpassword/>}/>
+        <Route path="/verifyemail" element={<VerifyEmail/>}/>
+        <Route path="/account" element={<AccountAuthWrapper/>}/>
+        <Route path="/submitpicks" element={<SubmissionAuthWrapper/>}/>
       </Routes>
     </Router>
     </div>
