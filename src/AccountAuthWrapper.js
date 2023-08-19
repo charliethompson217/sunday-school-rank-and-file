@@ -33,7 +33,7 @@ export default function AccountAuthWrapper() {
     if (user) {
         return (
         <>
-            <Account user={user}/>
+            <Account/>
             <button onClick={handleSignOut}>Sign Out</button>
         </>
         );

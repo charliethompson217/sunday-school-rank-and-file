@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Auth, Amplify } from 'aws-amplify';
 import awsconfig from './aws-exports';
+import Navbar from './Navbar';
 Amplify.configure(awsconfig);
 
 export default function Forgotpassword() {
@@ -59,37 +60,43 @@ export default function Forgotpassword() {
 
     if (step===1){
         return (
-            <div>
-                <form onSubmit={handleSubmitStep1} className="Forgotpassword">
-                    <h1>Forgot Password</h1>
-                    <div>
-                        <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
-                    </div>
-                    <div className='warning'>
-                        {warning}
-                    </div>
-                    <button type="submit">Next</button>
-                </form>
-            </div>
+            <>
+                <Navbar></Navbar>
+                <div className='navbar-offset-container'>
+                    <form onSubmit={handleSubmitStep1} className="Forgotpassword">
+                        <h1>Reset Password</h1>
+                        <div>
+                            <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
+                        </div>
+                        <div className='warning'>
+                            {warning}
+                        </div>
+                        <button type="submit">Next</button>
+                    </form>
+                </div>
+            </>
         )
     }
     else if (step===2){
         return (
-            <div>
-                <form onSubmit={handleSubmitStep2} className="Forgotpassword">
-                    <h1>Forgot Password</h1>
-                    <div>
-                        <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
-                        <input className="signin-form-control" placeholder="Verification Code" onChange={e => setVerificationCode(e.target.value)} required />
-                        <input className="signin-form-control" placeholder="New Password" type="password" onChange={e => setNewPassword(e.target.value)} required />
-                        <input className="signin-form-control" placeholder="Confirm New Password" type="password" onChange={e => setConfirmPassword(e.target.value)} required />
-                    </div>
-                    <div className='warning'>
-                        {warning}
-                    </div>
-                    <button type="submit">Reset Password</button>
-                </form>
-            </div>
+            <>
+                <Navbar></Navbar>
+                <div className='navbar-offset-container'>
+                    <form onSubmit={handleSubmitStep2} className="Forgotpassword">
+                        <h1>Forgot Password</h1>
+                        <div>
+                            <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
+                            <input className="signin-form-control" placeholder="Verification Code" onChange={e => setVerificationCode(e.target.value)} required />
+                            <input className="signin-form-control" placeholder="New Password" type="password" onChange={e => setNewPassword(e.target.value)} required />
+                            <input className="signin-form-control" placeholder="Confirm New Password" type="password" onChange={e => setConfirmPassword(e.target.value)} required />
+                        </div>
+                        <div className='warning'>
+                            {warning}
+                        </div>
+                        <button type="submit">Reset Password</button>
+                    </form>
+                </div>
+            </>
         )
     }
 }

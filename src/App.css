@@ -189,6 +189,14 @@
   font-size: large;
   margin-bottom: 10px;
 }
+.user-attribute-label{
+  margin-right: 10px;
+  font-weight: bold;
+}
+.account{
+  display: flex;
+  flex-direction: column;
+}
 /*
 Mobile specific CSS
 */

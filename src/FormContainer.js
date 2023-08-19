@@ -144,8 +144,12 @@ const FormContainer = () => {
     try {
       let fixedRanks = [...rankedRanks];
       fixedRanks.reverse();
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
       await API.post('sundaySchoolSubmissions', `/submission/${user.attributes['custom:playerId']}`, {
         body: {
+          jwt_token: `${idToken}`,
+          playerId: user.attributes['custom:playerId'],
           team: user.attributes['custom:team_name'],
           fullName: user.attributes['name'],
           week: week,
