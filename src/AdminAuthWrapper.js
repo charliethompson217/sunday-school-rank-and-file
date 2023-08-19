@@ -4,6 +4,7 @@ import SignIn from './SignIn';
 import Admin from './Admin';
 import jwtDecode from 'jwt-decode';
 import awsconfig from './aws-exports';
+import Navbar from './Navbar';
 Amplify.configure(awsconfig);
 
 export default function AdminAuthWrapper() {
@@ -40,15 +41,19 @@ export default function AdminAuthWrapper() {
         if (user.isAdmin) {
           return (
             <>
-              <h1>Admin</h1>
-              <button onClick={handleSignOut}>Sign Out</button>
-              <Admin />
+              <Navbar></Navbar>
+              <div className='navbar-offset-container'>
+                <h1>Admin</h1>
+                <button onClick={handleSignOut}>Sign Out</button>
+                <Admin />
+              </div>
             </>
           );
         } else {
           return (
             <>
-              <div>
+              <Navbar></Navbar>
+              <div className='navbar-offset-container'>
                 waiting for aproval for admin access
               </div>
               <button onClick={handleSignOut}>Sign Out</button>
@@ -58,8 +63,11 @@ export default function AdminAuthWrapper() {
       }
 
     return (
-    <div className=''>
-        <SignIn/>
-    </div>
+      <>
+        <Navbar></Navbar>
+        <div className='navbar-offset-container'>
+            <SignIn/>
+        </div>
+      </>
     )
 }
