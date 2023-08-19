@@ -38,7 +38,14 @@ const FormContainer = () => {
       return false;
     }
   }
-  
+  const parseJsonString = (jsonString) => {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      return null;
+    }
+  };
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
@@ -54,26 +61,50 @@ const FormContainer = () => {
         if (isBeforeCurrentUTC) {
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
-        const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
-          game: matchup,
-          value: null,
-        }));
-        setRankPicks(initialRankPicks);
-
-        const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
-          game: matchup,
-          value: null,
-        }));
-        setFilePicks(initialFilePicks);
-
-        const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
-        setRankedRanks(initialRankRanks);
         const curUser = await Auth.currentAuthenticatedUser();
         setUser(curUser);
-        setCurrentStep(2);
+        try {
+          const session = await Auth.currentSession();
+          const idToken = session.getIdToken().getJwtToken();
+          const response2 = await API.put('sundaySchoolSubmissions', `/submission/get-picks-for-player`,{
+            body: {
+              jwt_token: `${idToken}`,
+              playerId: curUser.attributes['custom:playerId'],
+              teamName: curUser.attributes['custom:team_name'],
+            },
+          });
+          if(fetchedTimestamp===response2.configId){
+            const fetchedRankPicks = parseJsonString(response2.rankPicks);
+            const fetchedRankedRanks = parseJsonString(response2.rankedRanks);
+            const fetchedFilePicks = parseJsonString(response2.filePicks);
+            console.log()
+            setRankPicks([...fetchedRankPicks]);
+            setRankedRanks([...fetchedRankedRanks]);
+            setFilePicks([...fetchedFilePicks]);
+          } else {
+            const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
+              game: matchup,
+              value: null,
+            }));
+            setRankPicks(initialRankPicks);
+    
+            const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
+              game: matchup,
+              value: null,
+            }));
+            setFilePicks(initialFilePicks);
+    
+            const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
+            setRankedRanks(initialRankRanks);
+          }
+          
+        } catch (error) {
+          console.error('Error fetching players:', error);
+        }
       } catch (error) {
         console.error('Error fetching matchups:', error);
       }
+      setCurrentStep(2);
     };
     fetchMatchups();
   }, []);
@@ -142,8 +173,6 @@ const FormContainer = () => {
   
   const sendToServer = async () => {
     try {
-      let fixedRanks = [...rankedRanks];
-      fixedRanks.reverse();
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
       await API.post('sundaySchoolSubmissions', `/submission/${user.attributes['custom:playerId']}`, {
@@ -155,7 +184,7 @@ const FormContainer = () => {
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
-          rankedRanks: JSON.stringify(fixRankedRanks(fixedRanks)),
+          rankedRanks: JSON.stringify(rankedRanks),
           filePicks: JSON.stringify(filePicks),
         }
       });
@@ -163,13 +192,7 @@ const FormContainer = () => {
       console.error('Error submitting picks:', error);
     }
   }
-  const fixRankedRanks = (array) =>{
-    let newArray = [...array];
-    for (let i = 0; i < newArray.length; i++) {
-        newArray[array[i]-1] = i+1;
-    }
-    return newArray;
-  }
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     if(isClosed){

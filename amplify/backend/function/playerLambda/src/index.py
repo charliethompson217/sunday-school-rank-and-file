@@ -16,8 +16,6 @@ def handler(event, context):
     table_name = f'sundaySchoolPlayers-{env}'
     table = dynamodb.Table(table_name)
 
-    
-
     if method == 'GET':
         print(playerId)
         response = table.scan()

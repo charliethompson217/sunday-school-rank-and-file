@@ -84,7 +84,14 @@ export default function PullPicks() {
     }
     return inputString;
   }
-
+  const fixRankedRanks = (array) =>{
+    array.reverse();
+    let newArray = [...array];
+    for (let i = 0; i < newArray.length; i++) {
+        newArray[array[i]-1] = i+1;
+    }
+    return newArray;
+  }
   const parseJsonString = (jsonString) => {
     try {
       return JSON.parse(jsonString);
@@ -115,14 +122,15 @@ export default function PullPicks() {
         const fullName = picks.fullName || '';
         csvData += `${fullName},`;
         csvData += `${team},`;
-  
+
         const rankedPicks = parseJsonString(picks.rankPicks) || [];
         for (let i = 0; i < 16; i++) {
           const value = rankedPicks[i]?.value || '';
           csvData += keepLastWord(`${value},`);
         }
   
-        const rankedRanks = parseJsonString(picks.rankedRanks) || [];
+        const fetchedRankedRanks = parseJsonString(picks.rankedRanks) || [];
+        const rankedRanks = fixRankedRanks(fetchedRankedRanks);
         for (let i = 0; i < 16; i++) {
           const rank = rankedRanks[i] || '';
           csvData += `${rank},`;

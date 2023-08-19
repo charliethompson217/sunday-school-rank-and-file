@@ -59,6 +59,51 @@ def handler(event, context):
             },
             'body': json.dumps('Picks inserted secsesfully!')
         }
+    elif method == 'PUT':
+        print(team)
+        timestamp = int(time.time())
+        body = json.loads(event['body'])
+        jwt_token = body.get('jwt_token')
+        parts = jwt_token.split('.')
+        payload = parts[1]
+        decoded_payload = base64.b64decode(payload + "===").decode()
+        payload_json = json.loads(decoded_payload)
+        tokenPlayerId = payload_json.get('custom:playerId')
+        playerId = body.get('playerId')
+        if(tokenPlayerId!=playerId):
+            return {
+                'statusCode': 403,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps("Access Denied!")
+            }
+        response = table.query(
+            KeyConditionExpression='team = :tid',
+            ExpressionAttributeValues={
+                ':tid': body.get('teamName')
+            },
+            ScanIndexForward=False,
+            Limit=1
+        )
+        if 'Items' in response:
+            most_recent_entry = response['Items'][0]
+            print(most_recent_entry)
+            if 'Timestamp' in most_recent_entry:
+                most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(most_recent_entry)
+            }
+        else:
+            print("No entries found.")
     return {
         'statusCode': 200,
         'headers': {
