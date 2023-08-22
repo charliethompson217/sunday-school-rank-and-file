@@ -40,7 +40,7 @@ export default function Forgotpassword() {
             setStep(2);
         } catch (error) {
             console.error(error);
-            setWarning('An error occurred while requesting verification.');
+            setWarning('An error occurred while requesting verification code.');
         }
     }
 

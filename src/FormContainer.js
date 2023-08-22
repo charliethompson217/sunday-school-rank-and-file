@@ -77,7 +77,6 @@ const FormContainer = () => {
             const fetchedRankPicks = parseJsonString(response2.rankPicks);
             const fetchedRankedRanks = parseJsonString(response2.rankedRanks);
             const fetchedFilePicks = parseJsonString(response2.filePicks);
-            console.log()
             setRankPicks([...fetchedRankPicks]);
             setRankedRanks([...fetchedRankedRanks]);
             setFilePicks([...fetchedFilePicks]);
@@ -97,14 +96,15 @@ const FormContainer = () => {
             const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
             setRankedRanks(initialRankRanks);
           }
-          
+          if(!isBeforeCurrentUTC){
+            setCurrentStep(2);
+          }
         } catch (error) {
           console.error('Error fetching players:', error);
         }
       } catch (error) {
         console.error('Error fetching matchups:', error);
       }
-      setCurrentStep(2);
     };
     fetchMatchups();
   }, []);
@@ -139,14 +139,19 @@ const FormContainer = () => {
 
 
   const checkTime = async () => {
-    const isAfterClose = await isDateTimeBeforeCurrentUTC(closeTime);
-    if(!closeUpdated&&isAfterClose&&!isClosed){
-      const newCloseTime = new Date(closeTime).getTime()+600000;
-      setCloseTime(newCloseTime);
-      setCloseUpdated(true);
+    try {
+      const isAfterClose = await isDateTimeBeforeCurrentUTC(closeTime);
+      if(!closeUpdated&&isAfterClose&&!isClosed){
+        const newCloseTime = new Date(closeTime).getTime()+600000;
+        setCloseTime(newCloseTime);
+        setCloseUpdated(true);
+      }
+      const newIsClosed = await isDateTimeBeforeCurrentUTC(closeTime);
+      setIsClosed(newIsClosed);
+    } catch(error) {
+      console.error('Error checking time:', error);
     }
-    const newIsClosed = await isDateTimeBeforeCurrentUTC(closeTime);
-    setIsClosed(newIsClosed);
+    
   };
   
   const nextStep = () => {
@@ -229,7 +234,7 @@ const FormContainer = () => {
         />
         <p className='warning'>{warning}</p>
         <div className='picks-form-nav'>
-          {currentStep > 1 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
+          {currentStep > 2 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
           {currentStep < steps.length-1 && <button type="button" onClick={nextStep}>Next</button>}
           {currentStep === steps.length-1 && <button type="submit">Submit</button>}
         </div>

@@ -44,9 +44,13 @@ export default function Account() {
 
   useEffect( () => {
     const fetchPlayers = async () => {
-      const response = await API.get('playerApi', '/player/get-players');
-      const players = response.map(team => team);
-      setTeams([...players]);
+      try {
+        const response = await API.get('playerApi', '/player/get-players');
+        const players = response.map(team => team);
+        setTeams([...players]);
+      } catch (error) {
+        console.error('Error fetching taken team names:', error);
+      }
     }
     fetchPlayers();
   }, []);
@@ -105,7 +109,7 @@ export default function Account() {
         }
       });
     } catch (error){
-      console.error(error);
+      console.error('Error submiting updates:',error);
     }
   }
 
@@ -120,7 +124,7 @@ export default function Account() {
     try{
       await Auth.verifyCurrentUserAttributeSubmit('email', verificationCode);
     } catch (error){
-      console.error(error);
+      console.error('Error verifiying email:',error);
     }
     setEmailNeedsVerification(false);
   };
@@ -134,7 +138,7 @@ export default function Account() {
             If you change your Team-Name, your current picks will be reset. <br></br>
             If you change your Email, you will have to re-verify your Email. 
           </p>
-          <div>
+          <div className='user-attribute'>
             <label className='user-attribute-label'>Team-Name</label>
             {isEditMode ? (
               <input
@@ -146,7 +150,7 @@ export default function Account() {
               <label>{teamName}</label>
             )}
           </div>
-          <div>
+          <div className='user-attribute'>
             <label className='user-attribute-label'>Full Name</label>
             {isEditMode ? (
               <input
@@ -158,7 +162,7 @@ export default function Account() {
               <label>{fullName}</label>
             )}
           </div>
-          <div>
+          <div className='user-attribute'>
             <label className='user-attribute-label'>Email</label>
             {isEditMode ? (
               <input
@@ -173,7 +177,7 @@ export default function Account() {
           <div className='warning'>
               {warning}
           </div>
-          <div>
+          <div className='user-attribute'>
             {emailNeedsVerification ? (
               <>
                 <input 

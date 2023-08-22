@@ -24,7 +24,7 @@ export default function Navbar() {
                 setIsAdmin(false); 
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error checking auth state',error);
         }
     };
     useEffect(() => {

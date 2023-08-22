@@ -18,9 +18,13 @@ export default function SignUp() {
 
     useEffect( () => {
         const fetchPlayers = async () => {
-          const response = await API.get('playerApi', '/player/get-players');
-          const players = response.map(team => team);
-          setTeams([...players]);
+          try {
+            const response = await API.get('playerApi', '/player/get-players');
+            const players = response.map(team => team);
+            setTeams([...players]);
+          } catch (error) {
+            console.error('Error fetching taken team names:', error);
+          }
         }
         fetchPlayers();
       }, []);

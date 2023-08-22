@@ -112,29 +112,23 @@
 .warning{
   color: red;
 }
-.PlayerEditor{
-  display: inline-block;
+
+.player-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid  rgb(6, 6, 111);
 }
-.PlayerEditor input{
-  flex: 1;
+
+.table-header {
+  background-color:  rgb(6, 6, 111);
+  color: white;
+  padding: 10px;
+  border: 1px solid  rgb(6, 6, 111);
 }
-.PlayerEditor-input-wrapper {
-  display: flex;
-  width: 100%; 
-}
-.PlayerEditor label{
-  margin-right: 5px;
-}
-.PlayerEditor ul{
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-}
-.PlayerEditor li{
-  margin-bottom: 20px;
-  margin-right: 20px;
-  border: 1px solid black;
+
+.player-table td {
   padding: 8px;
+  border: 1px solid rgb(6, 6, 111);
 }
 .navbar-offset-container{
   margin-top: 70px;
@@ -178,9 +172,6 @@
 .end-of-form ul{
   list-style: none;
 }
-.PlayerEditor-input-wrapper input{
-  background-color: rgb(220, 187, 160);
-}
 .SignIn, .SignUp, .Forgotpassword{
   margin-left: 5%;
   margin-top: 5%;
@@ -192,6 +183,9 @@
 .user-attribute-label{
   margin-right: 10px;
   font-weight: bold;
+}
+.user-attribute{
+  margin-bottom: 5px;
 }
 .account{
   display: flex;

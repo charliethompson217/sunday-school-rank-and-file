@@ -1,9 +1,6 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import { API, Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
-import FormContainer from './FormContainer';
 import AdminAuthWrapper from './AdminAuthWrapper';
 import Home from './Home';
 import Rules from './Rules'
@@ -14,22 +11,7 @@ import Forgotpassword from './Forgotpassword';
 import VerifyEmail from './VerifyEmail';
 import AccountAuthWrapper from './AccountAuthWrapper';
 
-Amplify.configure(awsExports);
-
 function App() {
-  const [players, setPlayers] = useState([]);
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      setPlayers([]);
-      try {
-        const response = await API.get('playerApi', '/player/get-players');
-        setPlayers(response);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
-    }
-    fetchPlayers();
-  }, []);
   return (
     <div className="App">
     <Router>

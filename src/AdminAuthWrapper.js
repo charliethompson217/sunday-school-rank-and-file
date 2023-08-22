@@ -22,7 +22,8 @@ export default function AdminAuthWrapper() {
             }
         
             setUser(currentUser);
-        } catch (err) {
+        } catch (error) {
+            console.error('Error fetching user:', error);
             setUser(null);
         }
     };
@@ -33,8 +34,8 @@ export default function AdminAuthWrapper() {
         try {
           await Auth.signOut();
           setUser(null);
-        } catch (err) {
-          console.error('error signing out: ', err);
+        } catch (error) {
+          console.error('error signing out: ', error);
         }
       };
     if (user) {
@@ -44,7 +45,6 @@ export default function AdminAuthWrapper() {
               <Navbar></Navbar>
               <div className='navbar-offset-container'>
                 <h1>Admin</h1>
-                <button onClick={handleSignOut}>Sign Out</button>
                 <Admin />
               </div>
             </>

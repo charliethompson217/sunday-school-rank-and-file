@@ -168,14 +168,14 @@ export default function PullPicks() {
   return (
     <div>
         <h2>Download Picks</h2>
-        <div>
+        <p>
         (download before updating form)
-        </div>
+        </p>
         <div>
         <button onClick={() => downloadPicks()}>Download CSV</button>
         </div>
         <div>
-          <h4>The following players have not submitted their picks:</h4>
+          <h4>The following {unsubmittedPlayers.length} players have not submitted their picks:</h4>
           <ul>
             {unsubmittedPlayers.map(player => (
               <li key={player}>
