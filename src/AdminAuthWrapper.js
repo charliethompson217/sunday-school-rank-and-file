@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Auth, Amplify } from 'aws-amplify';
-import SignUp from './SignUp';
 import SignIn from './SignIn';
 import Admin from './Admin';
 import jwtDecode from 'jwt-decode';
 import awsconfig from './aws-exports';
+import Navbar from './Navbar';
 Amplify.configure(awsconfig);
 
-export default function AuthWrapper() {
+export default function AdminAuthWrapper() {
     const [user, setUser] = useState(null);
     const checkAuthState = async () => {
         try {
@@ -22,7 +22,8 @@ export default function AuthWrapper() {
             }
         
             setUser(currentUser);
-        } catch (err) {
+        } catch (error) {
+            console.error('Error fetching user:', error);
             setUser(null);
         }
     };
@@ -33,23 +34,26 @@ export default function AuthWrapper() {
         try {
           await Auth.signOut();
           setUser(null);
-        } catch (err) {
-          console.error('error signing out: ', err);
+        } catch (error) {
+          console.error('error signing out: ', error);
         }
       };
     if (user) {
         if (user.isAdmin) {
           return (
             <>
-                <button onClick={handleSignOut}>Sign Out</button>
+              <Navbar></Navbar>
+              <div className='navbar-offset-container'>
+                <h1>Admin</h1>
                 <Admin />
-                
+              </div>
             </>
           );
         } else {
           return (
             <>
-              <div>
+              <Navbar></Navbar>
+              <div className='navbar-offset-container'>
                 waiting for aproval for admin access
               </div>
               <button onClick={handleSignOut}>Sign Out</button>
@@ -59,9 +63,11 @@ export default function AuthWrapper() {
       }
 
     return (
-    <div className=''>
-        <SignIn onSignIn={checkAuthState} />
-        <SignUp onSignUp={checkAuthState} />
-    </div>
+      <>
+        <Navbar></Navbar>
+        <div className='navbar-offset-container'>
+            <SignIn/>
+        </div>
+      </>
     )
 }

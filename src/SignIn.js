@@ -1,21 +1,35 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Auth, Amplify } from 'aws-amplify';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 
 export default function SignIn() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [warning, setWarning] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const user = await Auth.signIn(email, password);
-            console.log(user);
+            await Auth.signIn(email, password);
             window.location.reload();
         } catch (error) {
-            console.log('error signing in:', error);
+            console.error(error);
+            if (error.code === 'UserNotConfirmedException') {
+                setWarning('Please verify your email before signing in.');
+            } else if(error.code==='NotAuthorizedException'){
+                setWarning('Incorect Email or Password.');
+            } else {
+                setWarning('An error occurred while signing in.');
+            }
+
         }
+    }
+
+    const forgotPassword = () => {
+        navigate('/forgotpassword');
     }
 
     return (
@@ -28,7 +42,11 @@ export default function SignIn() {
                 <div>
                     <input className="signin-form-control" placeholder="Password" type="password" onChange={e => setPassword(e.target.value)} required />
                 </div>
+                <div className='warning'>
+                    {warning}
+                </div>
                 <button type="submit">Sign In</button>
+                <button onClick={forgotPassword}>Forgot Password</button>
             </form>
         </div>
     )

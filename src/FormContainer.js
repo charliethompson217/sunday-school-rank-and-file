@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { API, Amplify } from 'aws-amplify';
+import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
-import Team from './Team';
+import Loading from './Loading';
 import RankPicks from './RankPicks';
 import RankRanks from './RankRanks';
 import FilePicks from './FilePicks';
@@ -13,6 +12,7 @@ import Countdown from './Countdown';
 Amplify.configure(awsExports);
 
 const FormContainer = () => {
+  const [user, setUser] = useState();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(true);
   const [closeTime, setCloseTime] = useState("");
@@ -21,16 +21,10 @@ const FormContainer = () => {
   const [week, setWeek] = useState("Week");
   const [rankMatchups, setRankMatchups] = useState([]);
   const [fileMatchups, setFileMatchups] = useState([]);
-  const [teams, setTeams] = useState(["Chose Team"]);
-
-  const [team, setTeam] = useState("Chose Team");
   const [rankPicks, setRankPicks] = useState([]);
   const [filePicks, setFilePicks] = useState([]);
   const [rankedRanks, setRankedRanks] = useState([]);
-
   const [warning, setWarning] = useState("");
-  const location = useLocation();
-  let arr = location.pathname.split("/");
 
   async function isDateTimeBeforeCurrentUTC(inputDateTimeString) {
     try {
@@ -44,16 +38,14 @@ const FormContainer = () => {
       return false;
     }
   }
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      const response = await API.get('playerApi', '/player/get-players');
-      const teamNames = response.map(team => team.teamName);
-      const sortedTeams = [...teamNames].sort();
-      setTeams(["Chose Team", ...sortedTeams]);
+  const parseJsonString = (jsonString) => {
+    try {
+      return JSON.parse(jsonString);
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      return null;
     }
-    fetchPlayers();
-  }, []);
-  
+  };
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
@@ -69,20 +61,47 @@ const FormContainer = () => {
         if (isBeforeCurrentUTC) {
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
-        const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
-          game: matchup,
-          value: null,
-        }));
-        setRankPicks(initialRankPicks);
-
-        const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
-          game: matchup,
-          value: null,
-        }));
-        setFilePicks(initialFilePicks);
-
-        const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
-        setRankedRanks(initialRankRanks);
+        const curUser = await Auth.currentAuthenticatedUser();
+        setUser(curUser);
+        try {
+          const session = await Auth.currentSession();
+          const idToken = session.getIdToken().getJwtToken();
+          const response2 = await API.put('sundaySchoolSubmissions', `/submission/get-picks-for-player`,{
+            body: {
+              jwt_token: `${idToken}`,
+              playerId: curUser.attributes['custom:playerId'],
+              teamName: curUser.attributes['custom:team_name'],
+            },
+          });
+          if(fetchedTimestamp===response2.configId){
+            const fetchedRankPicks = parseJsonString(response2.rankPicks);
+            const fetchedRankedRanks = parseJsonString(response2.rankedRanks);
+            const fetchedFilePicks = parseJsonString(response2.filePicks);
+            setRankPicks([...fetchedRankPicks]);
+            setRankedRanks([...fetchedRankedRanks]);
+            setFilePicks([...fetchedFilePicks]);
+          } else {
+            const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
+              game: matchup,
+              value: null,
+            }));
+            setRankPicks(initialRankPicks);
+    
+            const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
+              game: matchup,
+              value: null,
+            }));
+            setFilePicks(initialFilePicks);
+    
+            const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
+            setRankedRanks(initialRankRanks);
+          }
+          if(!isBeforeCurrentUTC){
+            setCurrentStep(2);
+          }
+        } catch (error) {
+          console.error('Error fetching players:', error);
+        }
       } catch (error) {
         console.error('Error fetching matchups:', error);
       }
@@ -91,7 +110,7 @@ const FormContainer = () => {
   }, []);
 
   const steps = [
-    { id: 1, component: Team },
+    { id: 1, component: Loading },
     { id: 2, component: RankPicks },
     { id: 3, component: RankRanks },
     { id: 4, component: FilePicks },
@@ -117,19 +136,22 @@ const FormContainer = () => {
   const handleRankChange = (ranks) => {
     setRankedRanks(ranks);
   };
-  const handleTeamChange = (team) => {
-    setTeam(team);
-  };
+
 
   const checkTime = async () => {
-    const isAfterClose = await isDateTimeBeforeCurrentUTC(closeTime);
-    if(!closeUpdated&&isAfterClose&&!isClosed){
-      const newCloseTime = new Date(closeTime).getTime()+600000;
-      setCloseTime(newCloseTime);
-      setCloseUpdated(true);
+    try {
+      const isAfterClose = await isDateTimeBeforeCurrentUTC(closeTime);
+      if(!closeUpdated&&isAfterClose&&!isClosed){
+        const newCloseTime = new Date(closeTime).getTime()+600000;
+        setCloseTime(newCloseTime);
+        setCloseUpdated(true);
+      }
+      const newIsClosed = await isDateTimeBeforeCurrentUTC(closeTime);
+      setIsClosed(newIsClosed);
+    } catch(error) {
+      console.error('Error checking time:', error);
     }
-    const newIsClosed = await isDateTimeBeforeCurrentUTC(closeTime);
-    setIsClosed(newIsClosed);
+    
   };
   
   const nextStep = () => {
@@ -137,12 +159,6 @@ const FormContainer = () => {
     if(isClosed){
       setWarning(`The deadline has passed to submit picks for ${week}.`);
       return;
-    }
-    if (currentStep === 1) {
-      if (team==="Chose Team") {
-        setWarning("Please chose your team name");
-        return;
-      }
     }
     if (currentStep === 2) {
       const hasIncompleteValues = rankPicks.some(pick => pick.value === null);
@@ -162,31 +178,26 @@ const FormContainer = () => {
   
   const sendToServer = async () => {
     try {
-      let playerID = arr.slice(-1)[0];
-      let fixedRanks = [...rankedRanks];
-      fixedRanks.reverse();
-      const response = await API.post('sundaySchoolSubmissions', `/submission/${playerID}`, {
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      await API.post('sundaySchoolSubmissions', `/submission/${user.attributes['custom:playerId']}`, {
         body: {
-          team: team,
+          jwt_token: `${idToken}`,
+          playerId: user.attributes['custom:playerId'],
+          team: user.attributes['custom:team_name'],
+          fullName: user.attributes['name'],
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
-          rankedRanks: JSON.stringify(fixRankedRanks(fixedRanks)),
+          rankedRanks: JSON.stringify(rankedRanks),
           filePicks: JSON.stringify(filePicks),
         }
       });
-      console.log('Response', response);
     } catch (error) {
       console.error('Error submitting picks:', error);
     }
   }
-  const fixRankedRanks = (array) =>{
-    let newArray = [...array];
-    for (let i = 0; i < newArray.length; i++) {
-        newArray[array[i]-1] = i+1;
-    }
-    return newArray;
-  }
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     if(isClosed){
@@ -212,8 +223,6 @@ const FormContainer = () => {
       <Countdown targetDate={closeTime}></Countdown>
       <form onSubmit={handleSubmit}>
         <CurrentStepComponent
-          team={team}
-          teams={teams}
           rankMatchups={rankMatchups}
           fileMatchups={fileMatchups}
           rankPicks={rankPicks}
@@ -222,11 +231,10 @@ const FormContainer = () => {
           onRankPicksChange={handleRankPicksChange}
           onRankChange={handleRankChange}
           onFilePicksChange={handleFilePicksChange}
-          onTeamChange={handleTeamChange}
         />
         <p className='warning'>{warning}</p>
         <div className='picks-form-nav'>
-          {currentStep > 1 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
+          {currentStep > 2 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
           {currentStep < steps.length-1 && <button type="button" onClick={nextStep}>Next</button>}
           {currentStep === steps.length-1 && <button type="submit">Submit</button>}
         </div>

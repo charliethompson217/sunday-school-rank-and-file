@@ -169,7 +169,7 @@ def handler(event, context):
                 else:
                     print("No entries found.")
     return {
-        'statusCode': 200,
+        'statusCode': 403,
         'headers': {
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Origin': '*',
