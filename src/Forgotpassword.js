@@ -66,7 +66,7 @@ export default function Forgotpassword() {
                     <form onSubmit={handleSubmitStep1} className="Forgotpassword">
                         <h1>Reset Password</h1>
                         <div>
-                            <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
+                            <input key="step-1-email" className="signin-form-control" placeholder="E-Mail"autocomplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
                         </div>
                         <div className='warning'>
                             {warning}
@@ -84,11 +84,21 @@ export default function Forgotpassword() {
                 <div className='navbar-offset-container'>
                     <form onSubmit={handleSubmitStep2} className="Forgotpassword">
                         <h1>Forgot Password</h1>
+
                         <div>
-                            <input className="signin-form-control" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
-                            <input className="signin-form-control" placeholder="Verification Code" onChange={e => setVerificationCode(e.target.value)} required />
-                            <input className="signin-form-control" placeholder="New Password" type="password" onChange={e => setNewPassword(e.target.value)} required />
-                            <input className="signin-form-control" placeholder="Confirm New Password" type="password" onChange={e => setConfirmPassword(e.target.value)} required />
+                            <input key="step-2-email" className="signin-form-control" placeholder="E-Mail" autocomplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
+                        </div>
+
+                        <div>
+                            <input key="step-2-code" className="signin-form-control" placeholder="Verification Code" onChange={e => setVerificationCode(e.target.value)} required />
+                        </div>
+
+                        <div>
+                            <input key="step-2-new-password" className="signin-form-control" placeholder="New Password" type="password" onChange={e => setNewPassword(e.target.value)} required />
+                        </div>
+
+                        <div>
+                            <input key="step-2-confirm-password" className="signin-form-control" placeholder="Confirm New Password" type="password" onChange={e => setConfirmPassword(e.target.value)} required />
                         </div>
                         <div className='warning'>
                             {warning}

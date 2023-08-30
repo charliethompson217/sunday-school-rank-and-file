@@ -144,13 +144,13 @@ export default function SignUp() {
             <form onSubmit={signUp} className="SignUp">
                 <h1>Sign Up</h1>
                 <div>
-                    <input className="SignUp-form-control" placeholder="Full Name" onChange={e => setFullName(e.target.value)} required />
+                    <input className="SignUp-form-control" autocomplete="name" placeholder="Full Name" onChange={e => setFullName(e.target.value)} required />
                 </div>
                 <div>
-                    <input className="SignUp-form-control" placeholder="Team_Name" onChange={e => setTeamName(e.target.value)} required />
+                    <input className="SignUp-form-control" placeholder="Team_Name" autocomplete="off" onChange={e => setTeamName(e.target.value)} required />
                 </div>
                 <div>
-                    <input className="SignUp-form-control" placeholder="E-Mail" type="email" onChange={e => setEmail(e.target.value)} required />
+                    <input className="SignUp-form-control" autocomplete="email" placeholder="E-Mail" type="email" onChange={e => setEmail(e.target.value)} required />
                 </div>
                 <div>
                     <input className="SignUp-form-control" placeholder="Password" type="password" onChange={e => setPassword(e.target.value)} required />
