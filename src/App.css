@@ -187,9 +187,14 @@
 .user-attribute{
   margin-bottom: 5px;
 }
+
 .account{
   display: flex;
   flex-direction: column;
+  margin-left: 5%;
+}
+.sign-out-button{
+  margin-left: 5%;
 }
 /*
 Mobile specific CSS

@@ -14,9 +14,6 @@ export default function Account() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
-  const [teams, setTeams] = useState([]);
-  const [teamNameIsValid, setTeamNameIsValid] = useState(false);
-  const [warning, setWarning] = useState('');
   const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
 
@@ -42,55 +39,11 @@ export default function Account() {
     fetchUserData();
   }, []);
 
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      try {
-        const response = await API.get('playerApi', '/player/get-players');
-        const players = response.map(team => team);
-        setTeams([...players]);
-      } catch (error) {
-        console.error('Error fetching taken team names:', error);
-      }
-    }
-    fetchPlayers();
-  }, []);
-
-  useEffect(() => {
-    if(teamName!==''){
-        var teamNameRegex = /^[a-zA-Z0-9_\-.,:]+$/;
-        if(teamNameRegex.test(teamName)){
-            for(const team of teams) {
-                if(team.teamName===teamName&&team.playerId!==playerId){
-                    setWarning("Team Name Taken!");
-                    setTeamNameIsValid(false);
-                    break;
-                }
-                setWarning("");
-                setTeamNameIsValid(true);
-            }
-        }
-        else{
-            setWarning("Team Name can only contain alphanumeric characters, underscores, hyphens, periods, commas, and colons!");
-            setTeamNameIsValid(false);
-        }
-    } else { 
-      setWarning("");
-      setTeamNameIsValid(false);
-    }
-  }, [teamName, teams, playerId]);
 
   const sendToServer = async () => {
     try {
       if(email!==user.attributes['email']){
         setEmailNeedsVerification(true);
-      }
-      if(teamName!==user.attributes['custom:team_name']){
-        await API.post('sundaySchoolSubmissions', `/submission/${user.attributes['custom:playerId']}`, {
-          body: {
-            team: teamName,
-            configId: "1",
-          }
-        });
       }
       await Auth.updateUserAttributes(user, {
         name: fullName,
@@ -115,9 +68,6 @@ export default function Account() {
 
   const handleSubmit = async () => {
     setIsEditMode(!isEditMode);
-    if(!teamNameIsValid){
-      return;
-    }
     sendToServer();
   };
   const handleVerifyEmail = async () => {
@@ -135,32 +85,15 @@ export default function Account() {
         <div className='account'>
           <h1>Account</h1>
           <p>
-            If you change your Team-Name, your current picks will be reset. <br></br>
-            If you change your Email, you will have to re-verify your Email. 
+            If you change your email, you will have to re-verify your email. 
           </p>
           <div className='user-attribute'>
-            <label className='user-attribute-label'>Team-Name</label>
-            {isEditMode ? (
-              <input
-                type="text"
-                value={teamName}
-                onChange={e => setTeamName(e.target.value)}
-              />
-            ) : (
-              <label>{teamName}</label>
-            )}
+            <label className='user-attribute-label'>Team Name</label>
+            <label>{teamName}</label>
           </div>
           <div className='user-attribute'>
             <label className='user-attribute-label'>Full Name</label>
-            {isEditMode ? (
-              <input
-                type="text"
-                value={fullName}
-                onChange={e => setFullName(e.target.value)}
-              />
-            ) : (
-              <label>{fullName}</label>
-            )}
+            <label>{fullName}</label>
           </div>
           <div className='user-attribute'>
             <label className='user-attribute-label'>Email</label>
@@ -173,9 +106,6 @@ export default function Account() {
             ) : (
               <label>{email}</label>
             )}
-          </div>
-          <div className='warning'>
-              {warning}
           </div>
           <div className='user-attribute'>
             {emailNeedsVerification ? (
@@ -191,14 +121,16 @@ export default function Account() {
               <></>
             )}
           </div>
-        </div>
-        {isEditMode ? (
-          <button onClick={handleSubmit}>Submit</button>
-        ) : (
-          <button onClick={toggleEditMode}>Edit</button>
-        )}
-        <div>
-        <button onClick={changePassword}>change Password</button>
+          <div>
+          {isEditMode ? (
+            <button onClick={handleSubmit}>Submit</button>
+          ) : (
+            <button onClick={toggleEditMode}>Change Email</button>
+          )}
+          <div>
+          <button onClick={changePassword}>Change Password</button>
+          </div>
+          </div>
         </div>
       </div>
     </>
