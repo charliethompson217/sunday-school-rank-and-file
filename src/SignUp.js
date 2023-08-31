@@ -107,6 +107,16 @@ export default function SignUp() {
         setWarning("");
         try {
             const newId = makeId(7);
+            await Auth.signUp({
+                username: email,
+                password: password,
+                attributes: {
+                    name: fullName,
+                    email: email,
+                    'custom:team_name': teamName,
+                    'custom:playerId': newId,
+                }
+            });
             await API.post('playerApi', `/player/add-player`,{
                 body: {
                     playerId: newId,
@@ -119,16 +129,6 @@ export default function SignUp() {
                 body: {
                     team: teamName,
                     configId: "1",
-                }
-            });
-            await Auth.signUp({
-                username: email,
-                password: password,
-                attributes: {
-                    name: fullName,
-                    email: email,
-                    'custom:team_name': teamName,
-                    'custom:playerId': newId,
                 }
             });
             navigate('/verifyemail');
