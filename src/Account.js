@@ -7,6 +7,7 @@ import './App.css';
 Amplify.configure(awsconfig);
 
 export default function Account() {
+  
   const navigate = useNavigate();
   const [user, setUser] = useState();
   const [playerId, setPlayerId] = useState();
