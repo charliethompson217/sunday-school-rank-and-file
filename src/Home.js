@@ -14,7 +14,7 @@ export default function Home() {
               <img className="homeLogo" src={logo} alt="Logo" />
             </div>
             <div className="countdown-container">
-              <h1>2023-24 Season Kicks Off in:</h1>
+              <h1>2023–24 Season Kicks Off in:</h1>
               <Countdown targetDate={targetDate} />
             </div>
           </div>
