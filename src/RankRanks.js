@@ -67,7 +67,10 @@ const RankRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
     <div className='ranked-ranks'>
       <h3>Rank Ordering</h3>
       <p>
-      Now, you will rank your selected Rank winners. Rank your highest points at top and lowest points at bottom. The rank number next to each team is how many points you will earn if that team wins. This also means that your five picks closest from the bottom (picks 1 through 5) will be the teams that must win in order for you to earn the weekly bonus.
+        Now, you will rank your selected Rank winners. Rank your highest points at top and lowest points at bottom. The rank number next to each team is how many points you will earn if that team wins. This also means that your five picks closest from the bottom (picks 1 through 5) will be the teams that must win in order for you to earn the weekly bonus.
+        <br></br>
+        <br></br>
+        For mobile users, simply press and hold to move your rank selections.
       </p>
 
       <ul>
