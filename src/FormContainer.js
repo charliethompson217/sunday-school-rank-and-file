@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import Loading from './Loading';
 import RankPicks from './RankPicks';
-import RankRanks from './RankRanks';
+import RankRanks from './newRankedRanks';
 import FilePicks from './FilePicks';
 import './App.css';
 import Countdown from './Countdown';
@@ -25,6 +25,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
   const [rankPicks, setRankPicks] = useState([]);
   const [filePicks, setFilePicks] = useState([]);
   const [rankedRanks, setRankedRanks] = useState([]);
+  const [newrankedRanks, setNewRankedRanks] = useState([]);
   const [warning, setWarning] = useState("");
 
   async function isDateTimeBeforeCurrentUTC(inputDateTimeString) {
@@ -58,6 +59,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
           if(fetchedConfigId===picks.configId){
             setRankPicks([...fetchedRankPicks]);
             setRankedRanks([...fetchedRankedRanks]);
+            setNewRankedRanks([...fetchedRankedRanks]);
             setFilePicks([...fetchedFilePicks]);
           } else {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
@@ -74,6 +76,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
     
             const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
             setRankedRanks(initialRankRanks);
+            setNewRankedRanks(initialRankRanks);
           }
           if(!isBeforeCurrentUTC){
             setCurrentStep(2);
@@ -111,9 +114,9 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
       )
     );
   };
-  const handleRankChange = (ranks) => {
-    setRankedRanks(ranks);
-  };
+  const handleRankChange = useCallback((ranks) => {
+    setNewRankedRanks(ranks);
+  }, []);
 
 
   const checkTime = async () => {
@@ -133,6 +136,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
   };
   
   const nextStep = () => {
+    setRankedRanks(newrankedRanks);
     checkTime();
     if(isClosed){
       setWarning(`The deadline has passed to submit picks for ${week}.`);
@@ -150,6 +154,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
   };
 
   const prevStep = () => {
+    setRankedRanks(newrankedRanks);
     setWarning("");
     setCurrentStep((prevStep) => prevStep - 1);
   };
