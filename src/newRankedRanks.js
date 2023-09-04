@@ -17,7 +17,6 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
             let canvas;
             const canvasWidth = 300;
             const canvasHeight = rankedOptions.length*55+5;
-            let x;
             let y;
             let holding = false;
             let itemHeld = -1;
@@ -69,9 +68,8 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
             };
 
             const dragStarted = () => {
-                x = Math.floor(p.mouseX);
                 y = Math.floor(p.mouseY);
-                if(x<0||y<0||x>canvasWidth||y>canvasHeight){
+                if(y<0||y>canvasHeight){
                     return;
                 }
                 holding = true;
@@ -87,9 +85,8 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                 
             };
             const dragingOver = () => {
-                x = Math.floor(p.mouseX);
                 y = Math.floor(p.mouseY);
-                if(x<0||y<0||x>canvasWidth||y>canvasHeight){
+                if(y<0||y>canvasHeight){
                     return;
                 }
                 let overItem = Math.floor((y-5)/55);
