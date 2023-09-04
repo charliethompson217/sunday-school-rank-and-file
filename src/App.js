@@ -83,10 +83,16 @@ function App() {
     }
   }, [user]);
 
-  const setNewPicks = (newRankedPicks, newRankedRanks, newFilePicks) => {
+  const setNewPicks = (newRankedPicks, newRankedRanks, newFilePicks, newConfigId) => {
     setRankPicks(newRankedPicks);
     setRankedRanks(newRankedRanks);
     setFilePicks(newFilePicks);
+    const updatedPicks = {...picks};
+    updatedPicks.configId = newConfigId;
+    updatedPicks.Rankpicks = newRankedPicks;
+    updatedPicks.rankedRanks = newRankedRanks;
+    updatedPicks.filePicks = newFilePicks;
+    setPicks(updatedPicks);
   }
 
   return (

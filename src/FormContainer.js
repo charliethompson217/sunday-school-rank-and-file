@@ -191,7 +191,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
       }
     }
     setWarning("");
-    setNewPicks(rankPicks, rankedRanks, filePicks);
+    setNewPicks(rankPicks, rankedRanks, filePicks, configId);
     navigate('/endofform');
     sendToServer();
   };
