@@ -72,5 +72,5 @@ npm start
   Create a csv file with the headers 'Type', 'Home', 'Away', and optionaly 'Description'.    
   Where Type is either 'Rank', 'File', 'Christmas File', or 'Thanksgiving File'.    
   Home and Away must be valid nfl teams for logos to be rendered.    
-  Uplad The CSV on the admin page.
+  Upload the CSV on the admin page.
 - Once players fill out their picks, they will be avalibile for download in a CSV file on the admin page
