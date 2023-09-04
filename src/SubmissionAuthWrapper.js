@@ -4,7 +4,6 @@ import { API, Auth, Amplify } from 'aws-amplify';
 import SignIn from './SignIn';
 import awsconfig from './aws-exports';
 import Navbar from './Navbar';
-import FormContainer from './FormContainer';
 import Countdown from './Countdown';
 Amplify.configure(awsconfig);
 
@@ -36,15 +35,8 @@ export default function SubmissionAuthWrapper() {
     }, []);
 
     if (user) {
-        return (
-        <>
-            <Navbar></Navbar>
-            <div className='navbar-offset-container'>
-                <FormContainer/>
-            </div>
-        </>
-        );
-      }
+        window.location.reload();
+    }
 
     return (
     <>

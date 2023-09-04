@@ -37,7 +37,7 @@ export default function SignIn() {
             <form onSubmit={handleSubmit} className="SignIn">
                 <h1>Sign In</h1>
                 <div>
-                    <input className="signin-form-control" autocomplete="email" type="email" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
+                    <input className="signin-form-control" autoComplete="email" type="email" placeholder="E-Mail" onChange={e => setEmail(e.target.value)} required />
                 </div>
                 <div>
                     <input className="signin-form-control" placeholder="Password" type="password" onChange={e => setPassword(e.target.value)} required />

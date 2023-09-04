@@ -7,7 +7,7 @@ import Account from './Account';
 import Navbar from './Navbar';
 Amplify.configure(awsconfig);
 
-export default function AccountAuthWrapper() {
+export default function AccountAuthWrapper({onSignOut}) {
     const [user, setUser] = useState(null);
     const checkAuthState = async () => {
         try {
@@ -29,6 +29,7 @@ export default function AccountAuthWrapper() {
         } catch (err) {
           console.error('error signing out: ', err);
         }
+        onSignOut();
       };
     if (user) {
         return (

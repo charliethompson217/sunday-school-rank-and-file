@@ -169,6 +169,10 @@
   align-items: center;
   flex-direction: column;
 }
+.end-of-form{
+  margin-left: 5%;
+  margin-top: 5%;
+}
 .end-of-form ul{
   list-style: none;
 }

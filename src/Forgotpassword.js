@@ -66,7 +66,7 @@ export default function Forgotpassword() {
                     <form onSubmit={handleSubmitStep1} className="Forgotpassword">
                         <h1>Reset Password</h1>
                         <div>
-                            <input key="step-1-email" className="signin-form-control" placeholder="E-Mail"autocomplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
+                            <input key="step-1-email" className="signin-form-control" placeholder="E-Mail" autoComplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
                         </div>
                         <div className='warning'>
                             {warning}
@@ -86,7 +86,7 @@ export default function Forgotpassword() {
                         <h1>Forgot Password</h1>
 
                         <div>
-                            <input key="step-2-email" className="signin-form-control" placeholder="E-Mail" autocomplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
+                            <input key="step-2-email" className="signin-form-control" placeholder="E-Mail" autoComplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
                         </div>
 
                         <div>

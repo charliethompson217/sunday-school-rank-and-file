@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import Loading from './Loading';
 import RankPicks from './RankPicks';
 import RankRanks from './RankRanks';
 import FilePicks from './FilePicks';
-import EndOfForm from './EndOfForm';
 import './App.css';
 import Countdown from './Countdown';
+import Navbar from './Navbar';
 
 Amplify.configure(awsExports);
 
-const FormContainer = () => {
-  const [user, setUser] = useState();
+const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks}) => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(true);
   const [closeTime, setCloseTime] = useState("");
@@ -38,45 +39,23 @@ const FormContainer = () => {
       return false;
     }
   }
-  const parseJsonString = (jsonString) => {
-    try {
-      return JSON.parse(jsonString);
-    } catch (error) {
-      console.error('Error parsing JSON:', error);
-      return null;
-    }
-  };
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
         const response = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
-        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedTimestamp} = response;
+        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = response;
         setRankMatchups(fetchedRankMatchups);
         setFileMatchups(fetchedFileMatchups);
         setWeek(fetchedWeek);
-        setConfigId(fetchedTimestamp);
+        setConfigId(fetchedConfigId);
         setCloseTime(fetchedCloseTime);
         const isBeforeCurrentUTC = await isDateTimeBeforeCurrentUTC(fetchedCloseTime);
         setIsClosed(isBeforeCurrentUTC);
         if (isBeforeCurrentUTC) {
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
-        const curUser = await Auth.currentAuthenticatedUser();
-        setUser(curUser);
         try {
-          const session = await Auth.currentSession();
-          const idToken = session.getIdToken().getJwtToken();
-          const response2 = await API.put('sundaySchoolSubmissions', `/submission/get-picks-for-player`,{
-            body: {
-              jwt_token: `${idToken}`,
-              playerId: curUser.attributes['custom:playerId'],
-              teamName: curUser.attributes['custom:team_name'],
-            },
-          });
-          if(fetchedTimestamp===response2.configId){
-            const fetchedRankPicks = parseJsonString(response2.rankPicks);
-            const fetchedRankedRanks = parseJsonString(response2.rankedRanks);
-            const fetchedFilePicks = parseJsonString(response2.filePicks);
+          if(fetchedConfigId===picks.configId){
             setRankPicks([...fetchedRankPicks]);
             setRankedRanks([...fetchedRankedRanks]);
             setFilePicks([...fetchedFilePicks]);
@@ -107,14 +86,13 @@ const FormContainer = () => {
       }
     };
     fetchMatchups();
-  }, []);
+  }, [User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks,]);
 
   const steps = [
     { id: 1, component: Loading },
     { id: 2, component: RankPicks },
     { id: 3, component: RankRanks },
     { id: 4, component: FilePicks },
-    { id: 5, component: EndOfForm },
   ];
 
   const CurrentStepComponent = steps[currentStep - 1].component;
@@ -180,12 +158,12 @@ const FormContainer = () => {
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolSubmissions', `/submission/${user.attributes['custom:playerId']}`, {
+      await API.post('sundaySchoolSubmissions', `/submission/${User.attributes['custom:playerId']}`, {
         body: {
           jwt_token: `${idToken}`,
-          playerId: user.attributes['custom:playerId'],
-          team: user.attributes['custom:team_name'],
-          fullName: user.attributes['name'],
+          playerId: User.attributes['custom:playerId'],
+          team: User.attributes['custom:team_name'],
+          fullName: User.attributes['name'],
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
@@ -213,33 +191,40 @@ const FormContainer = () => {
       }
     }
     setWarning("");
-    nextStep();
+    setNewPicks(rankPicks, rankedRanks, filePicks);
+    navigate('/endofform');
     sendToServer();
   };
 
   return (
-    <div className='FormContainer'>
-      <h1>Sunday School {week}</h1>
-      <Countdown targetDate={closeTime}></Countdown>
-      <form onSubmit={handleSubmit}>
-        <CurrentStepComponent
-          rankMatchups={rankMatchups}
-          fileMatchups={fileMatchups}
-          rankPicks={rankPicks}
-          filePicks={filePicks}
-          rankedRanks={rankedRanks}
-          onRankPicksChange={handleRankPicksChange}
-          onRankChange={handleRankChange}
-          onFilePicksChange={handleFilePicksChange}
-        />
-        <p className='warning'>{warning}</p>
-        <div className='picks-form-nav'>
-          {currentStep > 2 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
-          {currentStep < steps.length-1 && <button type="button" onClick={nextStep}>Next</button>}
-          {currentStep === steps.length-1 && <button type="submit">Submit</button>}
+    <>
+      <Navbar></Navbar>
+      <div className='navbar-offset-container'>
+        <div className='FormContainer'>
+          <h1>Sunday School {week}</h1>
+          <Countdown targetDate={closeTime}></Countdown>
+          <form onSubmit={handleSubmit}>
+            <CurrentStepComponent
+              rankMatchups={rankMatchups}
+              fileMatchups={fileMatchups}
+              rankPicks={rankPicks}
+              filePicks={filePicks}
+              rankedRanks={rankedRanks}
+              onRankPicksChange={handleRankPicksChange}
+              onRankChange={handleRankChange}
+              onFilePicksChange={handleFilePicksChange}
+            />
+            <p className='warning'>{warning}</p>
+            <div className='picks-form-nav'>
+              {currentStep > 2 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
+              {currentStep < steps.length && <button type="button" onClick={nextStep}>Next</button>}
+              {currentStep === steps.length && <button type="submit">Submit</button>}
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
+      </div>
+    </>
+    
   );
 };
 
