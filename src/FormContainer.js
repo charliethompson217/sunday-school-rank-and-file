@@ -221,7 +221,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
             />
             <p className='warning'>{warning}</p>
             <div className='picks-form-nav'>
-              {currentStep > 2 && currentStep < steps.length &&<button type="button" onClick={prevStep}>Previous</button>}
+              {currentStep > 2 &&<button type="button" onClick={prevStep}>Previous</button>}
               {currentStep < steps.length && <button type="button" onClick={nextStep}>Next</button>}
               {currentStep === steps.length && <button type="submit">Submit</button>}
             </div>
