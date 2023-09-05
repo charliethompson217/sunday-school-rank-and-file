@@ -100,6 +100,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                         const oldHoldIndex = itemHeld;
                         const oldOverIndex = overItem;
                         games[overItem].index = oldHoldIndex;
+                        games[itemHeld].index = oldOverIndex;
                         const temp = games[itemHeld];
                         games[itemHeld] = games[overItem];
                         games[overItem] = temp;
@@ -109,11 +110,6 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                 }
             };
             const dragStoped = () => {
-                let overItem = Math.min(Math.floor((y-5)/55), rankedOptions.length-1);
-                if(overItem<0){
-                    overItem=0;
-                }
-                games[itemHeld].index = overItem;
                 holding = false;
                 if(itemHeld!==-1){
                     games[itemHeld].endDrag();
@@ -170,6 +166,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                     this.dragging = false;
                 }
             }
+
         };
 
         const myP5 = new p5(sketch);
