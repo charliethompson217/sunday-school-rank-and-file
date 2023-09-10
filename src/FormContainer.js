@@ -56,11 +56,29 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
         try {
-          if(fetchedConfigId===picks.configId){
-            setRankPicks([...fetchedRankPicks]);
-            setRankedRanks([...fetchedRankedRanks]);
-            setNewRankedRanks([...fetchedRankedRanks]);
-            setFilePicks([...fetchedFilePicks]);
+          if (picks!=null){
+            if(fetchedConfigId===picks.configId){
+              setRankPicks([...fetchedRankPicks]);
+              setRankedRanks([...fetchedRankedRanks]);
+              setNewRankedRanks([...fetchedRankedRanks]);
+              setFilePicks([...fetchedFilePicks]);
+            } else {
+              const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
+                game: matchup,
+                value: null,
+              }));
+              setRankPicks(initialRankPicks);
+      
+              const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
+                game: matchup,
+                value: null,
+              }));
+              setFilePicks(initialFilePicks);
+      
+              const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
+              setRankedRanks(initialRankRanks);
+              setNewRankedRanks(initialRankRanks);
+            }
           } else {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
               game: matchup,
