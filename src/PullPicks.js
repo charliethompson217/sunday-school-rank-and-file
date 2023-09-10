@@ -59,7 +59,9 @@ export default function PullPicks() {
         });
         setPlayerPicks((prevPlayerPicks) => [...prevPlayerPicks, response]);
       } catch (error) {
-        console.error('Error fetching players:', error);
+        console.error(`Error fetching picks for player: ${teamName} `, error);
+        console.log(`Retrying fetch picks for player: ${teamName} `);
+        fetchPicksForPlayer(teamName);
       }
     }
     players.forEach((player) => {
