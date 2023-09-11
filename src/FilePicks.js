@@ -6,7 +6,7 @@ const FilePicks = ({fileMatchups, filePicks, onFilePicksChange }) => {
   return (
     <div>
       <h3>File Picks</h3>
-      <p>Now you will make your picks for MNF</p>
+      <p>Now you will make your file picks</p>
       {fileMatchups.map((data, index) => (
         <QuestionWithTwoButtons
           key={index}
