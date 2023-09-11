@@ -181,12 +181,9 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolSubmissions', `/submission/${User.attributes['custom:playerId']}`, {
+      await API.post('sundaySchoolSubmissions', '/submission/submit-picks', {
         body: {
           jwt_token: `${idToken}`,
-          playerId: User.attributes['custom:playerId'],
-          team: User.attributes['custom:team_name'],
-          fullName: User.attributes['name'],
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),

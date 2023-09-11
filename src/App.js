@@ -60,11 +60,9 @@ function App() {
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.put('sundaySchoolSubmissions', `/submission/get-picks-for-player`,{
+        const response = await API.put('sundaySchoolSubmissions', '/submission/get-picks-for-player',{
           body: {
             jwt_token: `${idToken}`,
-            playerId: user.attributes['custom:playerId'],
-            teamName: user.attributes['custom:team_name'],
           },
         });
         setPicks(response);
