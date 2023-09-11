@@ -92,13 +92,14 @@ export default function Configuration() {
                     <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
                 <div>
-                    <label htmlFor="dateTimeInput">Close form on / Home-Screen Time:</label>
+                    <label htmlFor="dateTimeInput">Close form on / Home-Screen Time: </label>
                     <input
                         type="datetime-local"
                         id="dateTimeInput"
                         value={dateTime}
                         onChange={(e) => setDateTime(e.target.value)}
                     />
+                    <label htmlFor="dateTimeInput"> EST</label>
                 </div>
                 <div>
                     <label htmlFor="weekSelect">Select Week:</label>
