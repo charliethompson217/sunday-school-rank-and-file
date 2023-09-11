@@ -1,10 +1,30 @@
-import React from 'react';
-import Navbar from './Navbar';
-import Countdown from './Countdown';
-import logo from './assets/logo.svg';
+import React, { useState, useEffect } from 'react';
+import { API, Amplify } from 'aws-amplify';
+import awsExports from './aws-exports';
 import './App.css';
+import Countdown from './Countdown';
+import Navbar from './Navbar';
+import logo from './assets/logo.svg';
+
+Amplify.configure(awsExports);
+
 export default function Home() {
-  const targetDate = new Date('2023-09-10T17:00:00Z');
+  const [closeTime, setCloseTime] = useState("");
+  const [week, setWeek] = useState("Week");
+
+  useEffect(() => {
+    const fetchCloseTime = async () => {
+      try {
+        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-homescreen-time');
+        const {closeTime: fetchedCloseTime, week:fetchedWeek} = response;
+        setCloseTime(fetchedCloseTime);
+        setWeek(fetchedWeek);
+      } catch (error) {
+        console.error('Error fetching matchups:', error);
+      }
+    };
+    fetchCloseTime();
+  }, []);
   return (
     <>
         <Navbar></Navbar>
@@ -14,8 +34,8 @@ export default function Home() {
               <img className="homeLogo" src={logo} alt="Logo" />
             </div>
             <div className="countdown-container">
-              <h1>2023–24 Season Kicks Off in:</h1>
-              <Countdown targetDate={targetDate} />
+              <h1>Sunday School {week} Kicks Off In:</h1>
+              <Countdown targetDate={closeTime} />
             </div>
           </div>
         </div>

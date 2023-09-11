@@ -92,7 +92,7 @@ export default function Configuration() {
                     <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
                 <div>
-                    <label htmlFor="dateTimeInput">Close form on:</label>
+                    <label htmlFor="dateTimeInput">Close form on / Home-Screen Time:</label>
                     <input
                         type="datetime-local"
                         id="dateTimeInput"
