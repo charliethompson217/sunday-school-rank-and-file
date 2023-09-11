@@ -27,8 +27,6 @@ def handler(event, context):
                 del player['email']
             if 'fullname' in player:
                 del player['fullname']
-            if 'playerId' in player:
-                del player['playerId']
         return {
             'statusCode': 200,
             'headers': {
