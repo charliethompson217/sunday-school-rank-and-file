@@ -48,25 +48,28 @@ export default function PullPicks() {
   }, []);
   useEffect( () => {
     setPlayerPicks([]);
-    const fetchPicksForPlayer = async (teamName) => {
+    const fetchPicksForPlayers = async (playersToFetchPicksFor) => {
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.get('ssAdmin', `/admin/${teamName}`,{
+        const response = await API.put('ssAdmin', `/admin/pull-picks`,{
           headers: {
-            Authorization: `Bearer ${idToken}`
+            Authorization: `Bearer ${idToken}`,
           },
+          body: {
+            players: playersToFetchPicksFor
+          }
         });
-        setPlayerPicks((prevPlayerPicks) => [...prevPlayerPicks, response]);
+        setPlayerPicks(response);
       } catch (error) {
-        console.error(`Error fetching picks for player: ${teamName} `, error);
-        console.log(`Retrying fetch picks for player: ${teamName} `);
-        fetchPicksForPlayer(teamName);
+        console.error( 'Error fetching picks for players', error);
       }
     }
+    let playersToFetchPicksFor = [];
     players.forEach((player) => {
-      fetchPicksForPlayer(player.teamName);
+      playersToFetchPicksFor.push(player.teamName);
     });
+    fetchPicksForPlayers(playersToFetchPicksFor);
   }, [players]);
 
   useEffect(() =>{

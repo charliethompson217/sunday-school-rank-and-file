@@ -56,11 +56,29 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
         try {
-          if(fetchedConfigId===picks.configId){
-            setRankPicks([...fetchedRankPicks]);
-            setRankedRanks([...fetchedRankedRanks]);
-            setNewRankedRanks([...fetchedRankedRanks]);
-            setFilePicks([...fetchedFilePicks]);
+          if (picks!=null){
+            if(fetchedConfigId===picks.configId){
+              setRankPicks([...fetchedRankPicks]);
+              setRankedRanks([...fetchedRankedRanks]);
+              setNewRankedRanks([...fetchedRankedRanks]);
+              setFilePicks([...fetchedFilePicks]);
+            } else {
+              const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
+                game: matchup,
+                value: null,
+              }));
+              setRankPicks(initialRankPicks);
+      
+              const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
+                game: matchup,
+                value: null,
+              }));
+              setFilePicks(initialFilePicks);
+      
+              const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
+              setRankedRanks(initialRankRanks);
+              setNewRankedRanks(initialRankRanks);
+            }
           } else {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
               game: matchup,
@@ -163,12 +181,9 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolSubmissions', `/submission/${User.attributes['custom:playerId']}`, {
+      await API.post('sundaySchoolSubmissions', '/submission/submit-picks', {
         body: {
           jwt_token: `${idToken}`,
-          playerId: User.attributes['custom:playerId'],
-          team: User.attributes['custom:team_name'],
-          fullName: User.attributes['name'],
           week: week,
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),

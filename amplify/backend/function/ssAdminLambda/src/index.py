@@ -50,50 +50,28 @@ def handler(event, context):
                     },
                     'body': json.dumps('Matchups Updated!')
                 }
-            if(action == "add-player"):
-                table_name = f'sundaySchoolPlayers-{env}'
-                table = dynamodb.Table(table_name)
-                timestamp = int(time.time())
-                body = json.loads(event['body'])
-                item = {
-                    'playerId': body.get('playerId'),
-                    'Timestamp': timestamp,
-                    'teamName': body.get('teamName'),
-                    'email': body.get('email'),
-                    'fullName': body.get('fullName'),
-                }
-                table.put_item(Item=item)
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Player Added!')
-                }
+            
         elif method == 'PUT':
-            if(action == "edit-player"):
-                table_name = f'sundaySchoolPlayers-{env}'
+            if(action == "pull-picks"):
+                table_name = f'submissions-{env}'
                 table = dynamodb.Table(table_name)
                 body = json.loads(event['body'])
-                newTeamName = body.get('teamName')
-                newEmail = body.get('email')
-                playerId = body.get('playerId')
-                newFullName = body.get('fullName')
-                response = table.update_item(
-                    Key={
-                        'playerId': playerId,
-                    },
-                    UpdateExpression='SET teamName = :teamName, email = :email, fullName = :fullName',
-                    ExpressionAttributeValues={
-                        ':teamName': newTeamName,
-                        ':email': newEmail,
-                        ':fullName': newFullName,
-
-                    },
-                    ReturnValues='UPDATED_NEW'
-                )
+                players = body.get('players')
+                most_recent_entries = []
+                for player in players:
+                    response = table.query(
+                        KeyConditionExpression='team = :tid',
+                        ExpressionAttributeValues={
+                            ':tid': player
+                        },
+                        ScanIndexForward=False,
+                        Limit=1
+                    )
+                    if 'Items' in response:
+                        most_recent_entry = response['Items'][0]
+                        if 'Timestamp' in most_recent_entry:
+                            most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
+                        most_recent_entries.append(most_recent_entry)
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -101,28 +79,9 @@ def handler(event, context):
                         'Access-Control-Allow-Origin': '*',
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
-                    'body': json.dumps(response)
+                    'body': json.dumps(most_recent_entries)
                 }
-        elif method == 'DELETE':
-            if(action == "delete-player"):
-                table_name = f'sundaySchoolPlayers-{env}'
-                table = dynamodb.Table(table_name)
-                body = json.loads(event['body'])
-                playerId = body.get('playerId')
-                response = table.delete_item(
-                    Key={
-                        'playerId': playerId,
-                    }
-                )
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Player Deleted!')
-                }
+                
         elif method == 'GET':
             if(action == "get-players"):
                 table_name = f'sundaySchoolPlayers-{env}'
@@ -141,33 +100,7 @@ def handler(event, context):
                     },
                     'body': json.dumps(players)
                 }
-            else:
-                table_name = f'submissions-{env}'
-                table = dynamodb.Table(table_name)
-                response = table.query(
-                    KeyConditionExpression='team = :tid',
-                    ExpressionAttributeValues={
-                        ':tid': action
-                    },
-                    ScanIndexForward=False,
-                    Limit=1
-                )
-                if 'Items' in response:
-                    most_recent_entry = response['Items'][0]
-                    print(most_recent_entry)
-                    if 'Timestamp' in most_recent_entry:
-                        most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
-                    return {
-                        'statusCode': 200,
-                        'headers': {
-                            'Access-Control-Allow-Headers': '*',
-                            'Access-Control-Allow-Origin': '*',
-                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                        },
-                        'body': json.dumps(most_recent_entry)
-                    }
-                else:
-                    print("No entries found.")
+            
     return {
         'statusCode': 403,
         'headers': {

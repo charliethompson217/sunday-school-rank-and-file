@@ -125,9 +125,11 @@ export default function SignUp() {
                     fullName: fullName,
                 }
             });
-            await API.post('sundaySchoolSubmissions', `/submission/${newId}`, {
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();          
+            await API.post('sundaySchoolSubmissions', '/submission/submit-picks', {
                 body: {
-                    team: teamName,
+                    jwt_token: `${idToken}`,
                     configId: "1",
                 }
             });
