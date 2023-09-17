@@ -75,6 +75,11 @@ function App() {
       } catch (error) {
         console.error(error);
       }
+      try {
+        
+      } catch (error) {
+        console.error(error);
+      }
     };
     if(user){
       fetchPicks();

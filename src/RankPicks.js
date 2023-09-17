@@ -9,7 +9,7 @@ const RankPicks = ({rankMatchups, rankPicks, onRankPicksChange }) => {
       <p>First, you will pick all your Rank winners. Later, you will rank your selected Rank winners.</p>
       {rankMatchups.map((data, index) => (
         <QuestionWithTwoButtons
-          key={index}
+          key={data}
           question={`${data[0]} @ ${data[1]}`}
           label1={data[0]}
           label2={data[1]}

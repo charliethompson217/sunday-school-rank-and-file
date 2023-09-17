@@ -55,30 +55,15 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
         if (isBeforeCurrentUTC) {
           setWarning(`The deadline has passed to submit picks for ${fetchedWeek}.`);
         }
+        else {
+          setWarning('');
+        }
         try {
-          if (picks!=null){
-            if(fetchedConfigId===picks.configId){
-              setRankPicks([...fetchedRankPicks]);
-              setRankedRanks([...fetchedRankedRanks]);
-              setNewRankedRanks([...fetchedRankedRanks]);
-              setFilePicks([...fetchedFilePicks]);
-            } else {
-              const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
-                game: matchup,
-                value: null,
-              }));
-              setRankPicks(initialRankPicks);
-      
-              const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
-                game: matchup,
-                value: null,
-              }));
-              setFilePicks(initialFilePicks);
-      
-              const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
-              setRankedRanks(initialRankRanks);
-              setNewRankedRanks(initialRankRanks);
-            }
+          if ((picks!=null)&&(fetchedConfigId===picks.configId)) {
+            setRankPicks([...fetchedRankPicks]);
+            setRankedRanks([...fetchedRankedRanks]);
+            setNewRankedRanks([...fetchedRankedRanks]);
+            setFilePicks([...fetchedFilePicks]);
           } else {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
               game: matchup,
@@ -160,6 +145,9 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
       setWarning(`The deadline has passed to submit picks for ${week}.`);
       return;
     }
+    else {
+      setWarning('');
+    }
     if (currentStep === 2) {
       const hasIncompleteValues = rankPicks.some(pick => pick.value === null);
       if (hasIncompleteValues) {
@@ -201,6 +189,9 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
     if(isClosed){
       setWarning(`The deadline has passed to submit picks for ${week}.`);
       return;
+    }
+    else {
+      setWarning('');
     }
     
     if (currentStep === 4) {
