@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Cardinals from './assets/ARI.svg';
 import Panthers from './assets/CAR.svg'; 
 import Falcons from './assets/ATL.svg';
@@ -33,6 +33,12 @@ import Lions from './assets/DET.svg';
 import Chiefs from './assets/KC.svg';
 const QuestionWithTwoButtons = ({ question, label1, label2, answer, onInputChange, description}) => {
   const [selectedOption, setSelectedOption] = useState(answer);
+  
+  useEffect(() => {
+    setSelectedOption(answer);
+    console.log(selectedOption);
+    console.log(answer);
+  }, [answer]);
 
   const handleOptionClick = (option) => {
     setSelectedOption(option);
