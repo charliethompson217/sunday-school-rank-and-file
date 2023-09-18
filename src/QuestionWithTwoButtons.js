@@ -36,8 +36,6 @@ const QuestionWithTwoButtons = ({ question, label1, label2, answer, onInputChang
   
   useEffect(() => {
     setSelectedOption(answer);
-    console.log(selectedOption);
-    console.log(answer);
   }, [answer]);
 
   const handleOptionClick = (option) => {

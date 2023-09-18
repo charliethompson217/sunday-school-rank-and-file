@@ -23,7 +23,8 @@ function App() {
   const [rankPicks, setRankPicks] = useState([]);
   const [filePicks, setFilePicks] = useState([]);
   const [rankedRanks, setRankedRanks] = useState([]);
-
+  const [matchupsResponse, setMatchupsResponse] = useState();
+  
   useEffect(() => {
     const updateUser = async () => {
       try {
@@ -56,7 +57,7 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchPicks = async () => {
+    const fetchData = async () => {
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
@@ -76,13 +77,14 @@ function App() {
         console.error(error);
       }
       try {
-        
+        const fetchedMatchupsResponse = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
+        setMatchupsResponse(fetchedMatchupsResponse);
       } catch (error) {
         console.error(error);
       }
     };
     if(user){
-      fetchPicks();
+      fetchData();
     }
   }, [user]);
 
@@ -103,8 +105,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/*" element={<NotFound/>}/>
-        <Route path="/home" element={<Home/>}/>
-        <Route path="/" element={<Home/>}/>
+        <Route path="/home" element={<Home matchupsResponse={matchupsResponse} />}/>
+        <Route path="/" element={<Home matchupsResponse={matchupsResponse} />}/>
         <Route path="/admin" element={<AdminAuthWrapper/>}/>
         <Route path="/rules" element={<Rules/>}/>
         <Route path="/results" element={<Results/>}/>
@@ -121,6 +123,7 @@ function App() {
             fetchedRankedRanks={rankedRanks}
             fetchedFilePicks={filePicks}
             setNewPicks={setNewPicks}
+            matchupsResponse={matchupsResponse}
           /> : <SubmissionAuthWrapper/>}
         />
         <Route 

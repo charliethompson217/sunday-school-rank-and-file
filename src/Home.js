@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import {Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 import './App.css';
 import Countdown from './Countdown';
@@ -8,15 +8,14 @@ import logo from './assets/logo.svg';
 
 Amplify.configure(awsExports);
 
-export default function Home() {
+export default function Home({matchupsResponse}) {
   const [closeTime, setCloseTime] = useState("");
   const [week, setWeek] = useState("Week");
 
   useEffect(() => {
     const fetchCloseTime = async () => {
       try {
-        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-homescreen-time');
-        const {closeTime: fetchedCloseTime, week:fetchedWeek} = response;
+        const {closeTime: fetchedCloseTime, week:fetchedWeek} = matchupsResponse;
         setCloseTime(fetchedCloseTime);
         setWeek(fetchedWeek);
       } catch (error) {
@@ -24,7 +23,7 @@ export default function Home() {
       }
     };
     fetchCloseTime();
-  }, []);
+  }, [matchupsResponse]);
   return (
     <>
         <Navbar></Navbar>
