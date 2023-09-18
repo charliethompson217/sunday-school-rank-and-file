@@ -4,7 +4,7 @@ import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import Loading from './Loading';
 import RankPicks from './RankPicks';
-import RankRanks from './newRankedRanks';
+import RankRanks from './RankedRanks';
 import FilePicks from './FilePicks';
 import './App.css';
 import Countdown from './Countdown';
@@ -12,7 +12,7 @@ import Navbar from './Navbar';
 
 Amplify.configure(awsExports);
 
-const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks}) => {
+const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks, matchupsResponse}) => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(true);
@@ -43,8 +43,8 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
-        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
-        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = response;
+        
+        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = matchupsResponse;
         setRankMatchups(fetchedRankMatchups);
         setFileMatchups(fetchedFileMatchups);
         setWeek(fetchedWeek);
@@ -92,7 +92,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
       }
     };
     fetchMatchups();
-  }, [User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks,]);
+  }, [User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, matchupsResponse]);
 
   const steps = [
     { id: 1, component: Loading },
