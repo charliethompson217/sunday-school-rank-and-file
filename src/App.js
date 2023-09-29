@@ -31,7 +31,6 @@ function App() {
         const curUser = await Auth.currentAuthenticatedUser();
         setUser(curUser);
       } catch (error) {
-        console.error(error);
         setUser(null);
       }
     };
