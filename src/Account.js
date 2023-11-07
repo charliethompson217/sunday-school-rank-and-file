@@ -13,9 +13,14 @@ export default function Account() {
   const [teamName, setTeamName] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [rankPoints, setRankPoints] = useState('');
+  const [fileWins, setFileWins] = useState('');
+  const [playoffsBucks, setPlayoffsBucks] = useState('');
+  const [totalDollarPayout, setTotalDollarPayout] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
+
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -32,6 +37,17 @@ export default function Account() {
         setFullName(curUser.attributes['name']);
         setEmail(curUser.attributes['email']);
         setPlayerId(curUser.attributes['custom:playerId']);
+        const response = await API.get('playerApi', '/player/get-players');
+        let curPlayer;
+        for(var player of response){
+          if(player.playerId===curUser.attributes['custom:playerId']){
+            curPlayer=player;
+          }
+        }
+        setRankPoints(curPlayer.RankPoints);
+        setFileWins(curPlayer.FileWins);
+        setPlayoffsBucks(curPlayer.PlayoffsBucks);
+        setTotalDollarPayout(curPlayer.TotalDollarPayout);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -106,6 +122,22 @@ export default function Account() {
             ) : (
               <label>{email}</label>
             )}
+          </div>
+          <div className='user-attribute'>
+            <label className='user-attribute-label'>Rank Points</label>
+            <label>{rankPoints}</label>
+          </div>
+          <div className='user-attribute'>
+            <label className='user-attribute-label'>File Wins</label>
+            <label>{fileWins}</label>
+          </div>
+          <div className='user-attribute'>
+            <label className='user-attribute-label'>Playoffs Bucks</label>
+            <label>{playoffsBucks}</label>
+          </div>
+          <div className='user-attribute'>
+            <label className='user-attribute-label'>Total Dollar Payout</label>
+            <label>{totalDollarPayout}</label>
           </div>
           <div className='user-attribute'>
             {emailNeedsVerification ? (

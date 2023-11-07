@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { API, Amplify, Auth } from 'aws-amplify';
+import React from 'react';
+import {Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 
 Amplify.configure(awsExports);
