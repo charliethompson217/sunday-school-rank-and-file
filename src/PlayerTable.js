@@ -4,34 +4,7 @@ import awsExports from './aws-exports';
 
 Amplify.configure(awsExports);
 
-const PlayerTable = () => {
-  const [players, setPlayers] = useState([]);
-
-  const compareByTeamName = (a, b) => {
-    if (a.teamName < b.teamName) return -1;
-    if (a.teamName > b.teamName) return 1;
-    return 0;
-  };
-
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      try {
-        const session = await Auth.currentSession();
-        const idToken = session.getIdToken().getJwtToken();
-        const response = await API.get('ssAdmin', '/admin/get-players',{
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          },
-        });
-        const sortedPlayers = [...response].sort(compareByTeamName);
-        setPlayers(sortedPlayers);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
-      
-    }
-    fetchPlayers();
-  }, []);
+const PlayerTable = ({players}) => {
 
   const generateCsvData = () => {
     let csvData = '';
@@ -41,9 +14,17 @@ const PlayerTable = () => {
       const team = player.teamName;
       const name = player.fullName;
       const email = player.email;
+      const RankPoints = player.RankPoints;
+      const FileWins = player.FileWins;
+      const PlayoffsBucks = player.PlayoffsBucks;
+      const TotalDollarPayout = player.TotalDollarPayout;
       csvData += `${team},`;
       csvData += `${name},`;
       csvData += `${email},`;
+      csvData += `${RankPoints},`;
+      csvData += `${FileWins},`;
+      csvData += `${PlayoffsBucks},`;
+      csvData += `${TotalDollarPayout},`;
       csvData += '\n';
     })
     return csvData;
@@ -71,6 +52,11 @@ const PlayerTable = () => {
             <th className='table-header'>Team Name</th>
             <th className='table-header'>Full Name</th>
             <th className='table-header'>Email</th>
+            <th className='table-header'>Rank Points</th>
+            <th className='table-header'>File Wins</th>
+            <th className='table-header'>Playoffs Bucks</th>
+            <th className='table-header'>Total Dollar Payout</th>
+            
           </tr>
         </thead>
         <tbody>
@@ -79,6 +65,10 @@ const PlayerTable = () => {
               <td>{player.teamName}</td>
               <td>{player.fullName}</td>
               <td>{player.email}</td>
+              <td>{player.RankPoints}</td>
+              <td>{player.FileWins}</td>
+              <td>{player.PlayoffsBucks}</td>
+              <td>{player.TotalDollarPayout}</td>
             </tr>
           ))}
         </tbody>

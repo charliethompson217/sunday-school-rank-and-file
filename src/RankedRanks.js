@@ -15,7 +15,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
         const sketch = (p) => {
             let rankedOptions = rankedRanks;
             let canvas;
-            const canvasWidth = 300;
+            const canvasWidth = 310;
             const canvasHeight = rankedOptions.length*55+5;
             let x;
             let y;
@@ -59,7 +59,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
             };
 
             p.draw = () => {
-                p.background(220, 187, 160);
+                p.clear();
                 for(let i=0; i<games.length; i++){
                     games[i].update();
                 }
@@ -125,10 +125,11 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                     this.gameCode = gameCode;
                     this.index = index;
                     this.words = words;
-                    this.x=25;
+                    this.x=0;
                     this.r = 255;
                     this.g = 255;
                     this.b = 255;
+                    this.a = 255;
                     this.dragging = false;
                 };
                 update(){
@@ -138,23 +139,20 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                     else {
                         this.y=(this.index+1)*55;
                     }
-                    p.fill(this.r, this.g, this.b);
+                    p.fill(this.r, this.g, this.b, this.a);
                     p.noStroke();
-                    p.rect(this.x, this.y-50, 250, 50);
-                    p.ellipse(this.x, this.y-25, 50, 50);
-                    p.ellipse(this.x+250, this.y-25, 50, 50);
-                    p.fill(17, 81, 255);
+                    p.fill(0, 130, 6);
                     var w = p.textWidth(rankedOptions.length - this.index);
-                    p.rect(this.x-10, this.y-40, w+10, 30);
+                    p.rect(this.x, this.y-40, w+10, 30);
                     p.fill(0, 0, 0);
                     p.textSize(15);
-                    p.text(this.words, this.x+10+w, this.y-20);
+                    p.text(this.words, this.x+15+w, this.y-20);
                     p.fill(255, 255, 255);
-                    p.text(rankedOptions.length - this.index, this.x-5, this.y-20);
+                    p.text(rankedOptions.length - this.index, this.x+5, this.y-20);
                 }
                 startDrag(){
-                    this.r = 50;
-                    this.g = 50;
+                    this.r = 200;
+                    this.g = 200;
                     this.b = 200;
                     this.dragging = true;
                     this.offset=y-this.y;

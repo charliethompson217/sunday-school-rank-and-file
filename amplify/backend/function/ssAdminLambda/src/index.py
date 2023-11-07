@@ -81,7 +81,54 @@ def handler(event, context):
                     },
                     'body': json.dumps(most_recent_entries)
                 }
-                
+            if(action == "edit-player-stats"):
+                table_name = f'sundaySchoolPlayers-{env}'
+                table = dynamodb.Table(table_name)
+                body = json.loads(event['body'])
+                players = body.get('players')
+                for player in players:
+                    playerId = player[0]
+                    rankPoints = player[1]
+                    fileWins = player[2]
+                    playoffsBucks = player[3]
+                    totalDollarPayout = player[4]
+
+                    try:
+                        response = table.update_item(
+                            Key={
+                                'playerId': playerId,
+                            },
+                            UpdateExpression='SET RankPoints = :rankPoints, FileWins = :fileWins, PlayoffsBucks = :playoffsBucks, TotalDollarPayout = :totalDollarPayout',
+                            ExpressionAttributeValues={
+                                ':rankPoints': rankPoints,
+                                ':fileWins': fileWins,
+                                ':playoffsBucks': playoffsBucks,
+                                ':totalDollarPayout': totalDollarPayout,
+                            },
+                            ReturnValues='UPDATED_NEW'
+                        )
+                    except Exception as e:
+                        print(f"Error updating player {playerId}: {e}")
+                        # Output the exact update expression and values for debugging
+                        print("Update Expression:")
+                        print('SET RankPoints = :rankPoints, FileWins = :fileWins, PlayoffsBucks = :playoffsBucks, TotalDollarPayout = :totalDollarPayout')
+                        print("Expression Attribute Values:")
+                        print({
+                            ':rankPoints': rankPoints,
+                            ':fileWins': fileWins,
+                            ':playoffsBucks': playoffsBucks,
+                            ':totalDollarPayout': totalDollarPayout,
+                        })
+                        raise
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps("Player Stats Updated!")
+                }
         elif method == 'GET':
             if(action == "get-players"):
                 table_name = f'sundaySchoolPlayers-{env}'
