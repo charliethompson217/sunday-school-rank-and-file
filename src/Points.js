@@ -11,7 +11,7 @@ export default function Points({players}) {
 
     const findPlayerId = (teamName) => {
         for(const player of players){
-            if(teamName==player.teamName){
+            if(teamName===player.teamName){
                 return player.playerId;
             }
         }
@@ -60,7 +60,7 @@ export default function Points({players}) {
                             var fileWins = row['File Wins'];
                             var playoffsBucks = row['Playoffs Bucks'];
                             var totalDollarPayout = row['Total Fictional-Dollar Payout'];
-                            if (player != "") {
+                            if (player !== "") {
                                 var newRow = [];
                                 newRow.push(player);
                                 newRow.push(rankPoints);
