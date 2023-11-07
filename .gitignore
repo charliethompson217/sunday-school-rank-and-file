@@ -12,6 +12,12 @@
 # production
 /build
 
+#dev
+OldFormContainer.js
+OldRankRanks.js
+script.py
+sunday_school.csv
+
 # misc
 .DS_Store
 .env.local

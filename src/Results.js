@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar';
 import './App.css';
+import Leaderboard from './Leaderboard';
 
 export default function Results() {
   return (
@@ -16,6 +17,7 @@ export default function Results() {
           Google Sheet with Picks and Results
         </a>
         <br /><br />
+        <Leaderboard></Leaderboard>
       </div>
     </>
   );
