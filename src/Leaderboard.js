@@ -13,7 +13,6 @@ const Leaderboard = () => {
     return bValue - aValue;
   };
   
-
   useEffect( () => {
     const fetchPlayers = async () => {
       try {
