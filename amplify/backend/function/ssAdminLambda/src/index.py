@@ -51,6 +51,49 @@ def handler(event, context):
     is_admin = 'Admin' in groups
     if is_admin:
         if method == 'POST':
+            if(action == "set-cur-week"):
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
+                timestamp = int(time.time())
+                body = json.loads(event['body'])
+                item = {
+                    'ClientId': "cur-week",
+                    'Timestamp': timestamp,
+                    'week': body.get('week'),
+                }
+                table.put_item(Item=item)
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps('Current Week Updated!')
+                }
+            if(action == "upload-game-results"):
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
+                timestamp = int(time.time())
+                body = json.loads(event['body'])
+                item = {
+                    'ClientId': "game-results",
+                    'Timestamp': timestamp,
+                    'week': body.get('week'),
+                    'rankResults': body.get('rankResults'),
+                    'fileResults':body.get('fileResults'),
+                }
+                table.put_item(Item=item)
+
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps('Matchups Updated!')
+                }
             if(action == "upload-matchups"):
                 table_name = f'configuration-{env}'
                 table = dynamodb.Table(table_name)
@@ -65,10 +108,7 @@ def handler(event, context):
                     'fileMatchups':body.get('fileMatchups'),
                 }
                 table.put_item(Item=item)
-                print('Rank Matchups:')
-                print(body.get('rankMatchups'))
-                print('File Matchups:')
-                print(body.get('fileMatchups'))
+
                 return {
                     'statusCode': 200,
                     'headers': {

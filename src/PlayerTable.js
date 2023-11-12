@@ -9,10 +9,10 @@ Amplify.configure(awsExports);
 
 const PlayerTable = ({ fetchedPlayers }) => {
   const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
-  const [players, setPlayers] = useState(fetchedPlayers);
+  const [sortedPlayers, setSortedPlayers] = useState([]);
 
   useEffect(() => {
-    setPlayers(fetchedPlayers);
+    setSortedPlayers(fetchedPlayers); // Initialize sortedPlayers when fetchedPlayers changes
   }, [fetchedPlayers]);
 
   const sortPlayers = (key) => {
@@ -20,74 +20,60 @@ const PlayerTable = ({ fetchedPlayers }) => {
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
-    setSortConfig({ key, direction });
+    const newSortConfig = { key, direction };
+    setSortConfig(newSortConfig);
+
+    const playersToSort = [...fetchedPlayers]; // Sort based on the original fetched players
+    playersToSort.sort((a, b) => {
+      let aValue = a[key];
+      let bValue = b[key];
+
+      if (key === 'TotalDollarPayout') {
+        aValue = parseFloat(aValue.replace(/[\$,]/g, ''));
+        bValue = parseFloat(bValue.replace(/[\$,]/g, ''));
+      } else if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (aValue < bValue) {
+        return direction === 'ascending' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+    setSortedPlayers(playersToSort);
   };
 
-  const getSortIcon = (key) => {
-    return sortConfig.key === key ? (
-      sortConfig.direction === 'ascending' ? (
-        <FontAwesomeIcon icon={faArrowUp} />
-      ) : (
-        <FontAwesomeIcon icon={faArrowDown} />
-      )
-    ) : null;
-  };
-
-  useEffect(() => {
-    let sortedPlayers = players;
-    if (sortConfig !== null) {
-      sortedPlayers.sort((a, b) => {
-        // If sorting by TotalDollarPayout, parse the strings to numbers
-        if (sortConfig.key === 'TotalDollarPayout') {
-          const aValue = parseFloat(a[sortConfig.key].replace(/[\$,]/g, ''));
-          const bValue = parseFloat(b[sortConfig.key].replace(/[\$,]/g, ''));
-          return (aValue - bValue) * (sortConfig.direction === 'ascending' ? 1 : -1);
-        } else {
-          if (a[sortConfig.key] > b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
-          }
-          if (a[sortConfig.key] < b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
-          }
-        }
-        return 0;
-      });
-    }
-    setPlayers(sortedPlayers);
-  }, [sortConfig]);
+  const getSortIcon = (key) => (
+    sortConfig.key === key ? (
+      <FontAwesomeIcon icon={sortConfig.direction === 'ascending' ? faArrowUp : faArrowDown} />
+    ) : null
+  );
 
   const generateCsvData = () => {
-    let csvData = '';
-    csvData += 'Team Name,Full Name,Email';
-    csvData += '\n';
-    players.forEach((player) => {
-      csvData += `${player.teamName},`;
-      csvData += `${player.fullName},`;
-      csvData += `${player.email},`;
-      csvData += `${player.RankPoints},`;
-      csvData += `${player.FileWins},`;
-      csvData += `${player.PlayoffsBucks},`;
-      csvData += `${player.TotalDollarPayout},`;
-      csvData += '\n';
-    })
+    let csvData = 'Team Name,Full Name,Email,Rank Points,File Wins,Playoffs Bucks,Total Fictional-Dollar Payout\n';
+    sortedPlayers.forEach((player) => {
+      csvData += `${player.teamName},${player.fullName},${player.email},${player.RankPoints},${player.FileWins},${player.PlayoffsBucks},${player.TotalDollarPayout}\n`;
+    });
     return csvData;
   };
 
   const downloadPlayerCSV = () => {
     const csvData = generateCsvData();
-    if (csvData) {
-      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'players.csv';
-      link.click();
-    }
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'players.csv';
+    link.click();
   };
 
   return (
     <div className='PlayerTable'>
       <h2>Players</h2>
-      <div className='Admin' >
+      <div className='Admin'>
         <button onClick={downloadPlayerCSV}>Download CSV</button>
       </div>
       <table className='player-table'>
@@ -117,7 +103,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
           </tr>
         </thead>
         <tbody>
-          {players.map(player => (
+          {sortedPlayers.map(player => (
             <tr key={player.playerId}>
               <td>{player.teamName}</td>
               <td>{player.fullName}</td>
@@ -131,6 +117,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
         </tbody>
       </table>
     </div>
+
   );
 }
 

@@ -110,22 +110,22 @@ export default function Points({players}) {
 
     return (
         <div>
-            <h2>Update Season LeaderBoard</h2>
+            <h2>Update Season Point Totals</h2>
             <form onSubmit={handleSubmit}>
 
                 <div>
-                    <label htmlFor="fileInput">Choose a File:</label>
+                    <label htmlFor="fileInput">Season LeaderBoard:</label>
                     <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
                 
                 <p className='warning'>{warning}</p>
 
                 <div>
-                    <button type="submit">Update Season LeaderBoard with csv file</button>
+                    <button type="submit">Update with file</button>
                 </div>
             </form>
             <div>
-                <button onClick={fetchGoogleSheetData}>Update Season LeaderBoard with google API</button>
+                <button onClick={fetchGoogleSheetData}>Update with google API</button>
             </div>
         </div>
     )

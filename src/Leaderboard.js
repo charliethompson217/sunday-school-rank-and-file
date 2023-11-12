@@ -8,87 +8,66 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 Amplify.configure(awsExports);
 
 const Leaderboard = () => {
-  const [players, setPlayers] = useState([]);
+  const [sortedPlayers, setSortedPlayers] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
   const [activeChart, setActiveChart] = useState('seasonleaderboard');
   const [week, setWeek] = useState('Choose week');
   const weekOptions = [
     'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
   ];
-  const sortPlayers = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
+
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
         const response = await API.get('playerApi', '/player/get-players');
-        let sortedPlayers = [...response];
-        sortedPlayers.sort((a, b) => {
-          return b.teamName - a.teamName;
-        });
-        setPlayers(sortedPlayers);
+        setSortedPlayers(response); // Initialize sortedPlayers with the fetched data
       } catch (error) {
         console.error('Error fetching players:', error);
       }
     };
     fetchPlayers();
   }, []);
-  useEffect(() => {
-    try {
-      let sortedPlayers = players;
-      if (sortConfig !== null) {
-        sortedPlayers.sort((a, b) => {
-          if (sortConfig.key === 'teamName') {
-            const aValue = a[sortConfig.key].toLowerCase();
-            const bValue = b[sortConfig.key].toLowerCase();
-            if (aValue < bValue) {
-              return sortConfig.direction === 'ascending' ? -1 : 1;
-            }
-            if (aValue > bValue) {
-              return sortConfig.direction === 'ascending' ? 1 : -1;
-            }
-            return 0;
-          } else if (sortConfig.key === 'TotalDollarPayout') {
-            const aValue = parseFloat(a[sortConfig.key].replace(/[\$,]/g, ''));
-            const bValue = parseFloat(b[sortConfig.key].replace(/[\$,]/g, ''));
-            return (aValue - bValue) * (sortConfig.direction === 'ascending' ? 1 : -1);
-          } else {
-            if (a[sortConfig.key] > b[sortConfig.key]) {
-              return sortConfig.direction === 'ascending' ? -1 : 1;
-            }
-            if (a[sortConfig.key] < b[sortConfig.key]) {
-              return sortConfig.direction === 'ascending' ? 1 : -1;
-            }
-          }
-          return 0;
-        });
-      }
-      setPlayers(sortedPlayers);
-    } catch (error) {
-      console.error('Error fetching players:', error);
+
+  const sortPlayers = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
     }
-  }, [sortConfig, players]);
+    setSortConfig({ key, direction });
 
+    const playersToSort = [...sortedPlayers]; // Sort based on the original fetched players
+    playersToSort.sort((a, b) => {
+      let aValue = a[key];
+      let bValue = b[key];
 
+      if (key === 'TotalDollarPayout') {
+        aValue = parseFloat(aValue.replace(/[\$,]/g, ''));
+        bValue = parseFloat(bValue.replace(/[\$,]/g, ''));
+      } else if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
 
-  const getSortIcon = (key) => {
-    return sortConfig.key === key ? (
-      sortConfig.direction === 'ascending' ? (
-        <FontAwesomeIcon icon={faArrowUp} />
-      ) : (
-        <FontAwesomeIcon icon={faArrowDown} />
-      )
-    ) : null;
+      if (aValue < bValue) {
+        return direction === 'ascending' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+    setSortedPlayers(playersToSort);
   };
+
+  const getSortIcon = (key) => (
+    sortConfig.key === key ? (
+      <FontAwesomeIcon icon={sortConfig.direction === 'ascending' ? faArrowUp : faArrowDown} />
+    ) : null
+  );
 
   const changeChart = (chartName) => {
     setActiveChart(chartName);
   };
-
   return (
     <div className='PlayerTable'>
       <div className='chart-tabs'>
@@ -127,7 +106,7 @@ const Leaderboard = () => {
             </tr>
           </thead>
           <tbody>
-            {players.map(player => (
+            {sortedPlayers.map(player => (
               <tr key={player.playerId}>
                 <td>{player.teamName}</td>
                 <td>{player.RankPoints}</td>

@@ -3,6 +3,8 @@ import json
 import os
 import boto3
 import time
+from boto3.dynamodb.conditions import Key
+
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -66,19 +68,19 @@ def handler(event, context):
         payload_json = json.loads(decoded_payload)
         tokenPlayerId = payload_json.get('custom:playerId')
         teamName = payload_json.get('custom:team_name')
+        week = body.get("week")
+        # Query to fetch items for the given ClientId, sorted by Timestamp in descending order
         response = table.query(
-            KeyConditionExpression='team = :tid',
-            ExpressionAttributeValues={
-                ':tid': teamName
-            },
-            ScanIndexForward=False,
-            Limit=1
+            KeyConditionExpression=Key('team').eq(teamName),
+            ScanIndexForward=False  # Fetches items in descending order of Timestamp
         )
-        if 'Items' in response:
-            most_recent_entry = response['Items'][0]
-            if 'Timestamp' in most_recent_entry:
-                most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
-            if tokenPlayerId == most_recent_entry.get('playerId'):
+
+        # Iterate over the items to find the first one that matches the given week
+        for item in response.get('Items', []):
+            if item.get('week') == week:
+                # Found the most recent item for the specified week
+                if 'Timestamp' in item:
+                    item['Timestamp']=str(item['Timestamp'])
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -86,17 +88,7 @@ def handler(event, context):
                         'Access-Control-Allow-Origin': '*',
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
-                    'body': json.dumps(most_recent_entry)
-                }
-            else:
-                return {
-                    'statusCode': 401,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Unauthorized access!')
+                    'body': json.dumps(item)
                 }
         else:
             print("No entries found.")

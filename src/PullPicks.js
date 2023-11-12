@@ -20,7 +20,13 @@ export default function PullPicks() {
     const fetchConfigId = async () => {
       setCurrentConfigId([]);
       try {
-        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
+        const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
+        console.log(curWeek);
+        const response = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+          body: {
+            week: `${curWeek}`,
+          },
+        });
         const {Timestamp: fetchedTimestamp} = response;
         setCurrentConfigId(fetchedTimestamp);
       } catch (error) {

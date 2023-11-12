@@ -11,7 +11,12 @@ export default function SubmissionAuthWrapper() {
     const [closeTime, setCloseTime] = useState('');
     const getTime = async () => {
         try {
-            const {closeTime: fetchedCloseTime} = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
+            const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
+            const {closeTime: fetchedCloseTime} = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+            body: {
+                week: `${curWeek}`,
+            },
+            });
             setCloseTime(fetchedCloseTime);
         } catch (error) {
             console.error("error getting Countdown Time");
