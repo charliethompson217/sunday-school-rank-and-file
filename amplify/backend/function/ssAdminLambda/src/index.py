@@ -78,7 +78,6 @@ def handler(event, context):
                     },
                     'body': json.dumps('Matchups Updated!')
                 }
-            
         elif method == 'PUT':
             if(action == "pull-picks"):
                 table_name = f'submissions-{env}'

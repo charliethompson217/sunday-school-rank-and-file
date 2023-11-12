@@ -5,6 +5,7 @@ import Configuration from './Configuration';
 import PullPicks from './PullPicks';
 import PlayerTable from './PlayerTable';
 import Points from './Points';
+import GameResults from './Game-Results';
 
 Amplify.configure(awsExports);
 
@@ -40,10 +41,22 @@ export default function Admin() {
 
   return (
     <div >
-      <Configuration></Configuration>
-      <Points players={players}></Points>
-      <PullPicks players={players}></PullPicks>
-      <PlayerTable players={players}></PlayerTable>
+      <div  style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+        <div className='Admin' style={{ width: '48%' }}>
+          <Configuration />
+          <Points players={players} />
+          <PullPicks players={players} />
+        </div>
+
+        <div style={{ width: '48%' }}>
+          <GameResults />
+        </div>
+      </div>
+
+      {/* This is the full-width PlayerTable at the bottom */}
+      <div style={{ width: '100%' }}>
+        <PlayerTable fetchedPlayers={players} />
+      </div>
     </div>
   );
 }
