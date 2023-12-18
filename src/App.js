@@ -65,7 +65,6 @@ function App() {
           body: {
             jwt_token: `${idToken}`,
             week: fetchedCurWeek,
-
           },
         });
         setPicks(response);

@@ -28,7 +28,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
       let aValue = a[key];
       let bValue = b[key];
 
-      if (key === 'TotalDollarPayout') {
+      if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks') {
         aValue = parseFloat(aValue.replace(/[\$,]/g, ''));
         bValue = parseFloat(bValue.replace(/[\$,]/g, ''));
       } else if (typeof aValue === 'string') {

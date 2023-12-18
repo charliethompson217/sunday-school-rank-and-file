@@ -15,7 +15,10 @@ def handler(event, context):
     env = os.environ.get('ENV')
     table_name = f'submissions-{env}'
     table = dynamodb.Table(table_name)
-    if method == 'POST':
+    if method == 'GET':
+        serverTimestamp = int(time.time())
+        
+    elif method == 'POST':
         serverTimestamp = int(time.time())
         body = json.loads(event['body'])
         if(body.get('configId')!='1'):

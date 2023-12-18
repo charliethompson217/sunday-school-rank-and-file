@@ -47,10 +47,6 @@ export default function Admin() {
           <Points players={players} />
           <PullPicks players={players} />
         </div>
-
-        <div style={{ width: '48%' }}>
-          <GameResults />
-        </div>
       </div>
 
       {/* This is the full-width PlayerTable at the bottom */}

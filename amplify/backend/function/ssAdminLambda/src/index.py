@@ -134,7 +134,7 @@ def handler(event, context):
                         ScanIndexForward=False,
                         Limit=1
                     )
-                    if 'Items' in response:
+                    if 'Items' in response and len(response['Items'])>0:
                         most_recent_entry = response['Items'][0]
                         if 'Timestamp' in most_recent_entry:
                             most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])

@@ -44,7 +44,7 @@ def handler(event, context):
                 },
                 'body': json.dumps("No entries found.")
             }
-    if method == 'PUT':
+    elif method == 'PUT':
         body = json.loads(event['body'])
         week = body.get("week")
         # Query to fetch items for the given ClientId, sorted by Timestamp in descending order
@@ -68,7 +68,6 @@ def handler(event, context):
                     },
                     'body': json.dumps(item)
                 }
-
         # No matching item found
         print("No matching entries found for the specified week.")
         return {
@@ -80,12 +79,13 @@ def handler(event, context):
             },
             'body': json.dumps("No matching entries found.")
         }
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Headers': '*',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        'body': json.dumps('Access Denied!')
-    }
+    else:
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps('Access Denied!')
+        }

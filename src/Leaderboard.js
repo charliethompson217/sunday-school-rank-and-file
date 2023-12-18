@@ -40,7 +40,7 @@ const Leaderboard = () => {
       let aValue = a[key];
       let bValue = b[key];
 
-      if (key === 'TotalDollarPayout') {
+      if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks') {
         aValue = parseFloat(aValue.replace(/[\$,]/g, ''));
         bValue = parseFloat(bValue.replace(/[\$,]/g, ''));
       } else if (typeof aValue === 'string') {
@@ -70,20 +70,6 @@ const Leaderboard = () => {
   };
   return (
     <div className='PlayerTable'>
-      <div className='chart-tabs'>
-        {/* Render tabs for switching charts */}
-        <button onClick={() => changeChart('seasonleaderboard')} className={activeChart === 'seasonleaderboard' ? 'active' : ''}>
-          Season Leaderboard
-        </button>
-        <button onClick={() => changeChart('weeklyleaderboard')} className={activeChart === 'weeklyleaderboard' ? 'active' : ''}>
-          Weekly Leaderboard
-        </button>
-        <button onClick={() => changeChart('weeklypicks')} className={activeChart === 'weeklypicks' ? 'active' : ''}>
-          Weekly Picks
-        </button>
-        {/* Add more buttons for additional charts as needed */}
-      </div>
-
       {activeChart === 'seasonleaderboard' && (
         <table className='player-table'>
           <thead>
