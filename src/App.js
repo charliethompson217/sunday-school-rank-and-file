@@ -57,12 +57,14 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
+      const fetchedCurWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
         const response = await API.put('sundaySchoolSubmissions', '/submission/get-picks-for-player',{
           body: {
             jwt_token: `${idToken}`,
+            week: fetchedCurWeek,
           },
         });
         setPicks(response);
@@ -76,7 +78,11 @@ function App() {
         console.error(error);
       }
       try {
-        const fetchedMatchupsResponse = await API.get('sundaySchoolConfiguration', '/configuration/get-matchups');
+        const fetchedMatchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+          body: {
+            week: `${fetchedCurWeek}`,
+          },
+        });
         setMatchupsResponse(fetchedMatchupsResponse);
       } catch (error) {
         console.error(error);

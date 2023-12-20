@@ -3,8 +3,36 @@ import json
 import os
 import boto3
 import time
+from botocore.exceptions import ClientError
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 dynamodb = boto3.resource('dynamodb')
+
+def get_secret():
+
+    secret_name = "sundayschoolrankandfile_googlesheet"
+    region_name = "us-east-2"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        print("Couldn't get secret", e)
+        raise e
+    else:
+        if 'SecretString' in get_secret_value_response:
+            secret = get_secret_value_response['SecretString']
+            return json.loads(secret)  # returns the credentials from the secret
+        raise Exception("Secret not found or is not a string.")
 
 def handler(event, context):
     print('received event:')
@@ -23,6 +51,49 @@ def handler(event, context):
     is_admin = 'Admin' in groups
     if is_admin:
         if method == 'POST':
+            if(action == "set-cur-week"):
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
+                timestamp = int(time.time())
+                body = json.loads(event['body'])
+                item = {
+                    'ClientId': "cur-week",
+                    'Timestamp': timestamp,
+                    'week': body.get('week'),
+                }
+                table.put_item(Item=item)
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps('Current Week Updated!')
+                }
+            if(action == "upload-game-results"):
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
+                timestamp = int(time.time())
+                body = json.loads(event['body'])
+                item = {
+                    'ClientId': "game-results",
+                    'Timestamp': timestamp,
+                    'week': body.get('week'),
+                    'rankResults': body.get('rankResults'),
+                    'fileResults':body.get('fileResults'),
+                }
+                table.put_item(Item=item)
+
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps('Matchups Updated!')
+                }
             if(action == "upload-matchups"):
                 table_name = f'configuration-{env}'
                 table = dynamodb.Table(table_name)
@@ -37,10 +108,7 @@ def handler(event, context):
                     'fileMatchups':body.get('fileMatchups'),
                 }
                 table.put_item(Item=item)
-                print('Rank Matchups:')
-                print(body.get('rankMatchups'))
-                print('File Matchups:')
-                print(body.get('fileMatchups'))
+
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -50,7 +118,6 @@ def handler(event, context):
                     },
                     'body': json.dumps('Matchups Updated!')
                 }
-            
         elif method == 'PUT':
             if(action == "pull-picks"):
                 table_name = f'submissions-{env}'
@@ -67,7 +134,7 @@ def handler(event, context):
                         ScanIndexForward=False,
                         Limit=1
                     )
-                    if 'Items' in response:
+                    if 'Items' in response and len(response['Items'])>0:
                         most_recent_entry = response['Items'][0]
                         if 'Timestamp' in most_recent_entry:
                             most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
@@ -147,7 +214,33 @@ def handler(event, context):
                     },
                     'body': json.dumps(players)
                 }
-            
+            if(action == 'update-leaderboard'):
+                # Retrieve the secret
+                creds = get_secret()
+                # Authorize with the Google Sheets and Drive API
+                creds_json = json.dumps(creds)  # gspread requires credentials as a file-like object
+                credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(creds_json), [
+                    'https://www.googleapis.com/auth/spreadsheets',
+                    'https://www.googleapis.com/auth/drive',
+                ])
+                # Use creds to create a client to interact with the Google Drive API
+                gc = gspread.authorize(credentials)
+                # Find a workbook by name and open the first sheet
+                # Make sure you use the right name here.
+                sheet = gc.open("Sunday School Rank and File: 2023-24").worksheet('Season Leaderboard')
+
+                # Extract and print all of the values
+                list_of_values = sheet.get_values()
+                print(list_of_values)
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps(list_of_values)
+                }            
     return {
         'statusCode': 403,
         'headers': {

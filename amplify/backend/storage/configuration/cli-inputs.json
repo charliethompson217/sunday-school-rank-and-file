@@ -9,6 +9,18 @@
     "fieldName": "Timestamp",
     "fieldType": "number"
   },
-  "gsi": [],
+  "gsi": [
+    {
+      "name": "week",
+      "partitionKey": {
+        "fieldName": "week",
+        "fieldType": "string"
+      },
+      "sortKey": {
+        "fieldName": "Timestamp",
+        "fieldType": "number"
+      }
+    }
+  ],
   "triggerFunctions": []
 }

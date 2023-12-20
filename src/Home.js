@@ -15,7 +15,12 @@ export default function Home() {
   useEffect(() => {
     const fetchCloseTime = async () => {
       try {
-        const response = await API.get('sundaySchoolConfiguration', '/configuration/get-homescreen-time');
+        const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
+        const response = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+            body: {
+                week: `${curWeek}`,
+            },
+        });
         const {closeTime: fetchedCloseTime, week:fetchedWeek} = response;
         setCloseTime(fetchedCloseTime);
         setWeek(fetchedWeek);

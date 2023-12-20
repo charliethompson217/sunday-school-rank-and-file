@@ -11,6 +11,8 @@
 
 # production
 /build
+google_API_layer.zip
+lambda_layer
 
 #dev
 OldFormContainer.js

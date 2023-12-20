@@ -107,6 +107,13 @@
       "dependsOn": [
         {
           "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "andrewform6dffb2eb"
+        },
+        {
+          "attributes": [
             "Name",
             "Arn",
             "StreamArn"
@@ -131,13 +138,6 @@
           ],
           "category": "storage",
           "resourceName": "sundaySchoolPlayers"
-        },
-        {
-          "attributes": [
-            "UserPoolId"
-          ],
-          "category": "auth",
-          "resourceName": "andrewform6dffb2eb"
         }
       ],
       "providerPlugin": "awscloudformation",

@@ -43,7 +43,7 @@ export default function Points({players}) {
         }
         setWarning('');
         if (file) {
-            var players = [];
+            var newPlayers = [];
             Papa.parse(file, {
                 beforeFirstChunk: function(chunk) {
                     var rows = chunk.split(/\r\n|\r|\n/);
@@ -67,11 +67,11 @@ export default function Points({players}) {
                                 newRow.push(fileWins);
                                 newRow.push(playoffsBucks);
                                 newRow.push(totalDollarPayout);
-                                players.push(newRow);
+                                newPlayers.push(newRow);
                             }
                         }
                     }
-                    sendToServer(players);
+                    sendToServer(newPlayers);
                 },
                 header: true,
                 skipEmptyLines: true,
@@ -83,22 +83,50 @@ export default function Points({players}) {
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
     };
+
+    const fetchGoogleSheetData = async () => {
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const response = await API.get('ssAdmin', '/admin/update-leaderboard', {
+            headers: {
+                Authorization: `Bearer ${idToken}`
+            }
+        });
+        
+        var newPlayers = [];
+        for(let item of response){
+            if(item[0]===""||item[0]==="Player"){
+                continue;
+            }
+            let player = findPlayerId(item[0]);
+            item[0]=player;
+            if(player){
+                newPlayers.push(item);
+            }
+        }
+        console.log(newPlayers);
+        sendToServer(newPlayers);
+    };
+
     return (
         <div>
-            <h2>Update Season LeaderBoard</h2>
-                <form onSubmit={handleSubmit}>
+            <h2>Update Season Point Totals</h2>
+            <form onSubmit={handleSubmit}>
 
                 <div>
-                    <label htmlFor="fileInput">Choose a File:</label>
+                    <label htmlFor="fileInput">Season LeaderBoard:</label>
                     <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
                 
                 <p className='warning'>{warning}</p>
 
                 <div>
-                    <button type="submit">Update Season LeaderBoard</button>
+                    <button type="submit">Update with file</button>
                 </div>
             </form>
+            <div>
+                <button onClick={fetchGoogleSheetData}>Update with google API</button>
+            </div>
         </div>
     )
 }
