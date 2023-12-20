@@ -11,6 +11,7 @@ export default function Configuration() {
     const [curWeek, setCurWeek] = useState('Choose week');
     const [dateTime, setDateTime] = useState('');
     const [status, setStatus] = useState('');
+    const [status2, setStatus2] = useState('');
     const [warning, setWarning] = useState('');
     const weekOptions = [
         'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
@@ -100,6 +101,7 @@ export default function Configuration() {
                 week: curWeek,
             }
         });
+        setStatus2('Current Week Updated Succesfuly!');
     };
 
     return (
@@ -116,6 +118,7 @@ export default function Configuration() {
                         ))}
                     </select>
                 </div>
+                <p>{status2}</p>
                 <div>
                     <button type="submit">Update Current Week</button>
                 </div>
