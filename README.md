@@ -65,9 +65,18 @@ amplify publish
 ```
 npm start
 ```
-- Create an account
+- Create an account on the app
 - In aws cognito, create a group called 'Admin'
 - Add yourself to the admin group
+- Set the email verification method to link
+- Add custom attributes to user pool for teamName and playerId
+- Add a domain to the admin group in app the integration tab
+- Add an authenticator to the admin api
+- Configure the domain and rewrites and redirects
+- Create lambda layer for google api
+
+
+
 - Configure the site    
   Create a csv file with the headers 'Type', 'Home', 'Away', and optionaly 'Description'.    
   Where Type is either 'Rank', 'File', 'Christmas File', or 'Thanksgiving File'.    
