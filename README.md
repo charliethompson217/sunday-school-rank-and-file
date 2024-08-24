@@ -60,23 +60,17 @@ amplify push
 ```
 amplify publish
 ```
-# run project
-- to run locally,
-```
-npm start
-```
-- Create an account on the app
+
+- In the Cognito user pool, set the email verification method to link
+- Add custom attributes to user pool for teamName and playerId
+- Add a domain to the user pool in the app integration tab
+- In API Gateway, add an authenticator to the admin api
+- In Amplify, configure the rewrites and redirects add a new type 200 (Rewrite) rule with the soucre address </^((?!(css|svg|jpg|png|ico|images|js)).)*$/> and target address /index.html
+- Create lambda layer for the google api
+- Signup on the webapp
 - In aws cognito, create a group called 'Admin'
 - Add yourself to the admin group
-- Set the email verification method to link
-- Add custom attributes to user pool for teamName and playerId
-- Add a domain to the admin group in app the integration tab
-- Add an authenticator to the admin api
-- Configure the domain and rewrites and redirects
-- Create lambda layer for google api
-
-
-
+- Log out and log back in to get acess to the admin dashboard
 - Configure the site    
   Create a csv file with the headers 'Type', 'Home', 'Away', and optionaly 'Description'.    
   Where Type is either 'Rank', 'File', 'Christmas File', or 'Thanksgiving File'.    
