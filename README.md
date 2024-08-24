@@ -5,7 +5,7 @@ Unlike other pools, participants do not rank each and every game. Instead, the p
 
 The site has an admin console where admins configure the weekly matchups and download players' picks
 
-# Setup
+# Install
 Instructions are for MacOS    
 Linux should be the same exept for aws cli install    
 Instructions can be found [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
@@ -29,7 +29,6 @@ npm install -g @aws-amplify/cli
 ```
 amplify configure
 ```
-# Install
 
 - Clone the repository
 ```
@@ -61,6 +60,7 @@ amplify push
 amplify publish
 ```
 
+# Setup
 - In the Cognito user pool, set the email verification method to link
 - Add custom attributes to user pool for teamName and playerId
 - Add a domain to the user pool in the app integration tab
