@@ -104,7 +104,6 @@ export default function Points({players}) {
                 newPlayers.push(item);
             }
         }
-        console.log(newPlayers);
         sendToServer(newPlayers);
     };
 
@@ -124,9 +123,6 @@ export default function Points({players}) {
                     <button type="submit">Update with file</button>
                 </div>
             </form>
-            <div>
-                <button onClick={fetchGoogleSheetData}>Update with google API</button>
-            </div>
         </div>
     )
 }

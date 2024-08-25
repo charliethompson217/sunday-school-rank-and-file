@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Auth, Amplify, API } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 import awsconfig from './aws-exports';
 import Navbar from './Navbar';
 import './App.css';
+import defaultProfilePic from './assets/avatar.svg';
 Amplify.configure(awsconfig);
 
-export default function Account() {
+export default function Account({signout}) {
   const navigate = useNavigate();
   const [user, setUser] = useState();
   const [playerId, setPlayerId] = useState();
@@ -20,7 +21,8 @@ export default function Account() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
-
+  const [profilePicUrl, setProfilePicUrl] = useState(defaultProfilePic);
+  const fileInputRef = useRef(null);
 
   const toggleEditMode = () => {
     setIsEditMode(!isEditMode);
@@ -51,9 +53,27 @@ export default function Account() {
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
+      
     };
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    const fetchProfilePicture = async () => {
+      try {
+        const profilePictureUrl = `https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`;
+        const response = await fetch(profilePictureUrl, { method: 'GET' });
+        if (response.ok) {
+          setProfilePicUrl(profilePictureUrl);
+        }
+      } catch (error) {
+        console.error('Error fetching profile picture:', error);
+      }
+      
+    };
+    fetchProfilePicture();
+  }, [playerId]);
+
 
 
   const sendToServer = async () => {
@@ -89,79 +109,128 @@ export default function Account() {
   const handleVerifyEmail = async () => {
     try{
       await Auth.verifyCurrentUserAttributeSubmit('email', verificationCode);
+
     } catch (error){
       console.error('Error verifiying email:',error);
     }
     setEmailNeedsVerification(false);
   };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const session = await Auth.currentSession();
+      const idToken = session.getIdToken().getJwtToken();
+      const response = await API.put('playerApi', `/player/edit-profile-picture`,{
+        body: {
+          jwt_token: `${idToken}`,
+          playerId: playerId,
+          contentType: file.type
+        }
+      });
+      const uploadUrl = response.upload_url;
+      await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: file,
+      });
+
+      setProfilePicUrl(`https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`);
+    } catch (error) {
+        console.error("Failed to upload profile picture", error);
+    }
+};
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+};
   return (
     <>
       <Navbar></Navbar>
       <div className='navbar-offset-container'>
         <div className='account'>
-          <h1>Account</h1>
-          <p>
-            If you change your email, you will have to re-verify your email. 
-          </p>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Team Name</label>
-            <label>{teamName}</label>
+          <div className='profile-picture'>
+            <img src={profilePicUrl} alt=''></img>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Rank Points</label>
+              <label className='user-attribute-label-right'>{rankPoints}</label>
+            </div>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>File Wins</label>
+              <label className='user-attribute-label-right'>{fileWins}</label>
+            </div>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Playoffs Bucks</label>
+              <label className='user-attribute-label-right'>{playoffsBucks}</label>
+            </div>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Total Dollar Payout</label>
+              <label className='user-attribute-label-right'>{totalDollarPayout}</label>
+            </div>
           </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Full Name</label>
-            <label>{fullName}</label>
-          </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Email</label>
-            {isEditMode ? (
-              <input
-                type="text"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-              />
-            ) : (
-              <label>{email}</label>
-            )}
-          </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Rank Points</label>
-            <label>{rankPoints}</label>
-          </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>File Wins</label>
-            <label>{fileWins}</label>
-          </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Playoffs Bucks</label>
-            <label>{playoffsBucks}</label>
-          </div>
-          <div className='user-attribute'>
-            <label className='user-attribute-label'>Total Dollar Payout</label>
-            <label>{totalDollarPayout}</label>
-          </div>
-          <div className='user-attribute'>
-            {emailNeedsVerification ? (
-              <>
-                <input 
-                  type="text" 
-                  placeholder="Verification Code"
-                  onChange={e => setVerificationCode(e.target.value)}
+          <div className='profile-info'>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Team Name</label>
+              <label className='user-attribute-label-right'>{teamName}</label>
+            </div>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Full Name</label>
+              <label className='user-attribute-label-right'>{fullName}</label>
+            </div>
+            <div className='user-attribute'>
+              <label className='user-attribute-label-left'>Email</label>
+              {isEditMode ? (
+                <input
+                  type="text"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
-                <button onClick={handleVerifyEmail}>Verify Email</button>
-              </>
+              ) : (
+                <label className='user-attribute-label-right'>{email}</label>
+              )}
+            </div>
+            
+            <div className='user-attribute'>
+              {emailNeedsVerification ? (
+                <>
+                  <input 
+                    type="text" 
+                    placeholder="Verification Code"
+                    onChange={e => setVerificationCode(e.target.value)}
+                  />
+                  <button onClick={handleVerifyEmail}>Verify Email</button>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div>
+              <button className="change-profile-image-button" onClick={triggerFileInput}>Change Picture</button>
+              <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  style={{ display: 'none' }}  // Hide the file input
+                  onChange={handleFileChange} 
+              />
+            </div>
+            <div>
+            {isEditMode ? (
+              <button onClick={handleSubmit}>Submit</button>
             ) : (
-              <></>
+              <button onClick={toggleEditMode}>Change Email</button>
             )}
-          </div>
-          <div>
-          {isEditMode ? (
-            <button onClick={handleSubmit}>Submit</button>
-          ) : (
-            <button onClick={toggleEditMode}>Change Email</button>
-          )}
-          <div>
-          <button onClick={changePassword}>Change Password</button>
-          </div>
+            <div>
+            <button onClick={changePassword}>Change Password</button>
+            </div>
+            </div>
+            <div>
+              <button className="sign-out-button" onClick={signout}>Sign Out</button>
+            </div>
+            
           </div>
         </div>
       </div>

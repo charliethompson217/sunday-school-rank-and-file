@@ -1,7 +1,6 @@
 body{
-    /*background-image: url("snow.jpg");*/
     background-size: cover;
-    background-color: rgb(104, 161, 61);
+    background-color: #68a13d;
     background-repeat: no-repeat;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

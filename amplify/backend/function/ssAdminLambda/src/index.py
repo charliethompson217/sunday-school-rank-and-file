@@ -3,36 +3,10 @@ import json
 import os
 import boto3
 import time
-from botocore.exceptions import ClientError
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
 dynamodb = boto3.resource('dynamodb')
 
-def get_secret():
 
-    secret_name = "sundayschoolrankandfile_googlesheet"
-    region_name = "us-east-2"
-
-    # Create a Secrets Manager client
-    session = boto3.session.Session()
-    client = session.client(
-        service_name='secretsmanager',
-        region_name=region_name
-    )
-
-    try:
-        get_secret_value_response = client.get_secret_value(
-            SecretId=secret_name
-        )
-    except ClientError as e:
-        print("Couldn't get secret", e)
-        raise e
-    else:
-        if 'SecretString' in get_secret_value_response:
-            secret = get_secret_value_response['SecretString']
-            return json.loads(secret)  # returns the credentials from the secret
-        raise Exception("Secret not found or is not a string.")
 
 def handler(event, context):
     print('received event:')
@@ -213,33 +187,6 @@ def handler(event, context):
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
                     'body': json.dumps(players)
-                }
-            if(action == 'update-leaderboard'):
-                # Retrieve the secret
-                creds = get_secret()
-                # Authorize with the Google Sheets and Drive API
-                creds_json = json.dumps(creds)  # gspread requires credentials as a file-like object
-                credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(creds_json), [
-                    'https://www.googleapis.com/auth/spreadsheets',
-                    'https://www.googleapis.com/auth/drive',
-                ])
-                # Use creds to create a client to interact with the Google Drive API
-                gc = gspread.authorize(credentials)
-                # Find a workbook by name and open the first sheet
-                # Make sure you use the right name here.
-                sheet = gc.open("Sunday School Rank and File: 2023-24").worksheet('Season Leaderboard')
-
-                # Extract and print all of the values
-                list_of_values = sheet.get_values()
-                print(list_of_values)
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps(list_of_values)
                 }            
     return {
         'statusCode': 403,

@@ -64,10 +64,6 @@ const Leaderboard = () => {
       <FontAwesomeIcon icon={sortConfig.direction === 'ascending' ? faArrowUp : faArrowDown} />
     ) : null
   );
-
-  const changeChart = (chartName) => {
-    setActiveChart(chartName);
-  };
   return (
     <div className='PlayerTable'>
       {activeChart === 'seasonleaderboard' && (
@@ -87,7 +83,7 @@ const Leaderboard = () => {
                 Playoffs Bucks {getSortIcon('PlayoffsBucks')}
               </th>
               <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
-                Total Fictional-Dollar Payout {getSortIcon('TotalDollarPayout')}
+                Total Dollar Payout {getSortIcon('TotalDollarPayout')}
               </th>
             </tr>
           </thead>

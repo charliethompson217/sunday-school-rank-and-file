@@ -57,49 +57,100 @@ def handler(event, context):
             'body': json.dumps('Player Added!')
         }
     elif method == 'PUT':
-        body = json.loads(event['body'])
-        jwt_token = body.get('jwt_token')
-        parts = jwt_token.split('.')
-        payload = parts[1]
-        decoded_payload = base64.b64decode(payload + "===").decode()
-        payload_json = json.loads(decoded_payload)
-        tokenPlayerId = payload_json.get('custom:playerId')
-        playerId = body.get('playerId')
-        if(tokenPlayerId!=playerId):
+        if playerId == "edit-profile-picture":
+            body = json.loads(event['body'])
+            jwt_token = body.get('jwt_token')
+            parts = jwt_token.split('.')
+            payload = parts[1]
+            decoded_payload = base64.b64decode(payload + "===").decode()
+            payload_json = json.loads(decoded_payload)
+            tokenPlayerId = payload_json.get('custom:playerId')
+            playerId = body.get('playerId')
+            if(tokenPlayerId!=playerId):
+                return {
+                    'statusCode': 403,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps("Access Denied!")
+                }
+            s3 = boto3.client('s3', region_name='us-east-2')
+            bucket_name = 'sunday-school-profile-pictures'
+            object_name = f"{playerId}"
+            content_type = body.get('contentType')
+
+            try:
+                presigned_url = s3.generate_presigned_url(ClientMethod='put_object', Params={'Bucket': bucket_name, 'Key': object_name, 'ContentType': content_type}, ExpiresIn=3600)
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps({
+                        'upload_url': presigned_url
+                    })
+                }
+
+            except Exception as e:
+                return {
+                    'statusCode': 500,
+                        'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps({
+                        'error': str(e)
+                    })
+                }
+        else:
+            body = json.loads(event['body'])
+            jwt_token = body.get('jwt_token')
+            parts = jwt_token.split('.')
+            payload = parts[1]
+            decoded_payload = base64.b64decode(payload + "===").decode()
+            payload_json = json.loads(decoded_payload)
+            tokenPlayerId = payload_json.get('custom:playerId')
+            playerId = body.get('playerId')
+            if(tokenPlayerId!=playerId):
+                return {
+                    'statusCode': 403,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps("Access Denied!")
+                }
+            
+            newTeamName = body.get('teamName')
+            newEmail = body.get('email')
+            newFullName = body.get('fullName')
+            response = table.update_item(
+                Key={
+                    'playerId': playerId,
+                },
+                UpdateExpression='SET teamName = :teamName, email = :email, fullName = :fullName',
+                ExpressionAttributeValues={
+                    ':teamName': newTeamName,
+                    ':email': newEmail,
+                    ':fullName': newFullName,
+                },
+                ReturnValues='UPDATED_NEW'
+            )
             return {
-                'statusCode': 403,
+                'statusCode': 200,
                 'headers': {
                     'Access-Control-Allow-Headers': '*',
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-                'body': json.dumps("Access Denied!")
+                'body': json.dumps(response)
             }
-        
-        newTeamName = body.get('teamName')
-        newEmail = body.get('email')
-        newFullName = body.get('fullName')
-        response = table.update_item(
-            Key={
-                'playerId': playerId,
-            },
-            UpdateExpression='SET teamName = :teamName, email = :email, fullName = :fullName',
-            ExpressionAttributeValues={
-                ':teamName': newTeamName,
-                ':email': newEmail,
-                ':fullName': newFullName,
-            },
-            ReturnValues='UPDATED_NEW'
-        )
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps(response)
-        }
     return {
         'statusCode': 404,
         'headers': {

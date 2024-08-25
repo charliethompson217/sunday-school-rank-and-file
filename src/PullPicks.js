@@ -21,7 +21,6 @@ export default function PullPicks() {
       setCurrentConfigId([]);
       try {
         const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-        console.log(curWeek);
         const response = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
           body: {
             week: `${curWeek}`,
@@ -78,14 +77,19 @@ export default function PullPicks() {
     fetchPicksForPlayers(playersToFetchPicksFor);
   }, [players]);
 
-  useEffect(() =>{
-    setUnsubmittedPlayers([]);
+  useEffect(() => {
+    const initialUnsubmittedPlayers = players.map(player => player.teamName);
+    setUnsubmittedPlayers(initialUnsubmittedPlayers);
+  
     playerPicks.forEach((picks) => {
-      if(picks.configId!==currentConfigId){
-        setUnsubmittedPlayers((prevUnsubmittedPlayers) => [...prevUnsubmittedPlayers, picks.team])
+      if (picks.configId === currentConfigId) {
+        setUnsubmittedPlayers((prevUnsubmittedPlayers) => 
+          prevUnsubmittedPlayers.filter((teamName) => teamName !== picks.team)
+        );
       }
     });
-  }, [playerPicks, currentConfigId]);
+  }, [players, playerPicks, currentConfigId]);
+  
 
   function keepLastWord(inputString) {
     const words = inputString.split(' ');

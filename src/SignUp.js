@@ -60,6 +60,10 @@ export default function SignUp() {
                     setWarning("");
                     setTeamNameIsValid(true);
                 }
+                if ( teams.length === 0 ){
+                    setTeamNameIsValid(true);
+                    setWarning("");
+                }
             }
             else{
                 setWarning("Team Name can only contain alphanumeric characters, underscores, hyphens, periods, commas, and colons!");
@@ -105,9 +109,10 @@ export default function SignUp() {
             return;
         }
         setWarning("");
+        
         try {
             const newId = makeId(7);
-            await Auth.signUp({
+            let response = await Auth.signUp({
                 username: email,
                 password: password,
                 attributes: {
@@ -123,14 +128,6 @@ export default function SignUp() {
                     email: email,
                     teamName: teamName,
                     fullName: fullName,
-                }
-            });
-            const session = await Auth.currentSession();
-            const idToken = session.getIdToken().getJwtToken();          
-            await API.post('sundaySchoolSubmissions', '/submission/submit-picks', {
-                body: {
-                    jwt_token: `${idToken}`,
-                    configId: "1",
                 }
             });
             navigate('/verifyemail');

@@ -34,8 +34,7 @@ export default function AccountAuthWrapper({onSignOut}) {
     if (user) {
         return (
         <>
-            <Account/>
-            <button className="sign-out-button" onClick={handleSignOut}>Sign Out</button>
+            <Account signout = {handleSignOut}/>
         </>
         );
       }

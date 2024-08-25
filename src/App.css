@@ -4,6 +4,7 @@
     sans-serif;
   margin-bottom: 5%;
 }
+
 .Admin button, select, input[type=file]::file-selector-button, input[type="datetime-local"] {
   background-color: green;
   border: none;
@@ -148,10 +149,21 @@
 
 .navbar-offset-container {
   margin-top: 70px;
+  padding-bottom: 300px;
 }
 
 .rules h2 {
   text-decoration: underline;
+}
+
+.rules h1 {
+  text-decoration: underline;
+  text-align: center;
+}
+
+.rules h3 {
+  text-align: center;
+  font-style: italic;
 }
 
 .rules {
@@ -159,6 +171,10 @@
   margin-right: 5%;
   max-width: 900px;
   margin-bottom: 10%;
+}
+
+.rules li {
+  margin-top: 20px;
 }
 
 .italic-text {
@@ -216,19 +232,168 @@
   margin-bottom: 10px;
 }
 
-.user-attribute-label {
-  margin-right: 10px;
-  font-weight: bold;
-}
 
-.user-attribute {
-  margin-bottom: 5px;
+.profile-info {
+  display: flex;
+  flex-direction: column;
+
+}
+.profile-picture {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .account {
+  flex: 2;
+  display: flex;
+  flex-direction: row;
+  max-width: 600px;
+  margin: 50px auto;
+  background-color: #9bac39;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 150px;
+}
+
+
+
+.account img {
+  height: 200px;
+  width: 200px;
+  margin-bottom: 30px;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+
+.account h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.account p {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.user-attribute {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
+.user-attribute-label-left {
+  font-weight: bold;
+  color: #333;
+  margin-right: 20px;
+  flex: 1;
+  text-align: left;
+  text-wrap: nowrap;
+}
+.profile-picture .user-attribute-label-right {
+  margin-right: 30%;
+}
+
+.user-attribute-label-right {
+  color: #555;
+  flex: 2;
+  text-align: right;
+}
+
+.user-attribute input[type="text"] {
+  flex: 2;
+  padding: 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Buttons */
+.account button {
+  background-color: green;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.account button:hover {
+  background-color: #218838;
+}
+
+.account button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Email Verification */
+.verification-container {
   display: flex;
   flex-direction: column;
-  margin-left: 5%;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.verification-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.verification-container button {
+  background-color: #007bff;
+  width: auto;
+}
+
+.verification-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+  .account {
+    padding: 20px;
+    margin: 20px;
+    flex-direction: column;
+  }
+  .account img {
+    height: auto;
+    width: 100%;
+    object-fit: cover;
+    aspect-ratio: 1/1;
+  }
+
+  .user-attribute {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .user-attribute-label {
+    margin-bottom: 5px;
+  }
+
+  .user-attribute label,
+  .user-attribute input[type="text"] {
+    text-align: left;
+  }
+
+  .account button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
 
 .sign-out-button {

@@ -98,7 +98,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
               Playoffs Bucks {getSortIcon('PlayoffsBucks')}
             </th>
             <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
-              Total Fictional-Dollar Payout {getSortIcon('TotalDollarPayout')}
+              Total Dollar Payout {getSortIcon('TotalDollarPayout')}
             </th>
           </tr>
         </thead>

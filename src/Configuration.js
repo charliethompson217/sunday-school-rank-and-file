@@ -34,8 +34,6 @@ export default function Configuration() {
             }
         });
         setStatus('Configuration Updated Succesfuly!');
-        console.log(rankMatchups);
-        console.log(fileMatchups);
     } catch (error) {
         console.error('Error uploading matchups:', error);
     }

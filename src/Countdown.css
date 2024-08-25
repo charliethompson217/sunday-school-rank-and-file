@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   font-size: 24px;
+  
 }
 
 .countdown-item {
@@ -27,7 +28,6 @@
   
   .countdown-item {
     text-align: center;
-    
   }
   
   .countdown-value {
