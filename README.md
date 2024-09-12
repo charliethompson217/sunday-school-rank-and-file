@@ -67,6 +67,8 @@ amplify publish
 - In API Gateway, add an authenticator to the admin api
 - In Amplify, configure the rewrites and redirects add a new type 200 (Rewrite) rule with the soucre address </^((?!(css|svg|jpg|png|ico|images|js)).)*$/> and target address /index.html
 - Create lambda layer for the google api
+- Add the google api keys to an aws secret
+- Specify the secret name and google sheet url in the lambda function
 - Signup on the webapp
 - In aws cognito, create a group called 'Admin'
 - Add yourself to the admin group
