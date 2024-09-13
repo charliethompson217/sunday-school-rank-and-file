@@ -20,7 +20,7 @@ const Leaderboard = () => {
     const fetchPlayers = async () => {
       try {
         const response = await API.get('playerApi', '/player/get-players');
-        setSortedPlayers(response); // Initialize sortedPlayers with the fetched data
+        setSortedPlayers(response);
       } catch (error) {
         console.error('Error fetching players:', error);
       }
@@ -35,7 +35,7 @@ const Leaderboard = () => {
     }
     setSortConfig({ key, direction });
 
-    const playersToSort = [...sortedPlayers]; // Sort based on the original fetched players
+    const playersToSort = [...sortedPlayers];
     playersToSort.sort((a, b) => {
       let aValue = a[key];
       let bValue = b[key];
@@ -66,6 +66,11 @@ const Leaderboard = () => {
   );
   return (
     <div className='PlayerTable'>
+      <div className='chart-tabs'>
+        <button onClick={() => setActiveChart('seasonleaderboard')} className={activeChart === 'seasonleaderboard' ? 'active' : ''}> Season Leaderboard </button>
+        <button onClick={() => setActiveChart('weeklyleaderboard')} className={activeChart === 'weeklyleaderboard' ? 'active' : ''}> Weekly Leaderboard </button>
+        <button onClick={() => setActiveChart('weeklypicks')} className={activeChart === 'weeklypicks' ? 'active' : ''}> Weekly Picks </button>
+      </div>
       {activeChart === 'seasonleaderboard' && (
         <table className='player-table'>
           <thead>
@@ -124,8 +129,6 @@ const Leaderboard = () => {
           <p>Content for the weekly picks...</p>
         </div>
       )}
-
-      {/* Render additional charts based on activeChart */}
     </div>
   );
 };

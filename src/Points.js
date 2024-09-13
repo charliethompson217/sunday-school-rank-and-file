@@ -59,7 +59,7 @@ export default function Points({players}) {
                             var rankPoints = row['Rank Points'];
                             var fileWins = row['File Wins'];
                             var playoffsBucks = row['Playoffs Bucks'];
-                            var totalDollarPayout = row['Total Fictional-Dollar Payout'];
+                            var totalDollarPayout = row['Running Weekly Winnings'];
                             if (player !== "") {
                                 var newRow = [];
                                 newRow.push(player);
@@ -87,22 +87,24 @@ export default function Points({players}) {
     const fetchGoogleSheetData = async () => {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.get('ssAdmin', '/admin/update-leaderboard', {
+        let response = await API.get('ssAdmin', '/admin/update-leaderboard', {
             headers: {
                 Authorization: `Bearer ${idToken}`
             }
         });
-        
-        var newPlayers = [];
+        let newPlayers = [];
         for(let item of response){
-            if(item[0]===""||item[0]==="Player"){
+            if(item[0] === "" || item[0] === "Player"){
                 continue;
             }
-            let player = findPlayerId(item[0]);
-            item[0]=player;
-            if(player){
-                newPlayers.push(item);
-            }
+            let newRow = [];
+            
+            newRow.push(findPlayerId(item[0]));
+            newRow.push(item[2]);
+            newRow.push(item[3]);
+            newRow.push(item[4]);
+            newRow.push(item[5]);
+            newPlayers.push(newRow);
         }
         sendToServer(newPlayers);
     };
@@ -123,6 +125,9 @@ export default function Points({players}) {
                     <button type="submit">Update with file</button>
                 </div>
             </form>
+            <div>
+                <button onClick={fetchGoogleSheetData}>Update with google API</button>
+            </div>
         </div>
     )
 }

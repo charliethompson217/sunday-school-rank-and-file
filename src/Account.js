@@ -44,12 +44,12 @@ export default function Account({signout}) {
         for(var player of response){
           if(player.playerId===curUser.attributes['custom:playerId']){
             curPlayer=player;
+            setRankPoints(curPlayer.RankPoints);
+            setFileWins(curPlayer.FileWins);
+            setPlayoffsBucks(curPlayer.PlayoffsBucks);
+            setTotalDollarPayout(curPlayer.TotalDollarPayout);
           }
         }
-        setRankPoints(curPlayer.RankPoints);
-        setFileWins(curPlayer.FileWins);
-        setPlayoffsBucks(curPlayer.PlayoffsBucks);
-        setTotalDollarPayout(curPlayer.TotalDollarPayout);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -60,14 +60,16 @@ export default function Account({signout}) {
 
   useEffect(() => {
     const fetchProfilePicture = async () => {
-      try {
-        const profilePictureUrl = `https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`;
-        const response = await fetch(profilePictureUrl, { method: 'GET' });
-        if (response.ok) {
-          setProfilePicUrl(profilePictureUrl);
+      if(playerId){
+        try {
+          const profilePictureUrl = `https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`;
+          const response = await fetch(profilePictureUrl, { method: 'GET' });
+          if (response.ok) {
+            setProfilePicUrl(profilePictureUrl);
+          }
+        } catch (error) {
+          console.error('Error fetching profile picture:', error);
         }
-      } catch (error) {
-        console.error('Error fetching profile picture:', error);
       }
       
     };
@@ -120,30 +122,39 @@ export default function Account({signout}) {
     const file = event.target.files[0];
     if (!file) return;
 
-    try {
-      const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
-      const response = await API.put('playerApi', `/player/edit-profile-picture`,{
-        body: {
-          jwt_token: `${idToken}`,
-          playerId: playerId,
-          contentType: file.type
-        }
-      });
-      const uploadUrl = response.upload_url;
-      await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': file.type,
-        },
-        body: file,
-      });
-
-      setProfilePicUrl(`https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`);
-    } catch (error) {
-        console.error("Failed to upload profile picture", error);
+    // Allowed image MIME types
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'];
+    
+    if (!allowedTypes.includes(file.type)) {
+        alert('Please upload a valid image file (JPEG, PNG, GIF, BMP, WebP).');
+        return;
     }
-};
+
+    try {
+        const session = await Auth.currentSession();
+        const idToken = session.getIdToken().getJwtToken();
+        const response = await API.put('playerApi', `/player/edit-profile-picture`, {
+            body: {
+                jwt_token: `${idToken}`,
+                playerId: playerId,
+                contentType: file.type,
+            },
+        });
+        const uploadUrl = response.upload_url;
+        await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': file.type,
+            },
+            body: file,
+        });
+
+        setProfilePicUrl(`https://sunday-school-profile-pictures.s3.us-east-2.amazonaws.com/${playerId}`);
+    } catch (error) {
+        console.error('Failed to upload profile picture', error);
+    }
+  };
+
 
   const triggerFileInput = () => {
     fileInputRef.current.click();

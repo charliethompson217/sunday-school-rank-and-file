@@ -97,7 +97,7 @@ const QuestionWithTwoButtons = ({ question, label1, label2, answer, onInputChang
         <button
           type="button"
           onClick={() => handleOptionClick(label1)}
-          className={`option-button ${selectedOption === label1 ? 'selected' : ''}`}
+          className={`option-button ${selectedOption === label1 ? 'selected' : ''} ${selectedOption === label2 ? 'unselected' : ''}`}
         >
           <img
             src={logoMap[keepLastWord(label1)]}
@@ -108,7 +108,7 @@ const QuestionWithTwoButtons = ({ question, label1, label2, answer, onInputChang
         <button
           type="button"
           onClick={() => handleOptionClick(label2)}
-          className={`option-button ${selectedOption === label2 ? 'selected' : ''}`}
+          className={`option-button ${selectedOption === label2 ? 'selected' : ''} ${selectedOption === label1 ? 'unselected' : ''}`}
         >
           <img
             src={logoMap[keepLastWord(label2)]}

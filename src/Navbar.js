@@ -67,12 +67,12 @@ export default function Navbar() {
                     <span className="menu-icon"></span>
                 </button>
                 <ul className="navbar-menu">
-                    <li><Link to={"/submitpicks"}>Submit Picks</Link></li>
-                    <li><Link to={"/results"}>Picks & Results</Link></li>
-                    <li><Link to={"/account"}>Account</Link></li>
-                    <li><Link to={"/rules"}>Rules</Link></li>
+                    <Link to={"/submitpicks"}><li>Submit Picks</li></Link>
+                    <Link to={"/results"}><li>Picks & Results</li></Link>
+                    <Link to={"/account"}><li>Account</li></Link>
+                    <Link to={"/rules"}><li>Rules</li></Link>
                     {isAdmin ? (
-                        <li><Link to={"/admin"}>Admin</Link></li>
+                        <Link to={"/admin"}><li>Admin</li></Link>
                     ):(<></>)}
                 </ul>
             </div>

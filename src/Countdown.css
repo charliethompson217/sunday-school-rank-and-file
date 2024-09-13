@@ -3,7 +3,6 @@
   justify-content: center;
   align-items: center;
   font-size: 24px;
-  
 }
 
 .countdown-item {
@@ -18,24 +17,27 @@
 .countdown-label {
   font-size: 12px;
 }
+
+.countdown-zero .countdown-value,
+.countdown-zero .countdown-label {
+  color: red;
+}
+
 @media (max-width: 1000px) {
   .countdown {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 100px;
   }
-  
+
   .countdown-item {
     text-align: center;
   }
-  
+
   .countdown-value {
     font-weight: bold;
     font-size: xx-large;
     margin: 0 10px;
   }
-  
+
   .countdown-label {
     font-size: medium;
   }

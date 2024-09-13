@@ -129,7 +129,7 @@ made if necessary.
                 <h2>Submitting Picks</h2>
                 <p>
                 Players will submit picks through our proprietary picks-submission website: 
-                <span class="italic-text"> sundayschoolrankpool.com</span> When players join the pool, they will create an account and login to submit picks.<br></br><br></br>
+                <span class="italic-text"> sundayschoolrankpool.com</span> (<span className='bold-text'>note that this website differs from last year</span>). When players join the pool, they will create an account and login to submit picks.<br></br><br></br>
                 <span class="bold-text">All players must submit picks through the picks-submission link by kickoff
                 of the first wagered game of the week</span> (because international games are excluded, this means
                 the deadline is 1:00PM ET on Sunday in every week except Week 13, which will be

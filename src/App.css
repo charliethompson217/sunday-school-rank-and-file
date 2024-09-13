@@ -56,7 +56,7 @@
   border-radius: 12px;
   width: 190px;
   margin-left: 2px;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .option-button {
@@ -67,7 +67,7 @@
   border: 1px solid #ccc;
   cursor: pointer;
   padding-bottom: 10px;
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .option-button.selected {
@@ -75,7 +75,16 @@
   color: white;
 }
 
+.option-button.unselected {
+  background-color: rgba(120, 0, 0, 0.99);
+  color: white;
+}
+
 .option-button.selected span {
+  color: white;
+}
+
+.option-button.unselected span {
   color: white;
 }
 
@@ -84,6 +93,14 @@
   margin: 0 auto;
   padding: 0px;
 
+}
+
+.RankPicks {
+  display: flex;
+  flex-wrap: wrap;
+}
+.Matchup{
+  margin-right: 30px;
 }
 
 .ranked-ranks label {
@@ -632,4 +649,25 @@ Mobile specific CSS
     margin-top: 10%;
   }
 
+}
+
+.Game-Results {
+  margin-left: 50px;
+}
+.Game-Results button {
+  background-color: green;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+}
+
+.Result-Games {
+  display: flex;
+  flex-wrap: wrap;
+  
+}
+
+.Result-Games .QuestionWithTwoButtons {
+  margin-left: 50px;
+  margin-bottom: 40px;
 }

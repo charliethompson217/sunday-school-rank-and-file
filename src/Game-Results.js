@@ -101,13 +101,14 @@ const LivePicks = () => {
             }
         });
         } catch (error) {
-          console.error('Error submitting picks:', error);
+          console.error('Error submitting game results:', error);
         }
       }
 
     return (
-        <div className="matchups-container">
-            <div className='Admin'>
+        <div className="">
+            <div className='Game-Results'>
+                <h2>Game-Results</h2>
                 <div>
                     <label htmlFor="weekSelect">For Week:</label>
                     <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
@@ -121,12 +122,10 @@ const LivePicks = () => {
                 <button onClick={sendToServer}>Update With Local Values</button>
                 <button>Update With Google API (todo)</button>
             </div>
-            
-            <div className="matchup-column">
+            <div className='Result-Games'>
                 {rankMatchups.map((data, index) => (
                     <QuestionWithTwoButtons
                         key={`rank-${index}`}
-                        question={`${data[0]} @ ${data[1]}`}
                         label1={data[0]}
                         label2={data[1]}
                         description={data[2]}
@@ -134,12 +133,9 @@ const LivePicks = () => {
                         onInputChange={(value) => onRankPicksChange(index, value)}
                     />
                 ))}
-            </div>
-            <div className="matchup-column">
                 {fileMatchups.map((data, index) => (
                     <QuestionWithTwoButtons
                         key={`file-${index}`}
-                        question={`${data[0]} @ ${data[1]}`}
                         label1={data[0]}
                         label2={data[1]}
                         description={data[2]}

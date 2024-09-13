@@ -41,11 +41,14 @@ export default function Admin() {
 
   return (
     <div >
-      <div  style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div className='Admin' style={{ width: '48%' }}>
+      <div  style={{ display: 'flex', marginBottom: '20px' }}>
+        <div className='Admin' style={{ width: '30%' }}>
           <Configuration />
           <Points players={players} />
           <PullPicks players={players} />
+        </div>
+        <div>
+          <GameResults />
         </div>
       </div>
 
