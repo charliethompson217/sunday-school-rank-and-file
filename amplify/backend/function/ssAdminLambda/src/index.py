@@ -14,7 +14,6 @@ def get_secret():
     secret_name = "sundayschoolrankandfile_googlesheet"
     region_name = "us-east-2"
 
-    # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(
         service_name='secretsmanager',
@@ -31,7 +30,7 @@ def get_secret():
     else:
         if 'SecretString' in get_secret_value_response:
             secret = get_secret_value_response['SecretString']
-            return json.loads(secret)  # returns the credentials from the secret
+            return json.loads(secret)
         raise Exception("Secret not found or is not a string.")
 
 def handler(event, context):
@@ -124,21 +123,28 @@ def handler(event, context):
                 table = dynamodb.Table(table_name)
                 body = json.loads(event['body'])
                 players = body.get('players')
+                week = body.get('week')  # Get the week from the request body
                 most_recent_entries = []
+
                 for player in players:
                     response = table.query(
                         KeyConditionExpression='team = :tid',
                         ExpressionAttributeValues={
                             ':tid': player
                         },
-                        ScanIndexForward=False,
-                        Limit=1
+                        ScanIndexForward=False  # Sort in descending order by Timestamp
                     )
-                    if 'Items' in response and len(response['Items'])>0:
-                        most_recent_entry = response['Items'][0]
-                        if 'Timestamp' in most_recent_entry:
-                            most_recent_entry['Timestamp']=str(most_recent_entry['Timestamp'])
-                        most_recent_entries.append(most_recent_entry)
+                    
+                    if 'Items' in response and len(response['Items']) > 0:
+                        # Filter by the specified week in your own code and get the most recent one
+                        week_entries = [entry for entry in response['Items'] if entry.get('week') == week]
+                        if week_entries:
+                            # Since it's sorted by Timestamp in descending order, the first item is the most recent
+                            most_recent_entry = week_entries[0]
+                            if 'Timestamp' in most_recent_entry:
+                                most_recent_entry['Timestamp'] = str(most_recent_entry['Timestamp'])
+                            most_recent_entries.append(most_recent_entry)
+
                 return {
                     'statusCode': 200,
                     'headers': {
@@ -148,6 +154,7 @@ def handler(event, context):
                     },
                     'body': json.dumps(most_recent_entries)
                 }
+
             if(action == "edit-player-stats"):
                 table_name = f'sundaySchoolPlayers-{env}'
                 table = dynamodb.Table(table_name)

@@ -12,10 +12,16 @@ const LivePicks = () => {
     const weekOptions = [
         'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
     ];
+
+    function decrementLastNumber(str) {
+        return str.replace(/\d+$/, (num) => parseInt(num, 10) - 1);
+    }
+
     useEffect(() => {
         const fetchMatchups = async () => {
             
             let curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
+            curWeek = decrementLastNumber(curWeek);
             if(week!=="Choose week"){
                 curWeek = week;
             }

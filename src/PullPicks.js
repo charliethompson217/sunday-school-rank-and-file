@@ -10,26 +10,28 @@ export default function PullPicks() {
   const [players, setPlayers] = useState([]);
   const [playerPicks, setPlayerPicks] = useState([]);
   const [unsubmittedPlayers, setUnsubmittedPlayers] = useState([]);
+  const [week, setWeek] = useState('Choose week');
+  const weekOptions = [
+      'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+  ];
 
   const compareByTeamName = (a, b) => {
     if (a.teamName < b.teamName) return -1;
     if (a.teamName > b.teamName) return 1;
     return 0;
   };
+
+  function decrementLastNumber(str) {
+    return str.replace(/\d+$/, (num) => parseInt(num, 10) - 1);
+  }
+
   useEffect( () => {
     const fetchConfigId = async () => {
-      setCurrentConfigId([]);
       try {
         const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-        const response = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
-          body: {
-            week: `${curWeek}`,
-          },
-        });
-        const {Timestamp: fetchedTimestamp} = response;
-        setCurrentConfigId(fetchedTimestamp);
+        setWeek(decrementLastNumber(curWeek));
       } catch (error) {
-        console.error('Error fetching configId:', error);
+        console.error('Error fetching current week:', error);
       }
     };
     const fetchPlayers = async () => {
@@ -62,7 +64,8 @@ export default function PullPicks() {
             Authorization: `Bearer ${idToken}`,
           },
           body: {
-            players: playersToFetchPicksFor
+            players: playersToFetchPicksFor,
+            week: week,
           }
         });
         setPlayerPicks(response);
@@ -75,20 +78,20 @@ export default function PullPicks() {
       playersToFetchPicksFor.push(player.teamName);
     });
     fetchPicksForPlayers(playersToFetchPicksFor);
-  }, [players]);
+  }, [players, week]);
 
   useEffect(() => {
     const initialUnsubmittedPlayers = players.map(player => player.teamName);
     setUnsubmittedPlayers(initialUnsubmittedPlayers);
   
     playerPicks.forEach((picks) => {
-      if (picks.configId === currentConfigId) {
+      if (picks.week === week) {
         setUnsubmittedPlayers((prevUnsubmittedPlayers) => 
           prevUnsubmittedPlayers.filter((teamName) => teamName !== picks.team)
         );
       }
     });
-  }, [players, playerPicks, currentConfigId]);
+  }, [players, playerPicks, week]);
   
 
   function keepLastWord(inputString) {
@@ -132,7 +135,7 @@ export default function PullPicks() {
     csvData += '\n';
   
     playerPicks.forEach((picks) => {
-      if (picks.configId === currentConfigId) {
+      if (picks.week === week) {
         const team = picks.team || '';
         const fullName = picks.fullName || '';
         csvData += `${fullName},`;
@@ -182,15 +185,22 @@ export default function PullPicks() {
 
   return (
     <div>
-        <h2>Download Picks</h2>
-        <p>
-        (download before updating form)
-        </p>
+        <h2>Pull Picks</h2>
+        <div>
+          <label htmlFor="pullpicks-weekSelect">For Week:</label>
+          <select id="pullpicks-weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
+          {weekOptions.map((option) => (
+              <option key={option} value={option}>
+              {option}
+              </option>
+          ))}
+          </select>
+        </div>
         <div>
         <button onClick={() => downloadPicks()}>Download CSV</button>
         </div>
         <div>
-          <h4>The following {unsubmittedPlayers.length} players have not submitted their picks:</h4>
+          <h4>The following {unsubmittedPlayers.length} players did not submit their picks:</h4>
           <ul>
             {unsubmittedPlayers.map(player => (
               <li key={player}>

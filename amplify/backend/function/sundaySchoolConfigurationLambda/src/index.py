@@ -1,10 +1,25 @@
+from datetime import datetime
 import json
 import os
+import re
 import boto3
 import time
 from boto3.dynamodb.conditions import Key
+from decimal import Decimal
+
 
 dynamodb = boto3.resource('dynamodb')
+
+# Custom JSON encoder to handle Decimal types
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            # Convert Decimal to float or int, depending on the value
+            return float(obj) if obj % 1 else int(obj)
+        return super(DecimalEncoder, self).default(obj)
+    
+def increment_last_number(s):
+    return re.sub(r'\d+$', lambda x: str(int(x.group()) + 1), s)
 
 def handler(event, context):
     print('received event:')
@@ -17,13 +32,39 @@ def handler(event, context):
     client_id = path_parameters['operation']
     
     if method == 'GET':
-        response = table.query(
-            KeyConditionExpression=Key('ClientId').eq("cur-week"),
-            ScanIndexForward=False,
-            Limit=1
-        )
-        if 'Items' in response and len(response['Items']) > 0:
+        if path_parameters['operation'] == "get-current-week":
+
+            response = table.query(
+                KeyConditionExpression=Key('ClientId').eq("cur-week"),
+                ScanIndexForward=False,
+                Limit=1
+            )
             most_recent_entry = response['Items'][0]
+            week = most_recent_entry['week']
+
+            response = table.query(
+                KeyConditionExpression=Key('ClientId').eq("matchups"),
+                ScanIndexForward=False
+            )
+            for item in response.get('Items', []):
+                if item.get('week') == week:
+                    if 'Timestamp' in item:
+                        item['Timestamp']=str(item['Timestamp'])
+                        closeTime = item['closeTime']
+                        dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
+                        unix_closeTime = int(dt_object.timestamp())
+            timestamp = int(time.time())
+            if unix_closeTime < timestamp:
+                week = increment_last_number(week)
+                table_name = f'configuration-{env}'
+                table = dynamodb.Table(table_name)
+                body = json.loads(event['body'])
+                item = {
+                    'ClientId': "cur-week",
+                    'Timestamp': timestamp,
+                    'week': week,
+                }
+                table.put_item(Item=item)
             return {
                 'statusCode': 200,
                 'headers': {
@@ -31,10 +72,21 @@ def handler(event, context):
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-                'body': json.dumps(most_recent_entry['week'])
+                'body': json.dumps(week)
             }
-        else:
-            print("No entries found.")
+        elif path_parameters['operation'] == "get-game-results":            
+            response = table.query(
+                KeyConditionExpression=Key('ClientId').eq("game-results"),
+                ScanIndexForward=False
+            )
+            
+            items = response['Items']
+            latest_items_by_week = {}
+            
+            for item in items:
+                week = item['week']
+                if week not in latest_items_by_week:
+                    latest_items_by_week[week] = item 
             return {
                 'statusCode': 200,
                 'headers': {
@@ -42,7 +94,7 @@ def handler(event, context):
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                 },
-                'body': json.dumps("No entries found.")
+                'body': json.dumps(latest_items_by_week, cls=DecimalEncoder)
             }
     elif method == 'PUT':
         body = json.loads(event['body'])
