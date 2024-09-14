@@ -12,7 +12,7 @@
   margin: 5px;
 }
 .FormContainer {
-  margin-left: 10%;
+  margin-left: 5%;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -99,8 +99,10 @@
   display: flex;
   flex-wrap: wrap;
 }
+
 .Matchup{
-  margin-right: 30px;
+  display: flex;
+  margin-right: 10px;
 }
 
 .ranked-ranks label {
@@ -502,7 +504,6 @@ Mobile specific CSS
 @media (max-width: 1000px) {
   .FormContainer {
     margin-left: 2%;
-    margin-right: 2%;
     margin-bottom: 20%;
     font-family: Arial, Helvetica, sans-serif;
   }
@@ -670,4 +671,10 @@ Mobile specific CSS
 .Result-Games .QuestionWithTwoButtons {
   margin-left: 50px;
   margin-bottom: 40px;
+}
+
+@media (min-width: 1000px) {
+  .Matchup {
+    margin-right: 30px;
+  }
 }
