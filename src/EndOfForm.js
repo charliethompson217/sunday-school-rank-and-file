@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useContext }  from 'react';
 import Navbar from './Navbar';
+import { DataContext } from './DataContext';
 
-export default function EndOfForm({rankPicks, rankedRanks, filePicks}) {
+export default function EndOfForm() {
+  const {fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks  } = useContext(DataContext);
 
   function keepLastWord(inputString) {
     const words = inputString.split(' ');
@@ -20,23 +22,23 @@ export default function EndOfForm({rankPicks, rankedRanks, filePicks}) {
             <p>Thank you for making your picks. They are below. Feel free to fill out the form as many times as you'd like. Only your most recent picks will be tabulated.</p>
             <h1>Ranked Picks</h1>
             <ul>
-            {rankedRanks.map((num, index) => (
+            {fetchedRankedRanks.map((num, index) => (
               <li
                 key={index}
               >
-                <label>{rankedRanks.length - index}</label>
-                {` ${rankPicks[num-1].value} (vs ${keepLastWord(rankPicks[num - 1].game.find(
-                    (team) => team !== rankPicks[num - 1].value
+                <label>{fetchedRankedRanks.length - index}</label>
+                {` ${fetchedRankPicks[num-1].value} (vs ${keepLastWord(fetchedRankPicks[num - 1].game.find(
+                    (team) => team !== fetchedRankPicks[num - 1].value
                   ))})`}
               </li>
             ))}
             </ul>
             <h1>File Picks</h1>
             <ul>
-            {filePicks.map((pick, index) => (
+            {fetchedFilePicks.map((pick, index) => (
               <li key={index}>
-                {` ${filePicks[index].value} (vs ${keepLastWord(filePicks[index].game.find(
-                    (team) => team !== filePicks[index].value
+                {` ${fetchedFilePicks[index].value} (vs ${keepLastWord(fetchedFilePicks[index].game.find(
+                    (team) => team !== fetchedFilePicks[index].value
                   ))})`}
               </li>
             ))}

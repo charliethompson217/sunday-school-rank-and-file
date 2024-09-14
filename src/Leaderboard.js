@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import React, { useState, useEffect, useContext } from 'react';
+import {Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-svg-core/styles.css';
+import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
 const Leaderboard = () => {
+  const { fetchedCurWeek, fetchedPlayers, fetchedSubmissions, fetchedGameResults} = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState({});
@@ -26,40 +28,11 @@ const Leaderboard = () => {
   }
 
   useEffect(() => {
-
-    const fetchPlayers = async () => {
-      try {
-        const response = await API.get('playerApi', '/player/get-players');
-        setSortedPlayers(response);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
-    };
-    fetchPlayers();
-
-    const fetchPicks = async () => {
-      try {
-        const fetchedCurWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-        const response = await API.get('sundaySchoolSubmissions', '/submission/get-submissions');
-        setSubmissions(response);
-        setWeek(decrementLastNumber(fetchedCurWeek));
-      } catch (error) {
-        console.error('Error fetching picks:', error);
-      }
-    };
-    fetchPicks();
-
-    const fetchGameResults = async () => {
-      try {
-        const fetchedGameResults = await API.get('sundaySchoolConfiguration', '/configuration/get-game-results');
-        setGameResults(fetchedGameResults);
-      } catch (error) {
-        console.error('Error fetching game results:', error);
-      }
-    }
-
-    fetchGameResults();
-  }, []);
+    setSortedPlayers(fetchedPlayers);
+    setSubmissions(fetchedSubmissions);
+    setWeek(decrementLastNumber(fetchedCurWeek));
+    setGameResults(fetchedGameResults);
+  }, [fetchedPlayers, fetchedSubmissions, fetchedCurWeek, fetchedGameResults]);
 
   useEffect(() => {
     if (week !== 'Choose week') {
@@ -153,7 +126,8 @@ const Leaderboard = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedPlayers.map(player => (
+          {sortedPlayers && sortedPlayers.length > 0 ? (
+            sortedPlayers.map(player => (
               <tr key={player.playerId}>
                 <td>{player.teamName}</td>
                 <td>{player.RankPoints}</td>
@@ -161,7 +135,12 @@ const Leaderboard = () => {
                 <td>{player.PlayoffsBucks}</td>
                 <td>{player.TotalDollarPayout}</td>
               </tr>
-            ))}
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No players available</td>
+            </tr>
+          )}
           </tbody>
         </table>
       )}
@@ -186,94 +165,99 @@ const Leaderboard = () => {
           </tr>
         </thead>
         <tbody>
-          {sortedPlayers.map((player, index) => {
-            const submission = filteredSubmissions[player.playerId];
+          {sortedPlayers && sortedPlayers.length > 0 ? (
+            sortedPlayers.map((player, index) => {
+              const submission = filteredSubmissions[player.playerId];
 
-            const rankPicks = submission && typeof submission.rankPicks === 'string' 
-              ? JSON.parse(submission.rankPicks) 
-              : [];
-            const filePicks = submission && typeof submission.filePicks === 'string' 
-              ? JSON.parse(submission.filePicks) 
-              : [];
-            const rankRanks = submission && typeof submission.rankedRanks === 'string' 
-            ? JSON.parse(submission.rankedRanks) 
-            : [];
+              const rankPicks = submission && typeof submission.rankPicks === 'string' 
+                ? JSON.parse(submission.rankPicks) 
+                : [];
+              const filePicks = submission && typeof submission.filePicks === 'string' 
+                ? JSON.parse(submission.filePicks) 
+                : [];
+              const rankRanks = submission && typeof submission.rankedRanks === 'string' 
+                ? JSON.parse(submission.rankedRanks) 
+                : [];
 
-            const currentWeekResults = gameResults[week] || {};
-            const rankResults = currentWeekResults.rankResults || [];
-            const fileResults = currentWeekResults.fileResults || [];
+              const currentWeekResults = gameResults[week] || {};
+              const rankResults = currentWeekResults.rankResults || [];
+              const fileResults = currentWeekResults.fileResults || [];
 
-            const isPickCorrect = (pickValue, results) => {
-              return results.some(result => keepLastWord(result.value) === pickValue);
-            };
+              const isPickCorrect = (pickValue, results) => {
+                return results.some(result => keepLastWord(result.value) === pickValue);
+              };
 
-            return (
-              <tr key={index}>
-                <td style={{ textAlign: 'center', verticalAlign: 'middle', fontWeight: 'bold' }}>{player.teamName}</td>
-                <td>
-                  {Array.isArray(rankPicks) && rankPicks.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${rankPicks.length}, 1fr)`, gap: '2px' }}>
-                      {rankPicks.map((game, gameIndex) => {
-                        const playerPick = keepLastWord(game.value);
-                        const isCorrect = isPickCorrect(playerPick, rankResults);
-                        return (
-                          <div
-                            key={gameIndex}
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              width: '95px',
-                              height: '30px',
-                              backgroundColor: isCorrect ? 'green' : 'red',
-                              border: '1px solid black',
-                              color: 'white',
-                              fontSize: '12px',
-                            }}
-                          >
-                            {playerPick} {rankRanks[gameIndex]}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    'No Picks'
-                  )}
-                </td>
-                <td>
-                  {Array.isArray(filePicks) && filePicks.length > 0 ? (
-                    <div style={{ display: 'grid', gridTemplateColumns: `repeat(${filePicks.length}, 1fr)`, gap: '2px' }}>
-                      {filePicks.map((game, gameIndex) => {
-                        const playerPick = keepLastWord(game.value);
-                        const isCorrect = isPickCorrect(playerPick, fileResults);
-                        return (
-                          <div
-                            key={gameIndex}
-                            style={{
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              width: '50px',
-                              height: '30px',
-                              backgroundColor: isCorrect ? 'green' : 'red',
-                              border: '1px solid black',
-                              color: 'white',
-                              fontSize: '12px',
-                            }}
-                          >
-                            {playerPick}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    'No Picks'
-                  )}
-                </td>
-              </tr>
-            );
-            
-          })}
+              return (
+                <tr key={index}>
+                  <td style={{ textAlign: 'center', verticalAlign: 'middle', fontWeight: 'bold' }}>{player.teamName}</td>
+                  <td>
+                    {Array.isArray(rankPicks) && rankPicks.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${rankPicks.length}, 1fr)`, gap: '2px' }}>
+                        {rankPicks.map((game, gameIndex) => {
+                          const playerPick = keepLastWord(game.value);
+                          const isCorrect = isPickCorrect(playerPick, rankResults);
+                          return (
+                            <div
+                              key={gameIndex}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                width: '95px',
+                                height: '30px',
+                                backgroundColor: isCorrect ? 'green' : 'red',
+                                border: '1px solid black',
+                                color: 'white',
+                                fontSize: '12px',
+                              }}
+                            >
+                              {playerPick} {rankRanks[gameIndex]}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      'No Picks'
+                    )}
+                  </td>
+                  <td>
+                    {Array.isArray(filePicks) && filePicks.length > 0 ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${filePicks.length}, 1fr)`, gap: '2px' }}>
+                        {filePicks.map((game, gameIndex) => {
+                          const playerPick = keepLastWord(game.value);
+                          const isCorrect = isPickCorrect(playerPick, fileResults);
+                          return (
+                            <div
+                              key={gameIndex}
+                              style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                width: '50px',
+                                height: '30px',
+                                backgroundColor: isCorrect ? 'green' : 'red',
+                                border: '1px solid black',
+                                color: 'white',
+                                fontSize: '12px',
+                              }}
+                            >
+                              {playerPick}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      'No Picks'
+                    )}
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="3">No players available</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>

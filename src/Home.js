@@ -1,35 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { API, Amplify } from 'aws-amplify';
+import React, { useState, useEffect, useContext } from 'react';
+import { Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 import './App.css';
 import Countdown from './Countdown';
 import Navbar from './Navbar';
 import logo from './assets/logo.svg';
+import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
 export default function Home() {
+  const { fetchedCurWeek, fetchedMatchupsResponse} = useContext(DataContext);
   const [closeTime, setCloseTime] = useState("");
   const [week, setWeek] = useState("Week");
 
   useEffect(() => {
-    const fetchCloseTime = async () => {
-      try {
-        const curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-        const response = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
-            body: {
-                week: `${curWeek}`,
-            },
-        });
-        const {closeTime: fetchedCloseTime, week:fetchedWeek} = response;
-        setCloseTime(fetchedCloseTime);
-        setWeek(fetchedWeek);
-      } catch (error) {
-        console.error('Error fetching matchups:', error);
-      }
-    };
-    fetchCloseTime();
-  }, []);
+    const {closeTime: fetchedCloseTime, week:fetchedWeek} = fetchedMatchupsResponse;
+    setCloseTime(fetchedCloseTime);
+    setWeek(fetchedWeek);
+  }, [fetchedCurWeek, fetchedMatchupsResponse]);
+
   return (
     <>
         <Navbar></Navbar>

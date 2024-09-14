@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { API, Auth } from 'aws-amplify';
 import './App.css';
 import QuestionWithTwoButtons from './QuestionWithTwoButtons';
+import { DataContext } from './DataContext';
 
 const LivePicks = () => {
+    const { fetchedCurWeek, fetchedGameResults } = useContext(DataContext);
     const [rankPicks, setRankPicks] = useState([]);
     const [rankMatchups, setRankMatchups] = useState([]);
     const [filePicks, setFilePicks] = useState([]);
     const [fileMatchups, setFileMatchups] = useState([]);
     const [week, setWeek] = useState('Choose week');
     const weekOptions = [
-        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
     ];
 
     function decrementLastNumber(str) {
@@ -18,65 +20,59 @@ const LivePicks = () => {
     }
 
     useEffect(() => {
-        const fetchMatchups = async () => {
-            
-            let curWeek = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-            curWeek = decrementLastNumber(curWeek);
-            if(week!=="Choose week"){
+        const setData = async () => {
+            let curWeek = decrementLastNumber(fetchedCurWeek);
+            if(week !== "Choose week"){
                 curWeek = week;
             }
             else{
                 setWeek(curWeek);
             }
-            const fetchedMatchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+    
+            if (!fetchedGameResults) {
+                console.warn('fetchedGameResults is undefined or null');
+                return; 
+            }
+    
+            const matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
                 body: {
                     week: `${curWeek}`,
                 },
             });
-            const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek } = fetchedMatchupsResponse;
+    
+            const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
+        
             setRankMatchups(fetchedRankMatchups);
             setFileMatchups(fetchedFileMatchups);
-            try {
-                const fetchedGameResults = await API.put('sundaySchoolConfiguration', '/configuration/game-results',{
-                    body: {
-                        week: `${curWeek}`,
-                    },
-                });
-                const {rankResults: fetchedRankResults, fileResults: fetchedFileResults, week: fetchedResultsWeek} = fetchedGameResults
-                if(fetchedRankResults!==null&&fetchedFileResults!==null && fetchedResultsWeek === fetchedWeek){
-                    setRankPicks(fetchedRankResults);
-                    setFilePicks(fetchedFileResults);
-                }
-                else {
-                    const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
-                        game: matchup,
-                        value: null,
-                    }));
-                    setRankPicks(initialRankPicks);
         
-                    const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
-                        game: matchup,
-                        value: null,
-                    }));
-                    setFilePicks(initialFilePicks);
-                }
-            } catch (error){
-                const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
+            const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[week] || {};
+    
+            if (fetchedRankResults && fetchedFileResults) {
+                setRankPicks(fetchedRankResults);
+                setFilePicks(fetchedFileResults);
+            } else {
+                const initialRankPicks = fetchedRankMatchups?.map((matchup) => ({
                     game: matchup,
                     value: null,
-                }));
+                })) || [];
                 setRankPicks(initialRankPicks);
     
-                const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
+                const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
                     game: matchup,
                     value: null,
-                }));
+                })) || [];
                 setFilePicks(initialFilePicks);
             }
-            
+        };
+    
+        if (fetchedGameResults) {
+            setData();
+        } else {
+            console.warn('fetchedGameResults is not available');
         }
-        fetchMatchups();
-    }, [week]);
+    }, [week, fetchedCurWeek, fetchedGameResults]);
+    
+    
 
     const onRankPicksChange = (index, value) => {
         setRankPicks((prevRankPicks) =>
@@ -129,7 +125,7 @@ const LivePicks = () => {
                 <button>Update With Google API (todo)</button>
             </div>
             <div className='Result-Games'>
-                {rankMatchups.map((data, index) => (
+                {rankMatchups?.length > 0 && rankMatchups.map((data, index) => (
                     <QuestionWithTwoButtons
                         key={`rank-${index}`}
                         label1={data[0]}
@@ -139,7 +135,7 @@ const LivePicks = () => {
                         onInputChange={(value) => onRankPicksChange(index, value)}
                     />
                 ))}
-                {fileMatchups.map((data, index) => (
+                {fileMatchups?.length > 0 && fileMatchups.map((data, index) => (
                     <QuestionWithTwoButtons
                         key={`file-${index}`}
                         label1={data[0]}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
@@ -9,10 +9,12 @@ import FilePicks from './FilePicks';
 import './App.css';
 import Countdown from './Countdown';
 import Navbar from './Navbar';
+import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
-const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks, matchupsResponse}) => {
+const FormContainer = ( {User}) => {
+  const {fetchedMatchupsResponse, fetchedCurPicks, setNewPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks  } = useContext(DataContext);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(true);
@@ -44,7 +46,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
     const fetchMatchups = async () => {
       try {
         
-        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = matchupsResponse;
+        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = fetchedMatchupsResponse;
         setRankMatchups(fetchedRankMatchups);
         setFileMatchups(fetchedFileMatchups);
         setWeek(fetchedWeek);
@@ -59,7 +61,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
           setWarning('');
         }
         try {
-          if ((picks!=null)&&(fetchedConfigId===picks.configId)) {
+          if ((fetchedCurPicks!=null)&&(fetchedConfigId===fetchedCurPicks.configId)) {
             setRankPicks([...fetchedRankPicks]);
             setRankedRanks([...fetchedRankedRanks]);
             setNewRankedRanks([...fetchedRankedRanks]);
@@ -92,7 +94,7 @@ const FormContainer = ( {User, picks, fetchedRankPicks, fetchedRankedRanks, fetc
       }
     };
     fetchMatchups();
-  }, [User, picks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, matchupsResponse]);
+  }, [User, fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, fetchedMatchupsResponse]);
 
   const steps = [
     { id: 1, component: Loading },
