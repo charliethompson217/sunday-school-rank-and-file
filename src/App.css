@@ -678,3 +678,21 @@ Mobile specific CSS
     margin-right: 30px;
   }
 }
+
+.weekly-picks tr {
+  margin: 0;
+  padding: 0;
+  border-spacing: 0;
+}
+
+.weekly-picks td {
+  margin: 0;
+  padding: 0;
+  border-spacing: 0;
+}
+
+.weekly-picks div {
+  margin: 0;
+  padding: 0;
+}
+
