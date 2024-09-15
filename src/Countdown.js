@@ -3,8 +3,10 @@ import { differenceInMilliseconds } from 'date-fns';
 import './Countdown.css';
 
 const Countdown = ({ targetDate }) => {
+  
+
   const nowUTC = new Date().toISOString();
-  const initialRemainingTime = targetDate ? differenceInMilliseconds(new Date(targetDate), new Date(nowUTC)) : 0;
+  const initialRemainingTime = differenceInMilliseconds(new Date(targetDate), new Date(nowUTC));
   const [remainingTime, setRemainingTime] = useState(initialRemainingTime);
 
   useEffect(() => {
@@ -19,7 +21,6 @@ const Countdown = ({ targetDate }) => {
       };
     }
   }, [targetDate]);
-
   const isNegative = remainingTime < 0;
   const absRemainingTime = Math.abs(remainingTime);
 
@@ -33,23 +34,25 @@ const Countdown = ({ targetDate }) => {
   return (
     <div className={countdownClass}>
       <div className="countdown-item">
-        <div className="countdown-value">{(isNegative ? '-' : '') + days}</div>
+        <div className="countdown-value">{Number.isFinite(days) ? (isNegative ? '-' : '') + days : '--'}</div>
         <div className="countdown-label">Days</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{(isNegative ? '-' : '') + hours}</div>
+        <div className="countdown-value">{Number.isFinite(hours) ? (isNegative ? '-' : '') + hours : '--'}</div>
         <div className="countdown-label">Hours</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{(isNegative ? '-' : '') + minutes}</div>
+        <div className="countdown-value">{Number.isFinite(minutes) ? (isNegative ? '-' : '') + minutes : '--'}</div>
         <div className="countdown-label">Minutes</div>
       </div>
       <div className="countdown-item">
-        <div className="countdown-value">{(isNegative ? '-' : '') + seconds}</div>
+        <div className="countdown-value">{Number.isFinite(seconds) ? (isNegative ? '-' : '') + seconds : '--'}</div>
         <div className="countdown-label">Seconds</div>
       </div>
     </div>
   );
+  
+  
 };
 
 export default Countdown;

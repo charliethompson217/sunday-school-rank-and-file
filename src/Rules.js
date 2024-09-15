@@ -11,10 +11,11 @@ export default function Rules() {
                 <h3>2024–25 Season Rules</h3>
                 <h2>Overview</h2>
                 <p>
-                Hello and welcome (or welcome back) to year three of the <span class="italic-text">Sunday School: Rank and File</span> NFL pool! Last year, we enjoyed an excellent year with the introduction of our  proprietary picks-submission website, and we hope to build on that success this year. 
+                Hello and welcome (or welcome back) to year three of the <span className="italic-text">Sunday School: Rank and File</span> NFL pool! Last year, we enjoyed an excellent year with the introduction of our  proprietary picks-submission website, and we hope to build on that success this year. 
                 <br></br><br></br>
                 A few important points for new members:
                 <br></br>
+                </p>
                 <ul>
                   <li>
                   This pool is primarily for fun, and the wagers exist to compliment that fun, not  detract from it. Participants should share that spirit.
@@ -27,7 +28,7 @@ export default function Rules() {
                   </li>
                 </ul>
                 <br></br><br></br>
-                </p>
+                
                 <h2>The Rank</h2>
                 <p>
                 Each week, you will pick the straight-up winner of every Sunday NFL game (excluding
@@ -53,7 +54,7 @@ export default function Rules() {
                 <p>
                 In addition to picking Sunday games each week, we will also pick the winner of MNF
 games. Each MNF game that you pick correctly will go to your “File.” Tie games will also
-count as File wins. <span class="bold-text">The File will not count towards your weekly or season point
+count as File wins. <span className="bold-text">The File will not count towards your weekly or season point
 totals, and it will not directly pay out any money. </span> However, the season winner of
 the File will have their total Playoffs Bucks tripled (see more on Playoffs below), and the
 second-place File finisher will have their Playoffs Bucks doubled. If two or more players
@@ -61,16 +62,16 @@ tie for first or second place in the season-long File standings, all players tie
 second will receive the respective Playoffs bonus.<br></br><br></br>
 During Week 13, the 3 games played on Thursday, November 28 (Thanksgiving Day)
 will be part of the File (in addition to the regular MNF game played on December 2).
-Hitting all three Thanksgiving games is a <span class="bold-text">Turkey Trifecta</span>, and it adds 3 bonus wins <span class="bold-text">to your
+Hitting all three Thanksgiving games is a <span className="bold-text">Turkey Trifecta</span>, and it adds 3 bonus wins <span className="bold-text">to your
                 File</span> (in addition to the three total File wins necessarily awarded for winning each
                 game).<br></br><br></br>
                 During Week 17, the 3 games played on Monday, December 25 (Christmas Day) and
 Thursday, December 26 will be part of the File (in addition to the regular MNF game(s)
-played on December 30). Hitting all three Christmas games is a <span class="bold-text">Santa Hat Trick</span>, and it awards
-                3 bonus wins <span class="bold-text">to your File</span> (in addition to the three total File wins necessarily awarded
+played on December 30). Hitting all three Christmas games is a <span className="bold-text">Santa Hat Trick</span>, and it awards
+                3 bonus wins <span className="bold-text">to your File</span> (in addition to the three total File wins necessarily awarded
                 for winning each game).<br></br><br></br>
-                Hitting <span class="italic-text">both</span> the Turkey Trifecta <span class="italic-text">and</span> Santa Hat Trick awards an additional three bonus
-                wins <span class="bold-text">to your File</span>.
+                Hitting <span className="italic-text">both</span> the Turkey Trifecta <span className="italic-text">and</span> Santa Hat Trick awards an additional three bonus
+                wins <span className="bold-text">to your File</span>.
                 </p>
                 <h2>Playoffs</h2>
                 <p>
@@ -92,24 +93,24 @@ first splitting the pot (even if every player ends the Super Bowl with 0 Playoff
                 </p>
                 <h2>Dues and Payouts</h2>
                 <p>
-                Each player will pay <span class="bold-text">$10/week</span> to participate, including the Commissioner. Total dues
-                for the season are thus $180. As outlined previously, the pool is <span class="bold-text">expected to be a
+                Each player will pay <span className="bold-text">$10/week</span> to participate, including the Commissioner. Total dues
+                for the season are thus $180. As outlined previously, the pool is <span className="bold-text">expected to be a
                 season-long activity,</span>though players may join late and are not formally prohibited
 from dropping out. Any player who drops out is not eligible for the season or playoffs
-pot. For simplicity’s sake,<span class="bold-text">it is preferable that each player pay in advance for the
+pot. For simplicity’s sake,<span className="bold-text">it is preferable that each player pay in advance for the
 season</span>(or at least $90, representing half of the season), but accommodations can be
 made if necessary.
                 <br></br><br></br>
                 The pool will go forward no matter how many or how few players enter. The money
                 collected each week will be divided in this fashion:
                 <br></br><br></br>
-                <span class="indented-text">1) 65% to the weekly pot</span><br></br>
-                <span class="indented-text">2) 20% to the season pot</span><br></br>
-                <span class="indented-text">3) 15% to the playoffs pot</span><br></br><br></br>
+                <span className="indented-text">1) 65% to the weekly pot</span><br></br>
+                <span className="indented-text">2) 20% to the season pot</span><br></br>
+                <span className="indented-text">3) 15% to the playoffs pot</span><br></br><br></br>
                 Each week, the weekly pot will be divided in this fashion:<br></br><br></br>
-                <span class="indented-text">1) 65% to the 1st place player</span><br></br>
-                <span class="indented-text">2) 25% to the 2nd place player</span><br></br>
-                <span class="indented-text">3) 10% to the 3rd place player</span><br></br><br></br>
+                <span className="indented-text">1) 65% to the 1st place player</span><br></br>
+                <span className="indented-text">2) 25% to the 2nd place player</span><br></br>
+                <span className="indented-text">3) 10% to the 3rd place player</span><br></br><br></br>
                 A tie at any level of the weekly pot will cause the winnings of the next-lowest tier to be
                 “pulled up” to and shared among the tier containing the tie (and this process will be
                 repeated if there are multiple ties). For example, if two players tie for first in a given
@@ -121,28 +122,28 @@ made if necessary.
                 than tying first-place finishers, which happened on several occasions last year.
                 <br></br><br></br>
                 The season pot will be divided in this fashion:<br></br><br></br>
-                <span class="indented-text">1) $180 to the 2nd place player (awarded only if at least 10 players participate all
+                <span className="indented-text">1) $180 to the 2nd place player (awarded only if at least 10 players participate all
                   year)</span><br></br>
-                <span class="indented-text">2) the rest to the 1st place player.</span><br></br><br></br>
+                <span className="indented-text">2) the rest to the 1st place player.</span><br></br><br></br>
                 The commissioner will personally guarantee all payouts.
                 </p>
                 <h2>Submitting Picks</h2>
                 <p>
                 Players will submit picks through our proprietary picks-submission website: 
-                <span class="italic-text"> sundayschoolrankpool.com</span> (<span className='bold-text'>note that this website differs from last year</span>). When players join the pool, they will create an account and login to submit picks.<br></br><br></br>
-                <span class="bold-text">All players must submit picks through the picks-submission link by kickoff
+                <span className="italic-text"> sundayschoolrankpool.com</span> (<span className='bold-text'>note that this website differs from last year</span>). When players join the pool, they will create an account and login to submit picks.<br></br><br></br>
+                <span className="bold-text">All players must submit picks through the picks-submission link by kickoff
                 of the first wagered game of the week</span> (because international games are excluded, this means
                 the deadline is 1:00PM ET on Sunday in every week except Week 13, which will be
                 12:30PM ET on Thursday, November 28, and in Week 17, which will be 1:00
                 p.m. ET on Wednesday, December 25). Games prior to our first
-                played game (<span class="italic-text">i.e.</span> Thursday Night Football games, Friday games, Saturday games, and
+                played game (<span className="italic-text">i.e.</span> Thursday Night Football games, Friday games, Saturday games, and
                 international games) will not appear on the weekly picks survey.<br></br><br></br>
                 
                 If a player fails to submit picks on time, they will not be eligible to participate in the
                 Rank that week (dues are still assessed), but they may still make a File selection prior to
                 the File game kickoff by emailing the Commissioner. If a player fails to submit picks on
                 time in a holiday week, they may submit picks directly to the commissioner for any
-                games that have not been played, except that if <span class="italic-text">any</span> Rank game has started, <span class="italic-text">no</span> Rank
+                games that have not been played, except that if <span className="italic-text">any</span> Rank game has started, <span className="italic-text">no</span> Rank
                 picks may be made.<br></br><br></br>
                 If any player fails to submit Rank picks on time, they will be assessed the lowest number
                 of Rank points earned by any player that week. This helps ensure that missing a week

@@ -110,7 +110,7 @@ const Leaderboard = () => {
       const rankRanks = submission && typeof submission.rankedRanks === 'string' ? JSON.parse(submission.rankedRanks) : [];
 
       rankPicks.forEach((rank, index) => {
-        const combinedLength = (rankRanks[index]?.length || 0) + (keepLastWord(rank.value).length || 0);
+        const combinedLength = (rankRanks[index]?.length || 0) + (keepLastWord(rank.value).length || 0) + 3;
         if (!maxRankWidths[index] || combinedLength > maxRankWidths[index]) {
           maxRankWidths[index] = combinedLength;
         }
@@ -129,7 +129,7 @@ const Leaderboard = () => {
 
   const { maxRankWidths, maxFileWidths } = calculateMaxColumnWidths(sortedPlayers);
 
-  const getWidth = (length) => `${length * 10 + 15}px`;
+  const getWidth = (length) => `${length * 9 + 10}px`;
 
 
   return (
@@ -243,14 +243,22 @@ const Leaderboard = () => {
                                       alignItems: 'center',
                                       width: getWidth(maxRankWidths[gameIndex]), // Use calculated width
                                       height: '40px',
-                                      backgroundColor: isCorrect ? 'rgb(0, 120, 0)' : 'rgb(200, 0, 0)',
+                                      backgroundColor: isCorrect ? 'rgb(0, 120, 0)' : 'rgb(190, 0, 0)',
                                       color: 'black',
                                       fontSize: '12px',
                                       fontWeight: 'bold',
-                                      border: '1px solid black',
+                                      border: '2px solid black',
+                                      fontFamily: 'monospace'
                                     }}
                                   >
-                                    {rankRanks[gameIndex]}~{playerPick}
+                                    <span style={{
+                                      backgroundColor: 'rgba(0,0,0,0.45)',
+                                      borderStyle: 'none',
+                                      borderRadius: '10px',
+                                      color: 'rgba(255,255,255,0.5)',
+                                      padding: '5px',
+                                      marginRight: '5px',
+                                    }}>{rankRanks[gameIndex]}</span>{playerPick}
                                   </div>
                                 );
                               })}
@@ -282,7 +290,7 @@ const Leaderboard = () => {
                                       color: 'black',
                                       fontSize: '12px',
                                       fontWeight: 'bold',
-                                      border: '1px solid black',
+                                      border: '2px solid black',
                                     }}
                                   >
                                     {playerPick}

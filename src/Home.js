@@ -10,30 +10,32 @@ import { DataContext } from './DataContext';
 Amplify.configure(awsExports);
 
 export default function Home() {
-  const { fetchedCurWeek, fetchedMatchupsResponse} = useContext(DataContext);
+  const { fetchedCurWeek, fetchedMatchupsResponse } = useContext(DataContext);
   const [closeTime, setCloseTime] = useState("");
-  const [week, setWeek] = useState("Week");
+  const [week, setWeek] = useState();
 
   useEffect(() => {
-    const {closeTime: fetchedCloseTime, week:fetchedWeek} = fetchedMatchupsResponse;
+    const { closeTime: fetchedCloseTime, week: fetchedWeek } = fetchedMatchupsResponse;
     setCloseTime(fetchedCloseTime);
     setWeek(fetchedWeek);
   }, [fetchedCurWeek, fetchedMatchupsResponse]);
 
   return (
     <>
-        <Navbar></Navbar>
-        <div className='navbar-offset-container'>
-          <div className='home-screen'>
-            <div className="main-logo">
-              <img className="homeLogo" src={logo} alt="Logo" />
-            </div>
+      <Navbar />
+      <div className='navbar-offset-container'>
+        <div className='home-screen'>
+          <div className="main-logo">
+            <img className="homeLogo" src={logo} alt="Logo" />
+          </div>
+          {week && (
             <div className="countdown-container">
               <h1>Sunday School {week} Kicks Off In:</h1>
               <Countdown targetDate={closeTime} />
             </div>
-          </div>
+          )}
         </div>
+      </div>
     </>
-  )
+  );
 }

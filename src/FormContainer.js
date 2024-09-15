@@ -22,11 +22,11 @@ const FormContainer = ( {User}) => {
   const [closeUpdated, setCloseUpdated] = useState(false);
   const [configId, setConfigId] = useState("");
   const [week, setWeek] = useState("Week");
-  const [rankMatchups, setRankMatchups] = useState([]);
-  const [fileMatchups, setFileMatchups] = useState([]);
-  const [rankPicks, setRankPicks] = useState([]);
-  const [filePicks, setFilePicks] = useState([]);
-  const [rankedRanks, setRankedRanks] = useState([]);
+  const [rankMatchups, setRankMatchups] = useState();
+  const [fileMatchups, setFileMatchups] = useState();
+  const [rankPicks, setRankPicks] = useState();
+  const [filePicks, setFilePicks] = useState();
+  const [rankedRanks, setRankedRanks] = useState();
   const [newrankedRanks, setNewRankedRanks] = useState([]);
   const [warning, setWarning] = useState("");
 
@@ -66,7 +66,7 @@ const FormContainer = ( {User}) => {
             setRankedRanks([...fetchedRankedRanks]);
             setNewRankedRanks([...fetchedRankedRanks]);
             setFilePicks([...fetchedFilePicks]);
-          } else {
+          } else if(fetchedRankMatchups && fetchedFileMatchups && fetchedRankMatchups) {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
               game: matchup,
               value: null,
@@ -208,6 +208,17 @@ const FormContainer = ( {User}) => {
     navigate('/endofform');
     sendToServer();
   };
+
+  if(!fetchedMatchupsResponse || !rankPicks || !filePicks || !rankedRanks ){
+    <>
+      <Navbar></Navbar>
+      <div className='navbar-offset-container'>
+        <div className='FormContainer'>
+          <h1>Sunday School {week}</h1>
+        </div>
+      </div>
+    </>
+  }
 
   return (
     <>
