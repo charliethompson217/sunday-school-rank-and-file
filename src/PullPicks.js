@@ -6,7 +6,6 @@ import './App.css';
 Amplify.configure(awsExports);
 
 export default function PullPicks() {
-  const [currentConfigId, setCurrentConfigId] = useState("");
   const [players, setPlayers] = useState([]);
   const [playerPicks, setPlayerPicks] = useState([]);
   const [unsubmittedPlayers, setUnsubmittedPlayers] = useState([]);
@@ -95,13 +94,13 @@ export default function PullPicks() {
   
 
   function keepLastWord(inputString) {
-    const words = inputString.split(' ');
-    if (words.length > 0) {
-      const lastWord = words[words.length - 1];
-      return lastWord;
+    if (typeof inputString !== 'string' || inputString.trim() === '') {
+      return '';
     }
-    return inputString;
-  }
+    const words = inputString.split(' ');
+    return words[words.length - 1];
+  };
+
   const fixRankedRanks = (array) =>{
     array.reverse();
     let newArray = [...array];

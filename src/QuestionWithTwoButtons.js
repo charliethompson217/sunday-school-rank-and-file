@@ -77,13 +77,13 @@ const QuestionWithTwoButtons = ({ question, label1, label2, answer, onInputChang
     'Chiefs': Chiefs,
   };
   function keepLastWord(inputString) {
-    const words = inputString.split(' ');
-    if (words.length > 0) {
-      const lastWord = words[words.length - 1];
-      return lastWord;
+    if (typeof inputString !== 'string' || inputString.trim() === '') {
+      return '';
     }
-    return inputString;
-  }
+    const words = inputString.split(' ');
+    return words[words.length - 1];
+  };
+  
   return (
     <div className='QuestionWithTwoButtons'>
       <div className='Question-Description'>

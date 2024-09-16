@@ -6,13 +6,13 @@ export default function EndOfForm() {
   const {fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks  } = useContext(DataContext);
 
   function keepLastWord(inputString) {
-    const words = inputString.split(' ');
-    if (words.length > 0) {
-      const lastWord = words[words.length - 1];
-      return lastWord;
+    if (typeof inputString !== 'string' || inputString.trim() === '') {
+      return '';
     }
-    return inputString;
-  }
+    const words = inputString.split(' ');
+    return words[words.length - 1];
+  };
+  
   return (
     <>
       <Navbar></Navbar>

@@ -40,7 +40,7 @@ export default function Admin() {
   }, []);
 
   return (
-    <div >
+    <div style={{ minWidth: '800px' }}>
       <div  style={{ display: 'flex', marginBottom: '20px' }}>
         <div className='Admin' style={{ width: '30%' }}>
           <Configuration />

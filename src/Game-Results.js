@@ -34,35 +34,37 @@ const LivePicks = () => {
                 console.warn('fetchedGameResults is undefined or null');
                 return; 
             }
-    
-            const matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
-                body: {
-                    week: `${curWeek}`,
-                },
-            });
-    
-            const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
+            try {
+                const matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+                    body: {
+                        week: `${curWeek}`,
+                    },
+                });
+                const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
         
-            setRankMatchups(fetchedRankMatchups);
-            setFileMatchups(fetchedFileMatchups);
+                setRankMatchups(fetchedRankMatchups);
+                setFileMatchups(fetchedFileMatchups);
+            
+                const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[curWeek] || {};
         
-            const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[week] || {};
-    
-            if (fetchedRankResults && fetchedFileResults) {
-                setRankPicks(fetchedRankResults);
-                setFilePicks(fetchedFileResults);
-            } else if (fetchedRankMatchups && fetchedFileMatchups) {
-                const initialRankPicks = fetchedRankMatchups?.map((matchup) => ({
-                    game: matchup,
-                    value: null,
-                })) || [];
-                setRankPicks(initialRankPicks);
-    
-                const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
-                    game: matchup,
-                    value: null,
-                })) || [];
-                setFilePicks(initialFilePicks);
+                if (fetchedRankResults && fetchedFileResults) {
+                    setRankPicks(fetchedRankResults);
+                    setFilePicks(fetchedFileResults);
+                } else if (fetchedRankMatchups && fetchedFileMatchups) {
+                    const initialRankPicks = fetchedRankMatchups?.map((matchup) => ({
+                        game: matchup,
+                        value: null,
+                    })) || [];
+                    setRankPicks(initialRankPicks);
+        
+                    const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
+                        game: matchup,
+                        value: null,
+                    })) || [];
+                    setFilePicks(initialFilePicks);
+                }
+            } catch (error) {
+                console.error(error);
             }
         };
     
@@ -75,43 +77,47 @@ const LivePicks = () => {
 
     const onRankPicksChange = (index, value) => {
         setRankPicks((prevRankPicks) =>
-          prevRankPicks.map((pick, i) =>
-            i === index ? { ...pick, value } : pick
-          )
+            prevRankPicks.map((pick, i) =>
+                i === index ? { ...pick, value } : pick
+            )
         );
-      };
-      const onFilePicksChange = (index, value) => {
+    };
+    const onFilePicksChange = (index, value) => {
         setFilePicks((prevFilePicks) =>
-          prevFilePicks.map((pick, i) =>
-            i === index ? { ...pick, value } : pick
-          )
+            prevFilePicks.map((pick, i) =>
+                i === index ? { ...pick, value } : pick
+            )
         );
-      };
-      const sendToServer = async () => {
+    };
+    const sendToServer = async () => {
         try {
-          const session = await Auth.currentSession();
-          const idToken = session.getIdToken().getJwtToken();
-          await API.post('ssAdmin', '/admin/upload-game-results', {
-            headers: {
-                Authorization: `Bearer ${idToken}`
-            },
-            body: {
-                week: week,
-                rankResults: rankPicks,
-                fileResults: filePicks,
-            }
-          });
-          setHasSubmit(true);
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            await API.post('ssAdmin', '/admin/upload-game-results', {
+                headers: {
+                    Authorization: `Bearer ${idToken}`
+                },
+                body: {
+                    week: week,
+                    rankResults: rankPicks,
+                    fileResults: filePicks,
+                }
+            });
+            setNewGameResults(week, rankPicks, filePicks);
+            setHasSubmit(true);
         } catch (error) {
-          console.error('Error submitting game results:', error);
+            console.error('Error submitting game results:', error);
         }
-      }
-      const refresh = () => {
+    };
+
+    const refresh = () => {
         setHasSubmit(false);
-      };
-      useEffect(() => {
+    };
+
+    useEffect(() => {
         setHasSubmit(false);
-      }, [ week]);
+    }, [ week]);
+
     if(hasSubmit){
         return (
             <div className="">

@@ -720,6 +720,7 @@ Mobile specific CSS
 }
 .weekly-picks {
   padding-right: 40px;
+  padding-left: 20px;
 }
 .weekly-picks tr {
   margin: 0;
@@ -737,4 +738,17 @@ Mobile specific CSS
   margin: 0;
   padding: 0;
 }
+
+.correct {
+  background-color: rgba(0, 120, 0, 1);
+}
+
+.incorrect {
+  background-color: rgba(190, 5, 5, 1);
+}
+
+.undecided {
+  background-color: var(--secondary-button-color);
+}
+
 

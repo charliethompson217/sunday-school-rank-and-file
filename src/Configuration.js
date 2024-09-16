@@ -104,6 +104,23 @@ export default function Configuration() {
 
     return (
         <div>
+            <h2>Current Week</h2>
+            <form onSubmit={handleCurWeekSubmit}>
+                <div>
+                    <label htmlFor="Current-weekSelect">Current Week:</label>
+                    <select id="Current-weekSelect" value={curWeek} onChange={(e) => setCurWeek(e.target.value)}>
+                        {weekOptions.map((option) => (
+                            <option key={option} value={option}>
+                            {option}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <p>{status2}</p>
+                <div>
+                    <button type="submit">Update Current Week</button>
+                </div>
+            </form>
             <h2>Matchups</h2>
                 <form onSubmit={handleSubmit}>
                 <div>

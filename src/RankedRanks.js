@@ -4,13 +4,13 @@ import p5 from 'p5';
 const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
     const sketchRef = useRef();
     function keepLastWord(inputString) {
-        const words = inputString.split(' ');
-        if (words.length > 0) {
-            const lastWord = words[words.length - 1];
-            return lastWord;
-        }
-        return inputString;
+    if (typeof inputString !== 'string' || inputString.trim() === '') {
+        return '';
     }
+    const words = inputString.split(' ');
+    return words[words.length - 1];
+    };
+
     useEffect(() => {
         const sketch = (p) => {
             let rankedOptions = rankedRanks;
@@ -180,7 +180,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
         <p>
             Now, you will rank your selected Rank winners. Rank your highest points at top and lowest points at bottom. The rank number next to each team is how many points you will earn if that team wins. This also means that your five picks closest from the bottom (picks 1 through 5) will be the teams that must win in order for you to earn the weekly bonus.
         </p>
-        <div id="sketch-container" ref={sketchRef} style={{ display: 'flex', justifyContent: 'left' }}></div>
+        <div id="sketch-container" ref={sketchRef} style={{ display: 'flex', justifyContent: 'left', boxShadow: '2px 2px 2px 1px rgb(0 0 0 / 20%)', width: 'fit-content' }}></div>
         </>
     );
 };

@@ -42,29 +42,6 @@ def handler(event, context):
             most_recent_entry = response['Items'][0]
             week = most_recent_entry['week']
 
-            response = table.query(
-                KeyConditionExpression=Key('ClientId').eq("matchups"),
-                ScanIndexForward=False
-            )
-            for item in response.get('Items', []):
-                if item.get('week') == week:
-                    if 'Timestamp' in item:
-                        item['Timestamp']=str(item['Timestamp'])
-                        closeTime = item['closeTime']
-                        dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
-                        unix_closeTime = int(dt_object.timestamp())
-            timestamp = int(time.time())
-            if unix_closeTime < timestamp:
-                week = increment_last_number(week)
-                table_name = f'configuration-{env}'
-                table = dynamodb.Table(table_name)
-                body = json.loads(event['body'])
-                item = {
-                    'ClientId': "cur-week",
-                    'Timestamp': timestamp,
-                    'week': week,
-                }
-                table.put_item(Item=item)
             return {
                 'statusCode': 200,
                 'headers': {
@@ -74,6 +51,8 @@ def handler(event, context):
                 },
                 'body': json.dumps(week)
             }
+
+            
         elif path_parameters['operation'] == "get-game-results":            
             response = table.query(
                 KeyConditionExpression=Key('ClientId').eq("game-results"),
