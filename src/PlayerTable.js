@@ -8,11 +8,17 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 Amplify.configure(awsExports);
 
 const PlayerTable = ({ fetchedPlayers }) => {
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+  const [sortConfig, setSortConfig] = useState({ key: 'fullName', direction: 'ascending' });
   const [sortedPlayers, setSortedPlayers] = useState([]);
 
   useEffect(() => {
-    setSortedPlayers(fetchedPlayers); // Initialize sortedPlayers when fetchedPlayers changes
+    const playersToSort = [...fetchedPlayers];
+    playersToSort.sort((a, b) => {
+      let aValue = a['fullName'].toLowerCase();
+      let bValue = b['fullName'].toLowerCase();
+      return aValue.localeCompare(bValue);
+    });
+    setSortedPlayers(playersToSort);
   }, [fetchedPlayers]);
 
   const sortPlayers = (key) => {
@@ -20,20 +26,27 @@ const PlayerTable = ({ fetchedPlayers }) => {
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
-    const newSortConfig = { key, direction };
-    setSortConfig(newSortConfig);
 
-    const playersToSort = [...fetchedPlayers]; // Sort based on the original fetched players
+    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks'){
+      direction = 'descending';
+      if (sortConfig.key === key && sortConfig.direction === 'descending') {
+        direction = 'ascending';
+      }
+    }
+    setSortConfig({ key, direction });
+
+    const playersToSort = [...sortedPlayers];
     playersToSort.sort((a, b) => {
       let aValue = a[key];
       let bValue = b[key];
 
       if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks') {
-        aValue = parseFloat(aValue.replace(/[\$,]/g, ''));
-        bValue = parseFloat(bValue.replace(/[\$,]/g, ''));
+        aValue = parseFloat(aValue.replace(/[$,]/g, ''));
+        bValue = parseFloat(bValue.replace(/[$,]/g, ''));
       } else if (typeof aValue === 'string') {
         aValue = aValue.toLowerCase();
         bValue = bValue.toLowerCase();
+        return direction === 'ascending' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
       }
 
       if (aValue < bValue) {
@@ -117,8 +130,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
         </tbody>
       </table>
     </div>
-
   );
-}
+};
 
 export default PlayerTable;

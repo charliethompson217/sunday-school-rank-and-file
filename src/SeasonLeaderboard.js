@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {Amplify } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 import awsExports from './aws-exports';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -9,12 +9,20 @@ import { DataContext } from './DataContext';
 Amplify.configure(awsExports);
 
 const SeasonLeaderboard = () => {
-  const { fetchedPlayers} = useContext(DataContext);
+  const { fetchedPlayers } = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: '', direction: '' });
+  const [sortConfig, setSortConfig] = useState({ key: 'RankPoints', direction: 'descending' });
 
   useEffect(() => {
-    setSortedPlayers(fetchedPlayers);
+    if (fetchedPlayers && fetchedPlayers.length > 0) {
+      const playersToSort = [...fetchedPlayers];
+      playersToSort.sort((a, b) => {
+        let aValue = parseFloat(a['RankPoints']);
+        let bValue = parseFloat(b['RankPoints']);
+        return bValue - aValue;
+      });
+      setSortedPlayers(playersToSort);
+    }
   }, [fetchedPlayers]);
 
   const sortPlayers = (key) => {
@@ -22,6 +30,14 @@ const SeasonLeaderboard = () => {
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
+
+    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks'){
+      direction = 'descending';
+      if (sortConfig.key === key && sortConfig.direction === 'descending') {
+        direction = 'ascending';
+      }
+    }
+
     setSortConfig({ key, direction });
 
     const playersToSort = [...sortedPlayers];
@@ -56,42 +72,42 @@ const SeasonLeaderboard = () => {
 
   return (
     <table className='player-table'>
-        <thead>
+      <thead>
         <tr>
-            <th onClick={() => sortPlayers('teamName')} className='table-header'>
+          <th onClick={() => sortPlayers('teamName')} className='table-header'>
             Team {getSortIcon('teamName')}
-            </th>
-            <th onClick={() => sortPlayers('RankPoints')} className='table-header'>
+          </th>
+          <th onClick={() => sortPlayers('RankPoints')} className='table-header'>
             Rank Points {getSortIcon('RankPoints')}
-            </th>
-            <th onClick={() => sortPlayers('FileWins')} className='table-header'>
+          </th>
+          <th onClick={() => sortPlayers('FileWins')} className='table-header'>
             File Wins {getSortIcon('FileWins')}
-            </th>
-            <th onClick={() => sortPlayers('PlayoffsBucks')} className='table-header'>
+          </th>
+          <th onClick={() => sortPlayers('PlayoffsBucks')} className='table-header'>
             Playoffs Bucks {getSortIcon('PlayoffsBucks')}
-            </th>
-            <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
+          </th>
+          <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
             Total Dollar Payout {getSortIcon('TotalDollarPayout')}
-            </th>
+          </th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         {sortedPlayers && sortedPlayers.length > 0 ? (
-        sortedPlayers.map(player => (
+          sortedPlayers.map(player => (
             <tr key={player.playerId}>
-            <td>{player.teamName}</td>
-            <td>{player.RankPoints}</td>
-            <td>{player.FileWins}</td>
-            <td>{player.PlayoffsBucks}</td>
-            <td>{player.TotalDollarPayout}</td>
+              <td>{player.teamName}</td>
+              <td>{player.RankPoints}</td>
+              <td>{player.FileWins}</td>
+              <td>{player.PlayoffsBucks}</td>
+              <td>{player.TotalDollarPayout}</td>
             </tr>
-        ))
+          ))
         ) : (
-        <tr>
+          <tr>
             <td colSpan="5">No players available</td>
-        </tr>
+          </tr>
         )}
-        </tbody>
+      </tbody>
     </table>
   );
 };

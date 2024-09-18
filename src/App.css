@@ -179,6 +179,18 @@ body{
   border-collapse: collapse;
   width: 100%;
   border: 1px solid var(--primary-button-color);
+  table-layout: fixed; /* Ensure fixed layout for table */
+}
+
+.player-table th, .player-table td {
+  padding: 8px;
+  border: 1px solid var(--primary-button-color);
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflowed content */
+  text-overflow: ellipsis; /* Add ellipsis (...) when text overflows */
+  min-width: 150px; /* Set a minimum width for the columns */
+  max-width: 150px; /* Set a maximum width for the columns */
+  text-align: center; /* Ensure text is centered */
 }
 
 .table-header {
@@ -186,12 +198,13 @@ body{
   color: black;
   padding: 10px;
   border: 1px solid var(--primary-button-color);
+  min-width: 150px;
+  max-width: 150px;
+  white-space: nowrap; /* Prevent text wrapping */
+  overflow: hidden; /* Hide overflowed content */
+  text-overflow: ellipsis; /* Add ellipsis (...) when text overflows */
 }
 
-.player-table td {
-  padding: 8px;
-  border: 1px solid var(--primary-button-color);
-}
 
 .navbar-offset-container {
   margin-top: 70px;

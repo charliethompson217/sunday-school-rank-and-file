@@ -18,6 +18,15 @@ const WeeklyPicks = () => {
     'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
   ];
 
+  const fixRankedRanks = (array) =>{
+    array.reverse();
+    let newArray = [...array];
+    for (let i = 0; i < newArray.length; i++) {
+        newArray[array[i]-1] = i+1;
+    }
+    return newArray;
+  }
+
   function decrementLastNumber(str) {
     return str?.replace(/\d+$/, (num) => parseInt(num, 10) - 1) || 'Choose week';
   }
@@ -33,19 +42,27 @@ const WeeklyPicks = () => {
     if (week !== 'Choose week') {
       const weekNumber = week.split(' ')[1];
       const weekIndex = parseInt(weekNumber, 10) - 1;
-
+  
       const weekSubmissions = submissions?.[weekIndex] || [];
-
+  
       const submissionsByPlayer = weekSubmissions.reduce((acc, submission) => {
         if (submission?.playerId) {
-          acc[submission.playerId] = submission;
+          const rankRanks = submission?.rankedRanks ? JSON.parse(submission.rankedRanks) : [];
+  
+          const fixedRankedRanks = fixRankedRanks(rankRanks);
+  
+          acc[submission.playerId] = {
+            ...submission,
+            rankedRanks: JSON.stringify(fixedRankedRanks)
+          };
         }
         return acc;
       }, {});
-
+  
       setFilteredSubmissions(submissionsByPlayer);
     }
   }, [week, submissions]);
+  
 
   function keepLastWord(inputString) {
     if (typeof inputString !== 'string' || inputString.trim() === '') {
@@ -89,7 +106,7 @@ const WeeklyPicks = () => {
 
   const { maxRankWidths, maxFileWidths } = calculateMaxColumnWidths(sortedPlayers);
 
-  const getWidth = (length) => `${length * 10.5}px`;
+  const getWidth = (length) => `${length * 11}px`;
 
   const calculatePoints = (submission, currentWeekResults) => {
     const rankPicks = submission?.rankPicks ? JSON.parse(submission.rankPicks) : [];
@@ -174,9 +191,9 @@ const WeeklyPicks = () => {
         <table className="weekly-picks">
           <thead>
             <tr>
-              <th>Team</th>
-              <th>Rank Picks</th>
-              <th style={{paddingLeft: '15px', whiteSpace: 'nowrap',}}>File Picks</th>
+              <th style={{ padding: '10px', backgroundColor: 'black', color: 'white', borderRadius: '10px 0px 0px 10px', height: '30px'}}>Team</th>
+              <th style={{ padding: '10px', backgroundColor: 'black', color: 'white', borderRadius: '0px 0px 0px 0px', height: '30px'}}>Rank Picks</th>
+              <th style={{ paddingRight: '15px', paddingLeft: '15px', whiteSpace: 'nowrap', backgroundColor: 'black', color: 'white', borderRadius: '0px 10px 10px 0px', height: '30px'}}>File Picks</th>
             </tr>
           </thead>
           <tbody>
