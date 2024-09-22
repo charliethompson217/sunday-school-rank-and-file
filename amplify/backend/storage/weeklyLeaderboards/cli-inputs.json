@@ -1,0 +1,14 @@
+{
+  "resourceName": "weeklyLeaderboards",
+  "tableName": "weeklyLeaderboards",
+  "partitionKey": {
+    "fieldName": "Week",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "Timestamp",
+    "fieldType": "number"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

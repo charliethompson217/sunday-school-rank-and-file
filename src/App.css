@@ -193,6 +193,13 @@ body{
   text-align: center; /* Ensure text is centered */
 }
 
+
+
+.weekly-leaderboard{
+  min-width: 1400px;
+}
+
+
 .table-header {
   background-color: var(--primary-button-color);
   color: black;
@@ -424,6 +431,12 @@ body{
 
 /* Mobile Responsive */
 @media (max-width: 600px) {
+  .weekly-leaderboard .table-header, .player-table .table-header{
+    height: 100px;
+    white-space: wrap;
+    padding: 0px;
+  }
+  
   .account {
     padding: 20px;
     margin: 20px;

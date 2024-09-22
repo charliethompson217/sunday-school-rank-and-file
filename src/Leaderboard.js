@@ -4,6 +4,7 @@ import awsExports from './aws-exports';
 
 import SeasonLeaderboard from './SeasonLeaderboard';
 import WeeklyPicks from './WeeklyPicks';
+import WeeklyLeaderboard from './WeeklyLeaderboard';
 
 Amplify.configure(awsExports);
 
@@ -23,6 +24,9 @@ const Leaderboard = () => {
       )}
       {activeChart === 'weeklypicks' && (
         <WeeklyPicks></WeeklyPicks>
+      )}
+      {activeChart === 'weeklyleaderboard' && (
+        <WeeklyLeaderboard></WeeklyLeaderboard>
       )}
     </div>
   );

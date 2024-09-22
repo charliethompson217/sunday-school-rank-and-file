@@ -15,10 +15,18 @@ export const DataProvider = ({ user, children }) => {
     const [fetchedRankPicks, setFetchedRankPicks] = useState([]);
     const [fetchedRankedRanks, setFetchedRankedRanks] = useState([]);
     const [fetchedFilePicks, setFetchedFilePicks] = useState([]);
+    const [fetchedWeeklyLeaderboards, setFetchedWeeklyLeaderboards] = useState([]);
 
     // Fetch data from the server
     useEffect(() => {
         const fetchData = async () => {
+
+            try {
+                const Fetched_Cur_Week = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
+                setFetchedCurWeek(Fetched_Cur_Week);
+            } catch (error) {
+                console.log(error);
+            }
             try {
                 const Fetched_Players = await API.get('playerApi', '/player/get-players');
                 setFetchedPlayers(Fetched_Players);
@@ -42,13 +50,19 @@ export const DataProvider = ({ user, children }) => {
 
             try {
                 const Fetched_Cur_Week = await API.get('sundaySchoolConfiguration', '/configuration/get-current-week');
-                setFetchedCurWeek(Fetched_Cur_Week);
                 const Fetched_Matchups_Response = await API.put('sundaySchoolConfiguration', '/configuration/matchups', {
                     body: {
                         week: `${Fetched_Cur_Week}`,
                     },
                 });
                 setFetchedMatchupsResponse(Fetched_Matchups_Response);
+            } catch (error) {
+                console.log(error);
+            }
+            
+            try {
+                const Fetched_Weekly_Leaderboards = await API.get('playerApi', '/player/get-weekly-Leaderboards');
+                setFetchedWeeklyLeaderboards(Fetched_Weekly_Leaderboards);
             } catch (error) {
                 console.log(error);
             }
@@ -135,6 +149,7 @@ export const DataProvider = ({ user, children }) => {
             fetchedRankedRanks,
             fetchedFilePicks,
             setNewGameResults,
+            fetchedWeeklyLeaderboards,
         }}>
             {children}
         </DataContext.Provider>

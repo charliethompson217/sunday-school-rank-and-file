@@ -25,11 +25,11 @@ const WeeklyPicks = () => {
         newArray[array[i]-1] = i+1;
     }
     return newArray;
-  }
+  };
 
   function decrementLastNumber(str) {
     return str?.replace(/\d+$/, (num) => parseInt(num, 10) - 1) || 'Choose week';
-  }
+  };
 
   useEffect(() => {
     setSortedPlayers(fetchedPlayers || []);

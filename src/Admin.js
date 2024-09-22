@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
-import Configuration from './Configuration';
+import UpdateMatchups from './UpdateMatchups';
 import PullPicks from './PullPicks';
 import PlayerTable from './PlayerTable';
-import Points from './Points';
+import UpdateSeasonLeaderboard from './UpdateSeasonLeaderboard';
+import UpdateWeeklyLeaderboard from './UpdateWeeklyLeaderboard';
 import GameResults from './Game-Results';
 
 Amplify.configure(awsExports);
@@ -43,8 +44,9 @@ export default function Admin() {
     <div style={{ minWidth: '800px' }}>
       <div  style={{ display: 'flex', marginBottom: '20px' }}>
         <div className='Admin' style={{ width: '30%' }}>
-          <Configuration />
-          <Points players={players} />
+          <UpdateMatchups />
+          <UpdateSeasonLeaderboard players={players} />
+          <UpdateWeeklyLeaderboard players={players} />
           <PullPicks players={players} />
         </div>
         <div>
@@ -52,7 +54,6 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* This is the full-width PlayerTable at the bottom */}
       <div style={{ width: '100%' }}>
         <PlayerTable fetchedPlayers={players} />
       </div>

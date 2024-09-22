@@ -6,6 +6,7 @@ import time
 from botocore.exceptions import ClientError
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import re
 
 dynamodb = boto3.resource('dynamodb')
 
@@ -40,6 +41,7 @@ def handler(event, context):
     headers = event['headers']
     path_parameters = event['pathParameters']
     action = path_parameters['action']
+    print(action)
     jwt_token = headers['Authorization'].split(' ')[1]
     parts = jwt_token.split('.')
     payload = parts[1]
@@ -155,7 +157,7 @@ def handler(event, context):
                     'body': json.dumps(most_recent_entries)
                 }
 
-            if(action == "edit-player-stats"):
+            elif(action == "edit-player-stats"):
                 table_name = f'sundaySchoolPlayers-{env}'
                 table = dynamodb.Table(table_name)
                 body = json.loads(event['body'])
@@ -183,16 +185,6 @@ def handler(event, context):
                         )
                     except Exception as e:
                         print(f"Error updating player {playerId}: {e}")
-                        # Output the exact update expression and values for debugging
-                        print("Update Expression:")
-                        print('SET RankPoints = :rankPoints, FileWins = :fileWins, PlayoffsBucks = :playoffsBucks, TotalDollarPayout = :totalDollarPayout')
-                        print("Expression Attribute Values:")
-                        print({
-                            ':rankPoints': rankPoints,
-                            ':fileWins': fileWins,
-                            ':playoffsBucks': playoffsBucks,
-                            ':totalDollarPayout': totalDollarPayout,
-                        })
                         raise
                 return {
                     'statusCode': 200,
@@ -203,6 +195,31 @@ def handler(event, context):
                     },
                     'body': json.dumps("Player Stats Updated!")
                 }
+            else:
+                pattern = r"^edit-Week%20(\d{1,2})leaderboard$"
+                match = re.match(pattern, action)
+                if match:
+                    week_number = match.group(1)
+                    table_name = f'weeklyLeaderboards-{env}'
+                    table = dynamodb.Table(table_name)
+                    timestamp = int(time.time())
+                    body = json.loads(event['body'])
+                    item = {
+                        'Timestamp': timestamp,
+                        'Week': f'Week {week_number}',
+                        'data': body.get('data'),
+                    }
+                    table.put_item(Item=item)
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Access-Control-Allow-Headers': '*',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                        },
+                        'body': json.dumps(f'Week {week_number} leaderboard updated')
+                    }
+
         elif method == 'GET':
             if(action == "get-players"):
                 table_name = f'sundaySchoolPlayers-{env}'
@@ -247,7 +264,39 @@ def handler(event, context):
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
                     'body': json.dumps(list_of_values)
-                }            
+                }
+            else:
+                pattern = r"^fetch-Week%20(\d{1,2})leaderboard$"
+                match = re.match(pattern, action)
+                if match:
+                    week_number = match.group(1)
+                    # Retrieve the secret
+                    creds = get_secret()
+                    # Authorize with the Google Sheets and Drive API
+                    creds_json = json.dumps(creds)  # gspread requires credentials as a file-like object
+                    credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(creds_json), [
+                        'https://www.googleapis.com/auth/spreadsheets',
+                        'https://www.googleapis.com/auth/drive',
+                    ])
+                    # Use creds to create a client to interact with the Google Drive API
+                    gc = gspread.authorize(credentials)
+                    # Make sure you use the right url here.
+                    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1sLEqJF3xtKneBczD37eaMvMexlHCC1INcOlQZeacJOQ/edit"
+                    sheet = gc.open_by_url(spreadsheet_url).worksheet(f'Week {week_number} Leaderboard')
+
+                    # Extract and print all of the values
+                    list_of_values = sheet.get_values()
+                    print(list_of_values)
+                    return {
+                        'statusCode': 200,
+                        'headers': {
+                            'Access-Control-Allow-Headers': '*',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                        },
+                        'body': json.dumps(list_of_values)
+                    }
+
     return {
         'statusCode': 403,
         'headers': {

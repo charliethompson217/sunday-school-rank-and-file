@@ -3,8 +3,23 @@ import json
 import os
 import boto3
 import time
+import re
+from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
+
+def convert_decimal(item):
+    if isinstance(item, list):
+        return [convert_decimal(i) for i in item]
+    elif isinstance(item, dict):
+        return {k: convert_decimal(v) for k, v in item.items()}
+    elif isinstance(item, Decimal):
+        if item % 1 == 0:
+            return int(item)
+        else:
+            return float(item)
+    else:
+        return item
 
 def handler(event, context):
     print('received event:')
@@ -17,25 +32,62 @@ def handler(event, context):
     table = dynamodb.Table(table_name)
 
     if method == 'GET':
-        print(playerId)
-        response = table.scan()
-        players = response['Items']
-        for player in players:
-            if 'Timestamp' in player:
-                player['Timestamp']=str(player['Timestamp'])
-            if 'email' in player:
-                del player['email']
-            if 'fullname' in player:
-                del player['fullname']
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps(players)
-        }
+        if (playerId == 'get-weekly-Leaderboards'):
+            table_name = f'weeklyLeaderboards-{env}'
+            table = dynamodb.Table(table_name)
+            response = table.scan()
+            items = response.get('Items', [])
+
+            if items:
+                most_recent_by_week = {}
+                for item in items:
+                    week = item['Week']
+                    timestamp = item['Timestamp']
+                    if week not in most_recent_by_week or timestamp > most_recent_by_week[week]['Timestamp']:
+                        most_recent_by_week[week] = item
+                
+                result = list(most_recent_by_week.values())
+                result = convert_decimal(result)
+
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps(result)
+                }
+            else:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps("no weekly leaderboards found!")
+                }
+        else:
+            print(playerId)
+            response = table.scan()
+            players = response['Items']
+            for player in players:
+                if 'Timestamp' in player:
+                    player['Timestamp']=str(player['Timestamp'])
+                if 'email' in player:
+                    del player['email']
+                if 'fullname' in player:
+                    del player['fullname']
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps(players)
+            }
     elif method == 'POST':
         timestamp = int(time.time())
         body = json.loads(event['body'])

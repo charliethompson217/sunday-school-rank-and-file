@@ -97,6 +97,15 @@
           ],
           "category": "storage",
           "resourceName": "sundaySchoolPlayers"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "weeklyLeaderboards"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -138,6 +147,15 @@
           ],
           "category": "storage",
           "resourceName": "sundaySchoolPlayers"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "weeklyLeaderboards"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -284,6 +302,10 @@
       "service": "DynamoDB"
     },
     "sundaySchoolPlayers": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "weeklyLeaderboards": {
       "providerPlugin": "awscloudformation",
       "service": "DynamoDB"
     }

@@ -71,44 +71,51 @@ const SeasonLeaderboard = () => {
   );
 
   return (
-    <table className='player-table'>
-      <thead>
-        <tr>
-          <th onClick={() => sortPlayers('teamName')} className='table-header'>
-            Team {getSortIcon('teamName')}
-          </th>
-          <th onClick={() => sortPlayers('RankPoints')} className='table-header'>
-            Rank Points {getSortIcon('RankPoints')}
-          </th>
-          <th onClick={() => sortPlayers('FileWins')} className='table-header'>
-            File Wins {getSortIcon('FileWins')}
-          </th>
-          <th onClick={() => sortPlayers('PlayoffsBucks')} className='table-header'>
-            Playoffs Bucks {getSortIcon('PlayoffsBucks')}
-          </th>
-          <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
-            Total Dollar Payout {getSortIcon('TotalDollarPayout')}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {sortedPlayers && sortedPlayers.length > 0 ? (
-          sortedPlayers.map(player => (
-            <tr key={player.playerId}>
-              <td>{player.teamName}</td>
-              <td>{player.RankPoints}</td>
-              <td>{player.FileWins}</td>
-              <td>{player.PlayoffsBucks}</td>
-              <td>{player.TotalDollarPayout}</td>
-            </tr>
-          ))
-        ) : (
+    <div>
+      <select style={{visibility: 'hidden'}} >
+          <option>
+            Hide
+          </option>
+      </select>
+      <table className='player-table'>
+        <thead>
           <tr>
-            <td colSpan="5">No players available</td>
+            <th onClick={() => sortPlayers('teamName')} className='table-header'>
+              Team {getSortIcon('teamName')}
+            </th>
+            <th onClick={() => sortPlayers('RankPoints')} className='table-header'>
+              Rank Points {getSortIcon('RankPoints')}
+            </th>
+            <th onClick={() => sortPlayers('FileWins')} className='table-header'>
+              File Wins {getSortIcon('FileWins')}
+            </th>
+            <th onClick={() => sortPlayers('PlayoffsBucks')} className='table-header'>
+              Playoffs Bucks {getSortIcon('PlayoffsBucks')}
+            </th>
+            <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
+              Total Dollar Payout {getSortIcon('TotalDollarPayout')}
+            </th>
           </tr>
-        )}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {sortedPlayers && sortedPlayers.length > 0 ? (
+            sortedPlayers.map(player => (
+              <tr key={player.playerId}>
+                <td>{player.teamName}</td>
+                <td>{player.RankPoints}</td>
+                <td>{player.FileWins}</td>
+                <td>{player.PlayoffsBucks}</td>
+                <td>{player.TotalDollarPayout}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No players available</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

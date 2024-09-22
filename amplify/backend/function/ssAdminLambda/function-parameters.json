@@ -26,6 +26,12 @@
         "read",
         "update",
         "delete"
+      ],
+      "weeklyLeaderboards": [
+        "create",
+        "read",
+        "update",
+        "delete"
       ]
     }
   },

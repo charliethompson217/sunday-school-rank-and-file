@@ -27,6 +27,18 @@
     "storagesundaySchoolPlayersStreamArn": {
       "Type": "String",
       "Default": "storagesundaySchoolPlayersStreamArn"
+    },
+    "storageweeklyLeaderboardsName": {
+      "Type": "String",
+      "Default": "storageweeklyLeaderboardsName"
+    },
+    "storageweeklyLeaderboardsArn": {
+      "Type": "String",
+      "Default": "storageweeklyLeaderboardsArn"
+    },
+    "storageweeklyLeaderboardsStreamArn": {
+      "Type": "String",
+      "Default": "storageweeklyLeaderboardsStreamArn"
     }
   },
   "Conditions": {
@@ -90,6 +102,15 @@
             },
             "STORAGE_SUNDAYSCHOOLPLAYERS_STREAMARN": {
               "Ref": "storagesundaySchoolPlayersStreamArn"
+            },
+            "STORAGE_WEEKLYLEADERBOARDS_NAME": {
+              "Ref": "storageweeklyLeaderboardsName"
+            },
+            "STORAGE_WEEKLYLEADERBOARDS_ARN": {
+              "Ref": "storageweeklyLeaderboardsArn"
+            },
+            "STORAGE_WEEKLYLEADERBOARDS_STREAMARN": {
+              "Ref": "storageweeklyLeaderboardsStreamArn"
             }
           }
         },
@@ -204,22 +225,13 @@
             {
               "Effect": "Allow",
               "Action": [
-                "dynamodb:Put*",
-                "dynamodb:Create*",
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PartiQLInsert",
                 "dynamodb:Get*",
                 "dynamodb:BatchGetItem",
                 "dynamodb:List*",
                 "dynamodb:Describe*",
                 "dynamodb:Scan",
                 "dynamodb:Query",
-                "dynamodb:PartiQLSelect",
-                "dynamodb:Update*",
-                "dynamodb:RestoreTable*",
-                "dynamodb:PartiQLUpdate",
-                "dynamodb:Delete*",
-                "dynamodb:PartiQLDelete"
+                "dynamodb:PartiQLSelect"
               ],
               "Resource": [
                 {
@@ -231,6 +243,34 @@
                     [
                       {
                         "Ref": "storagesundaySchoolPlayersArn"
+                      },
+                      "index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect"
+              ],
+              "Resource": [
+                {
+                  "Ref": "storageweeklyLeaderboardsArn"
+                },
+                {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      {
+                        "Ref": "storageweeklyLeaderboardsArn"
                       },
                       "index/*"
                     ]
