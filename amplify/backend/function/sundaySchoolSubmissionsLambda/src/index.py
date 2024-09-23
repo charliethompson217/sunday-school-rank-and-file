@@ -34,7 +34,6 @@ def handler(event, context):
     table = dynamodb.Table(table_name)
     if method == 'GET':
         serverTimestamp = int(time.time())
-        
         table_name = f'configuration-{env}'
         table = dynamodb.Table(table_name)
         response = table.query(
@@ -53,8 +52,8 @@ def handler(event, context):
                 closeTime = item['closeTime']
                 dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
                 unix_closeTime = int(dt_object.timestamp())
-
         curWeekStillOpen = serverTimestamp < unix_closeTime
+        
         table_name = f'submissions-{env}'
         table = dynamodb.Table(table_name)
         response = table.scan()
@@ -88,48 +87,81 @@ def handler(event, context):
 
     elif method == 'POST':
         serverTimestamp = int(time.time())
-        body = json.loads(event['body'])
-        if(body.get('configId')!='1'):
-            jwt_token = body.get('jwt_token')
-            if(jwt_token == None):
-                return {
-                    'statusCode': 498,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Invalid Token')
-                }
-            
-            parts = jwt_token.split('.')
-            payload = parts[1]
-            decoded_payload = base64.b64decode(payload + "===").decode()
-            payload_json = json.loads(decoded_payload)
-            tokenPlayerId = payload_json.get('custom:playerId')
-            tokenTeam = payload_json.get('custom:team_name')
-            tokenName = payload_json.get('name')
-        item = {
-            'team': tokenTeam,
-            'fullName': tokenName,
-            'playerId': tokenPlayerId,
-            'Timestamp': serverTimestamp,
-            'week': body.get('week'),
-            'configId': body.get('configId'),
-            'rankPicks': body.get('rankPicks'),
-            'rankedRanks': body.get('rankedRanks'),
-            'filePicks':body.get('filePicks'),
-        }
-        table.put_item(Item=item)
-        return {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps('Picks inserted secsesfully!')
-        }
+        table_name = f'configuration-{env}'
+        table = dynamodb.Table(table_name)
+        response = table.query(
+            KeyConditionExpression=Key('ClientId').eq("cur-week"),
+            ScanIndexForward=False,
+            Limit=1
+        )
+        most_recent_entry = response['Items'][0]
+        curWeek = most_recent_entry['week']
+        response = table.query(
+            KeyConditionExpression=Key('ClientId').eq('matchups'),
+            ScanIndexForward=False
+        )
+        for item in response.get('Items', []):
+            if item.get('week') == curWeek:
+                closeTime = item['closeTime']
+                dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
+                unix_closeTime = int(dt_object.timestamp())
+        grace_period = 300  # 5 minutes in seconds
+        curWeekStillOpen = serverTimestamp < (unix_closeTime + grace_period)
+        if(curWeekStillOpen):
+            table_name = f'submissions-{env}'
+            table = dynamodb.Table(table_name)
+            body = json.loads(event['body'])
+            if(body.get('configId')!='1'):
+                jwt_token = body.get('jwt_token')
+                if(jwt_token == None):
+                    return {
+                        'statusCode': 498,
+                        'headers': {
+                            'Access-Control-Allow-Headers': '*',
+                            'Access-Control-Allow-Origin': '*',
+                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                        },
+                        'body': json.dumps('Invalid Token')
+                    }
+                
+                parts = jwt_token.split('.')
+                payload = parts[1]
+                decoded_payload = base64.b64decode(payload + "===").decode()
+                payload_json = json.loads(decoded_payload)
+                tokenPlayerId = payload_json.get('custom:playerId')
+                tokenTeam = payload_json.get('custom:team_name')
+                tokenName = payload_json.get('name')
+            item = {
+                'team': tokenTeam,
+                'fullName': tokenName,
+                'playerId': tokenPlayerId,
+                'Timestamp': serverTimestamp,
+                'week': body.get('week'),
+                'configId': body.get('configId'),
+                'rankPicks': body.get('rankPicks'),
+                'rankedRanks': body.get('rankedRanks'),
+                'filePicks':body.get('filePicks'),
+            }
+            table.put_item(Item=item)
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps('Picks inserted secsesfully!')
+            }
+        else:
+            return {
+                'statusCode': 418,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps('The deadline has passed!')
+            }
     elif method == 'PUT':
         body = json.loads(event['body'])
         jwt_token = body.get('jwt_token')

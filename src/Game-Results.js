@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { API, Auth } from 'aws-amplify';
 import './App.css';
-import QuestionWithTwoButtons from './QuestionWithTwoButtons';
+import QuestionWithThreeButtons from './QuestionWithThreeButtons';
 import { DataContext } from './DataContext';
 
 const LivePicks = () => {
-    const { fetchedCurWeek, fetchedGameResults, setNewGameResults } = useContext(DataContext);
+    const { fetchedCurWeek, fetchedGameResults } = useContext(DataContext);
     const [rankPicks, setRankPicks] = useState([]);
     const [rankMatchups, setRankMatchups] = useState([]);
     const [filePicks, setFilePicks] = useState([]);
@@ -68,10 +68,8 @@ const LivePicks = () => {
             }
         };
     
-        if (fetchedGameResults) {
+        if (fetchedGameResults && fetchedCurWeek) {
             setData();
-        } else {
-            console.warn('fetchedGameResults is not available');
         }
     }, [week, fetchedCurWeek, fetchedGameResults]);
 
@@ -103,7 +101,6 @@ const LivePicks = () => {
                     fileResults: filePicks,
                 }
             });
-            setNewGameResults(week, rankPicks, filePicks);
             setHasSubmit(true);
         } catch (error) {
             console.error('Error submitting game results:', error);
@@ -157,7 +154,7 @@ const LivePicks = () => {
             </div>
             <div className='Result-Games'>
                 {rankMatchups?.length > 0 && rankMatchups.map((data, index) => (
-                    <QuestionWithTwoButtons
+                    <QuestionWithThreeButtons
                         key={`rank-${index}`}
                         label1={data[0]}
                         label2={data[1]}
@@ -167,7 +164,7 @@ const LivePicks = () => {
                     />
                 ))}
                 {fileMatchups?.length > 0 && fileMatchups.map((data, index) => (
-                    <QuestionWithTwoButtons
+                    <QuestionWithThreeButtons
                         key={`file-${index}`}
                         label1={data[0]}
                         label2={data[1]}

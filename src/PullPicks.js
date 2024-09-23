@@ -192,7 +192,7 @@ export default function PullPicks() {
           <h4>The following {unsubmittedPlayers.length} players have not submited their picks:</h4>
           <ul>
             {unsubmittedPlayers.map(player => (
-              <li key={player}>
+              <li key={player.playerId}>
                 {player.fullName}
               </li>
             ))}

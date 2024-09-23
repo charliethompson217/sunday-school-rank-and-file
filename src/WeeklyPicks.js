@@ -106,7 +106,7 @@ const WeeklyPicks = () => {
 
   const { maxRankWidths, maxFileWidths } = calculateMaxColumnWidths(sortedPlayers);
 
-  const getWidth = (length) => `${length * 11}px`;
+  const getWidth = (length) => `${length * 8}px`;
 
   const calculatePoints = (submission, currentWeekResults) => {
     const rankPicks = submission?.rankPicks ? JSON.parse(submission.rankPicks) : [];
@@ -116,7 +116,7 @@ const WeeklyPicks = () => {
     let totalPoints = 0;
 
     rankPicks.forEach((game, gameIndex) => {
-      if (isPickCorrect(game, rankResults, gameIndex) === 'correct') {
+      if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'tie' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
         totalPoints += parseInt(rankRanks?.[gameIndex], 10) || 0;
       }
     });
@@ -126,7 +126,7 @@ const WeeklyPicks = () => {
     rankPicks.forEach((game, gameIndex) => {
         if (parseInt(rankRanks?.[gameIndex], 10)>5)
             return;
-        if (isPickCorrect(game, rankResults, gameIndex) === 'correct') {
+        if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
             checkBonus++;
         }
     });
@@ -136,7 +136,7 @@ const WeeklyPicks = () => {
     // check perfect sunday
     checkBonus = 0;
     rankPicks.forEach((game, gameIndex) => {
-        if (isPickCorrect(game, rankResults, gameIndex) === 'correct') {
+        if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
           checkBonus++;
         }
     });
@@ -172,6 +172,8 @@ const WeeklyPicks = () => {
 
     if (playerPick === resultPick) {
       return 'correct';
+    } if (resultPick === 'Tie'){
+      return 'tie';
     } else {
       return 'incorrect';
     }
@@ -191,9 +193,9 @@ const WeeklyPicks = () => {
         <table className="weekly-picks">
           <thead>
             <tr>
-              <th style={{ padding: '10px', backgroundColor: 'black', color: 'white', borderRadius: '10px 0px 0px 10px', height: '30px'}}>Team</th>
-              <th style={{ padding: '10px', backgroundColor: 'black', color: 'white', borderRadius: '0px 0px 0px 0px', height: '30px'}}>Rank Picks</th>
-              <th style={{ paddingRight: '15px', paddingLeft: '15px', whiteSpace: 'nowrap', backgroundColor: 'black', color: 'white', borderRadius: '0px 10px 10px 0px', height: '30px'}}>File Picks</th>
+              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '10px 0px 0px 10px', height: '20px'}}>Team (possible maximum)</th>
+              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 0px 0px 0px', height: '20px'}}>Rank Picks</th>
+              <th className="primary-btn-color" style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 10px 10px 0px', height: '20px'}}>File Picks</th>
             </tr>
           </thead>
           <tbody>
@@ -208,25 +210,26 @@ const WeeklyPicks = () => {
                 const fileResults = currentWeekResults?.fileResults || [];
 
                 return (
-                  <tr key={index}>
-                    <td style={{ 
+                  <tr key={player.playerId}>
+                    <td className="primary-btn-color"
+                    style={{ 
                         textAlign: 'right', 
                         verticalAlign: 'middle', 
                         fontWeight: 'bold', 
                         whiteSpace: 'nowrap', 
                         paddingRight: '10px',
                         paddingLeft: '10px',
-                        color: 'rgba(255, 255, 255, 0.6)',
-                        backgroundColor: 'black',
-                        height: '40px',
+                        color: 'black',
+                        height: '30px',
                         borderRadius: '10px 0px 0px 10px',
+                        fontSize: '12px',
                     }}>
                       {player?.teamName}  <span style={{
-                                              color: 'rgba(255, 255, 255, 0.8)',
+                                              color: 'black',
                                               padding: '5px',
                                               marginRight: '3px',
                                               marginLeft: '5px',
-                                              fontSize: '18px',
+                                              fontSize: '12px',
                                             }}>{player?.totalPoints}</span>
                     </td>
                     <td>
@@ -234,7 +237,7 @@ const WeeklyPicks = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: rankPicks.map((_, gameIndex) => getWidth(maxRankWidths[gameIndex])).join(' '),
-                          gap: '7px'
+                          gap: '2px'
                         }}>
                           {rankPicks.map((game, gameIndex) => {
                             const playerPick = keepLastWord(game?.value);
@@ -247,11 +250,10 @@ const WeeklyPicks = () => {
                                   justifyContent: 'center',
                                   alignItems: 'center',
                                   width: getWidth(maxRankWidths[gameIndex]),
-                                  height: '40px',
+                                  height: '30px',
                                   color: 'rgb(0,0,0)',
-                                  fontSize: '14px',
+                                  fontSize: '10px',
                                   fontWeight: '800',
-                                  border: '3px solid black',
                                   letterSpacing: '1px',
                                 }}
                               >
@@ -260,9 +262,9 @@ const WeeklyPicks = () => {
                                   borderStyle: 'none',
                                   borderRadius: '10px',
                                   color: 'rgba(255,255,255,0.5)',
-                                  padding: '5px',
+                                  padding: '3px',
                                   marginRight: '3px',
-                                  fontSize: '10px',
+                                  fontSize: '8px',
                                 }}>{rankRanks?.[gameIndex]}</span>{playerPick}
                               </div>
                             );
@@ -277,7 +279,7 @@ const WeeklyPicks = () => {
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: filePicks.map((_, gameIndex) => getWidth(maxFileWidths[gameIndex])).join(' '),
-                          gap: '6px',
+                          gap: '23px',
                           paddingLeft: '15px',
                         }}>
                           {filePicks.map((game, gameIndex) => {
@@ -291,13 +293,13 @@ const WeeklyPicks = () => {
                                   justifyContent: 'center',
                                   alignItems: 'center',
                                   width: getWidth(maxFileWidths[gameIndex]),
-                                  height: '40px',
+                                  height: '30px',
                                   color: 'rgb(0,0,0)',
-                                  fontSize: '14px',
-                                  fontWeight: '1000',
-                                  border: '3px solid black',
-                                  fontFamily: 'monospace',
+                                  fontSize: '12px',
+                                  fontWeight: '800',
                                   letterSpacing: '1px',
+                                  paddingLeft: '10px',
+                                  paddingRight: '10px',
                                 }}
                               >
                                 {playerPick}

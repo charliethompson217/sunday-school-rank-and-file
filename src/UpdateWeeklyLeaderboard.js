@@ -34,7 +34,6 @@ export default function UpdateWeeklyLeaderboard({players}) {
                     data: data,
                 }
             });
-            console.log(response);
             setStatus(`${week} Leaderboard Updated!`);
         } catch (error) {
             console.error('Error uploading matchups:', error);
@@ -90,6 +89,8 @@ export default function UpdateWeeklyLeaderboard({players}) {
                     ))}
                 </select>
             </div>
+            <p className='warning'>{warning}</p>
+            <p>{status}</p>
             <div>
                 <button onClick={fetchGoogleSheetData}>Fetch google sheet data</button>
             </div>

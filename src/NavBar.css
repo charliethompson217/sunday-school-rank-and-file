@@ -93,6 +93,7 @@
 
 .navbar-menu li:hover {
   text-decoration: underline;
+  background-color: var(--primary-button-color);
 }
 
 .navbar-menu a {
