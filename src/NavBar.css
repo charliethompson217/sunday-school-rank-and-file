@@ -93,7 +93,7 @@
 
 .navbar-menu li:hover {
   text-decoration: underline;
-  background-color: var(--primary-button-color);
+  background-color: rgba(100, 200, 100, 0.2);
 }
 
 .navbar-menu a {

@@ -160,8 +160,13 @@ made if necessary.
                 </p>
                 <h2>Viewing Picks and Results</h2>
                 <p>
-                Players will be able to see picks and results after each game via a Google Sheet. This
-                Google Sheet will be shared with players via email and will be updated with all players’
+                Players will be able to see picks and results after each game via a Google Sheet. This <a
+                  href='https://docs.google.com/spreadsheets/d/1sLEqJF3xtKneBczD37eaMvMexlHCC1INcOlQZeacJOQ/edit?usp=sharing'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                >
+                  Google Sheet
+                </a> will be shared with players via email and will be updated with all players’
                 picks shortly after kickoff. The Sheet will be updated with results throughout game days.
                 Additionally, players may make their own local copy of the Sheet and use the game interface to test how different game outcomes might influence the results. If any player
                 has questions about the Sheet, they are encouraged to contact the Commissioner.

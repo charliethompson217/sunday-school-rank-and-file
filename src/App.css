@@ -434,14 +434,13 @@ body{
 .verification-container button:hover {
   background-color: var(--secondary-button-color);
 }
-
+.weekly-leaderboard .table-header, .player-table .table-header{
+  height: 50px;
+  white-space: wrap;
+  padding: 0px;
+}
 /* Mobile Responsive */
 @media (max-width: 600px) {
-  .weekly-leaderboard .table-header, .player-table .table-header{
-    height: 100px;
-    white-space: wrap;
-    padding: 0px;
-  }
   
   .account {
     padding: 20px;
@@ -751,9 +750,10 @@ Mobile specific CSS
   }
 }
 .weekly-picks {
-  padding-right: 40px;
-  padding-left: 20px;
+  margin-right: 40px;
+  margin-left: 20px;
 }
+
 .weekly-picks tr {
   margin: 0;
   padding: 0;

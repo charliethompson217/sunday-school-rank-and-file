@@ -11,7 +11,7 @@ Amplify.configure(awsExports);
 const WeeklyLeaderboard = () => {
   const { fetchedPlayers, fetchedWeeklyLeaderboards, fetchedCurWeek } = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: 'RankPoints', direction: 'descending' });
+  const [sortConfig, setSortConfig] = useState({ key: 'maximumPoints', direction: 'descending' });
   const [week, setWeek] = useState('Choose week');
   const weekOptions = [
     'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',

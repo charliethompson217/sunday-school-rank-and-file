@@ -193,9 +193,9 @@ const WeeklyPicks = () => {
         <table className="weekly-picks">
           <thead>
             <tr>
-              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '10px 0px 0px 10px', height: '20px'}}>Team (possible maximum)</th>
-              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 0px 0px 0px', height: '20px'}}>Rank Picks</th>
-              <th className="primary-btn-color" style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 10px 10px 0px', height: '20px'}}>File Picks</th>
+              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '10px 0px 0px 10px', height: '30px'}}>Team (possible maximum)</th>
+              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 0px 0px 0px', height: '30px'}}>Rank Picks</th>
+              <th className="primary-btn-color" style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 10px 10px 0px', height: '30px'}}>File Picks</th>
             </tr>
           </thead>
           <tbody>
