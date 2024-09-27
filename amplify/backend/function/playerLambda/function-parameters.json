@@ -2,6 +2,7 @@
   "permissions": {
     "storage": {
       "sundaySchoolPlayers": [
+        "create",
         "read"
       ],
       "weeklyLeaderboards": [

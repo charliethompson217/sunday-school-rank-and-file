@@ -92,7 +92,7 @@ export default function UpdateWeeklyLeaderboard({players}) {
             <p className='warning'>{warning}</p>
             <p>{status}</p>
             <div>
-                <button onClick={fetchGoogleSheetData}>Fetch google sheet data</button>
+                <button onClick={fetchGoogleSheetData}>Update with google API</button>
             </div>
         </div>
     )

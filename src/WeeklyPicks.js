@@ -14,9 +14,32 @@ const WeeklyPicks = () => {
   const [gameResults, setGameResults] = useState([]);
 
   const weekOptions = [
-    'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
+    'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
     'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
   ];
+
+  const handleKeyDown = (event) => {
+    event.preventDefault();
+    const currentIndex = weekOptions.indexOf(week);
+
+    if (event.key === 'ArrowDown') {
+      const nextIndex = (currentIndex + 1) % weekOptions.length;
+      if(submissions?.[nextIndex])
+        setWeek(weekOptions[nextIndex]);
+    } else if (event.key === 'ArrowUp') {
+      const prevIndex = (currentIndex - 1 + weekOptions.length) % weekOptions.length;
+      if(submissions?.[prevIndex])
+        setWeek(weekOptions[prevIndex]);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [week]);
 
   const fixRankedRanks = (array) =>{
     array.reverse();
@@ -179,9 +202,14 @@ const WeeklyPicks = () => {
     }
   };
 
+  function changeWeek(value)  {
+    if(submissions?.[weekOptions.indexOf(value)])
+      setWeek(value);
+  };
+
   return (
     <div>
-      <select className="week-select" value={week} onChange={(e) => setWeek(e.target.value)}>
+      <select className="week-select" value={week} onChange={(e) => changeWeek(e.target.value)}>
         {weekOptions.map((option) => (
           <option key={option} value={option}>
             {option}

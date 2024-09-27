@@ -92,7 +92,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
       <table className='player-table'>
         <thead>
           <tr>
-            <th onClick={() => sortPlayers('teamName')} className='table-header'>
+            <th onClick={() => sortPlayers('teamName')} className='table-header first-th'>
               Team {getSortIcon('teamName')}
             </th>
             <th onClick={() => sortPlayers('fullName')} className='table-header'>
@@ -110,7 +110,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
             <th onClick={() => sortPlayers('PlayoffsBucks')} className='table-header'>
               Playoffs Bucks {getSortIcon('PlayoffsBucks')}
             </th>
-            <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header'>
+            <th onClick={() => sortPlayers('TotalDollarPayout')} className='table-header last-th'>
               Total Dollar Payout {getSortIcon('TotalDollarPayout')}
             </th>
           </tr>

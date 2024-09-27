@@ -14,9 +14,32 @@ const WeeklyLeaderboard = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'maximumPoints', direction: 'descending' });
   const [week, setWeek] = useState('Choose week');
   const weekOptions = [
-    'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
+    'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
     'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
   ];
+
+  const handleKeyDown = (event) => {
+    event.preventDefault();
+    const currentIndex = weekOptions.indexOf(week);
+    
+    if (event.key === 'ArrowDown') {
+      const nextIndex = (currentIndex + 1) % weekOptions.length;
+      if(fetchedWeeklyLeaderboards?.[nextIndex])
+        setWeek(weekOptions[nextIndex]);
+    } else if (event.key === 'ArrowUp') {
+      const prevIndex = (currentIndex - 1 + weekOptions.length) % weekOptions.length;
+      if(fetchedWeeklyLeaderboards?.[prevIndex])
+        setWeek(weekOptions[prevIndex]);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [week]);
 
   const getTeamName = (playerId) => {
     const player = fetchedPlayers.find(p => p.playerId === playerId);
@@ -135,9 +158,14 @@ const WeeklyLeaderboard = () => {
     ) : null
   );
 
+  function changeWeek(value)  {
+    if(fetchedWeeklyLeaderboards?.[weekOptions.indexOf(value)])
+    setWeek(value);
+  };
+
   return (
     <div>
-      <select className="week-select" value={week} onChange={(e) => setWeek(e.target.value)}>
+      <select className="week-select" value={week} onChange={(e) => changeWeek(e.target.value)}>
         {weekOptions.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -147,7 +175,7 @@ const WeeklyLeaderboard = () => {
       <table className='player-table weekly-leaderboard'>
         <thead>
           <tr>
-            <th onClick={() => sortPlayers('teamName')} className='table-header'>
+            <th onClick={() => sortPlayers('teamName')} className='table-header first-th'>
               Team {getSortIcon('teamName')}
             </th>
             <th onClick={() => sortPlayers('maximumPoints')} className='table-header'>
@@ -177,7 +205,7 @@ const WeeklyLeaderboard = () => {
             <th onClick={() => sortPlayers('playoffsBucksEarned')} className='table-header'>
               Playoffs Bucks Earned {getSortIcon('playoffsBucksEarned')}
             </th>
-            <th onClick={() => sortPlayers('weeklyPayout')} className='table-header'>
+            <th onClick={() => sortPlayers('weeklyPayout')} className='table-header last-th'>
               Weekly Payout {getSortIcon('weeklyPayout')}
             </th>
           </tr>

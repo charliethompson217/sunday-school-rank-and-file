@@ -184,13 +184,20 @@ body{
 .player-table {
   border-collapse: collapse;
   width: 100%;
-  border: 1px solid var(--primary-button-color);
   table-layout: fixed; /* Ensure fixed layout for table */
+  
+}
+
+.player-table th {
+  border: none;
+}
+
+.player-table td {
+  border: 1px solid var(--primary-button-color);
 }
 
 .player-table th, .player-table td {
   padding: 8px;
-  border: 1px solid var(--primary-button-color);
   white-space: nowrap; /* Prevent text wrapping */
   overflow: hidden; /* Hide overflowed content */
   text-overflow: ellipsis; /* Add ellipsis (...) when text overflows */
@@ -199,6 +206,15 @@ body{
   text-align: center; /* Ensure text is centered */
 }
 
+.first-th{
+  border-radius: 15px 0px 0px 0px;
+  border: none;
+}
+
+.last-th{
+  border-radius: 0px 15px 0px 0px;
+  border: none;
+}
 
 
 .weekly-leaderboard{
@@ -478,21 +494,53 @@ body{
   margin-left: 5%;
 }
 
-.chart-tabs button{
+.chart-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  max-width: 90vw;
+}
+
+.chart-tabs button {
   background-color: var(--secondary-button-color);
   border: none;
-  padding: 1rem;
+  padding: 1rem 1.5rem;
   color: black;
-  font-size: large;
+  font-size: 1.1rem;
+  font-family: 'Arial', sans-serif;
+  margin: 5px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.chart-tabs button:hover{
+.chart-tabs button:hover {
   background-color: var(--primary-button-color);
+  transform: translateY(-2px);
 }
 
-.chart-tabs .active{
+.chart-tabs .active {
   background-color: var(--primary-button-color);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  border-bottom: 4px solid var(--primary-button-color);
 }
+
+@media (max-width: 768px) {
+  .chart-tabs {
+    flex-direction: column;
+  }
+
+  .chart-tabs button {
+    width: 100%;
+    padding: 1rem;
+    margin: 5px 0;
+  }
+}
+
+
 .week-select {
   padding: 8px;
   background-color: var(--primary-button-color);
@@ -566,6 +614,10 @@ Mobile specific CSS
 
 
 @media (max-width: 1000px) {
+  .graphs {
+    min-width: 100vh;
+  }
+
   .FormContainer {
     margin-left: 2%;
     margin-bottom: 20%;
@@ -793,5 +845,17 @@ Mobile specific CSS
 
 .game-results-option{
   margin: 5px;
+}
+
+.graphs {
+  background-color:  rgba(0, 120, 0, 0.3);
+  margin-top: 30px;
+  border-radius: 50px;
+  min-width: 100vh;
+}
+
+.RankPoints-Graph {
+  align-items: center;
+  padding: 3%;
 }
 
