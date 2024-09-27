@@ -34,7 +34,9 @@ const primaryButtonColor = getComputedStyle(document.documentElement).getPropert
 
   useEffect(() => {
     if (fetchedPlayers && fetchedPlayers.length > 0) {
-      const playersToSort = [...fetchedPlayers];
+      const playersToSort = fetchedPlayers
+      .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
+      .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
       playersToSort.sort((a, b) => parseFloat(b['RankPoints']) - parseFloat(a['RankPoints']));
       setSortedPlayers(playersToSort);
     }

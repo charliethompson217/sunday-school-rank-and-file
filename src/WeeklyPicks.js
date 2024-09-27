@@ -55,7 +55,16 @@ const WeeklyPicks = () => {
   };
 
   useEffect(() => {
-    setSortedPlayers(fetchedPlayers || []);
+    if (fetchedPlayers && fetchedPlayers.length > 0) {
+      const playersToSort = fetchedPlayers
+        .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
+        .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
+        setSortedPlayers(playersToSort);
+    }
+    else {
+      setSortedPlayers(fetchedPlayers || []);
+    }
+    
     setSubmissions(fetchedSubmissions || []);
     setWeek(decrementLastNumber(fetchedCurWeek));
     setGameResults(fetchedGameResults || []);
