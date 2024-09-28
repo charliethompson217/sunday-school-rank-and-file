@@ -64,7 +64,7 @@ amplify publish
 - In the Cognito user pool, set the email verification method to link
 - Add custom attributes to user pool for teamName and playerId
 - Add a domain to the user pool in the app integration tab
-- In API Gateway, add an authenticator to the admin api
+- In API Gateway, add an authenticator to the admin api, and authenticated player api
 - In Amplify, configure the rewrites and redirects add a new type 200 (Rewrite) rule with the soucre address </^((?!(css|svg|jpg|png|ico|images|js)).)*$/> and target address /index.html
 - Create lambda layer for the google api
 - Add the google api keys to an aws secret
