@@ -22,6 +22,9 @@
     },
     "sundaySchoolSubmissions": {
       "Type": "String"
+    },
+    "sundaySchoolAuthorized": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -61,7 +64,7 @@
                       },
                       ":",
                       {
-                        "Ref": "ssAdmin"
+                        "Ref": "sundaySchoolAuthorized"
                       },
                       "/",
                       {
@@ -73,7 +76,7 @@
                           }
                         ]
                       },
-                      "/*/admin/*/*"
+                      "/*/player/*/*"
                     ]
                   ]
                 },
@@ -91,7 +94,7 @@
                       },
                       ":",
                       {
-                        "Ref": "ssAdmin"
+                        "Ref": "sundaySchoolAuthorized"
                       },
                       "/",
                       {
@@ -103,7 +106,7 @@
                           }
                         ]
                       },
-                      "/*/admin/*"
+                      "/*/player/*"
                     ]
                   ]
                 }

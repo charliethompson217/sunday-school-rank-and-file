@@ -10,6 +10,11 @@ export type AmplifyDependentResourcesAttributes = {
       "ApiName": "string",
       "RootUrl": "string"
     },
+    "sundaySchoolAuthorized": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "sundaySchoolConfiguration": {
       "ApiId": "string",
       "ApiName": "string",
@@ -41,6 +46,13 @@ export type AmplifyDependentResourcesAttributes = {
       "Region": "string"
     },
     "ssAdminLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
+    "sundaySchoolAuthorized": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",

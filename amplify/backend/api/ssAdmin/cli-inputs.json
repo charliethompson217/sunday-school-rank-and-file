@@ -5,13 +5,7 @@
       "name": "/admin/{action}",
       "lambdaFunction": "ssAdminLambda",
       "permissions": {
-        "setting": "private",
-        "auth": [
-          "create",
-          "read",
-          "update",
-          "delete"
-        ]
+        "setting": "open"
       }
     }
   }

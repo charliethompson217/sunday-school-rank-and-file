@@ -171,10 +171,12 @@ const FormContainer = ( {User}) => {
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolSubmissions', '/submission/submit-picks', {
+      await API.post('sundaySchoolAuthorized', '/player/submit-picks', {
+        headers: {
+          Authorization: `Bearer ${idToken}`
+        },
         body: {
-          jwt_token: `${idToken}`,
-          week: week,
+          operation: 'submit-picks',
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
           rankedRanks: JSON.stringify(rankedRanks),

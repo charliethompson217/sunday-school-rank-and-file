@@ -12,9 +12,12 @@ export const useUserPicks = (user, fetchedCurWeek) => {
             try {
                 const session = await Auth.currentSession();
                 const idToken = session.getIdToken().getJwtToken();
-                const Fetched_Cur_Picks = await API.put('sundaySchoolSubmissions', '/submission/get-picks-for-player', {
+                const Fetched_Cur_Picks = await API.put('sundaySchoolAuthorized', '/player/get-picks-for-player', {
+                    headers: {
+                        Authorization: `Bearer ${idToken}`
+                    },
                     body: {
-                        jwt_token: `${idToken}`,
+                        operation: 'get-picks-for-player',
                         week: fetchedCurWeek,
                     },
                 });

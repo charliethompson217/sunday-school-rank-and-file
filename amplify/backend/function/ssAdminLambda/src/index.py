@@ -296,13 +296,13 @@ def handler(event, context):
                         },
                         'body': json.dumps(list_of_values)
                     }
-
-    return {
-        'statusCode': 403,
-        'headers': {
-            'Access-Control-Allow-Headers': '*',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-        },
-        'body': json.dumps('Unautherized!')
-    }
+    else:
+        return {
+            'statusCode': 403,
+            'headers': {
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            },
+            'body': json.dumps('Unautherized!')
+        }

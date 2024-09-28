@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "storage": {
+      "configuration": [
+        "read"
+      ],
+      "submissions": [
+        "create",
+        "read",
+        "update"
+      ],
+      "sundaySchoolPlayers": [
+        "read"
+      ],
+      "weeklyLeaderboards": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

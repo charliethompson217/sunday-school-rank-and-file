@@ -28,6 +28,20 @@
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
     },
+    "sundaySchoolAuthorized": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "sundaySchoolAuthorized"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "sundaySchoolConfiguration": {
       "dependsOn": [
         {
@@ -161,6 +175,49 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "sundaySchoolAuthorized": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "configuration"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "submissions"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "sundaySchoolPlayers"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "weeklyLeaderboards"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "sundaySchoolConfigurationLambda": {
       "build": true,
       "dependsOn": [
@@ -240,6 +297,22 @@
         {
           "category": "function",
           "resourceName": "ssAdminLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolAuthorized_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolAuthorized"
+        }
+      ]
+    },
+    "AMPLIFY_function_sundaySchoolAuthorized_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sundaySchoolAuthorized"
         }
       ]
     },

@@ -18,15 +18,9 @@ export default function Account({signout}) {
   const [fileWins, setFileWins] = useState('');
   const [playoffsBucks, setPlayoffsBucks] = useState('');
   const [totalDollarPayout, setTotalDollarPayout] = useState('');
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [emailNeedsVerification, setEmailNeedsVerification] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
   const [profilePicUrl, setProfilePicUrl] = useState(defaultProfilePic);
   const fileInputRef = useRef(null);
 
-  const toggleEditMode = () => {
-    setIsEditMode(!isEditMode);
-  };
   const changePassword = () => {
     navigate('/forgotpassword');
   }
@@ -77,47 +71,6 @@ export default function Account({signout}) {
   }, [playerId]);
 
 
-
-  const sendToServer = async () => {
-    try {
-      if(email!==user.attributes['email']){
-        setEmailNeedsVerification(true);
-      }
-      await Auth.updateUserAttributes(user, {
-        name: fullName,
-        email: email,
-        'custom:team_name': teamName,
-      });
-      const session = await Auth.currentSession();
-      const idToken = session.getIdToken().getJwtToken();
-      await API.put('playerApi', `/player/edit-player`,{
-        body: {
-          jwt_token: `${idToken}`,
-          playerId: playerId,
-          email: email,
-          teamName: teamName,
-          fullName: fullName,
-        }
-      });
-    } catch (error){
-      console.error('Error submiting updates:',error);
-    }
-  }
-
-  const handleSubmit = async () => {
-    setIsEditMode(!isEditMode);
-    sendToServer();
-  };
-  const handleVerifyEmail = async () => {
-    try{
-      await Auth.verifyCurrentUserAttributeSubmit('email', verificationCode);
-
-    } catch (error){
-      console.error('Error verifiying email:',error);
-    }
-    setEmailNeedsVerification(false);
-  };
-
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -133,10 +86,11 @@ export default function Account({signout}) {
     try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.put('playerApi', `/player/edit-profile-picture`, {
+        const response = await API.put('sundaySchoolAuthorized', `/player/edit-profile-picture`, {
+            headers: {
+              Authorization: `Bearer ${idToken}`
+            },
             body: {
-                jwt_token: `${idToken}`,
-                playerId: playerId,
                 contentType: file.type,
             },
         });
@@ -194,31 +148,9 @@ export default function Account({signout}) {
             </div>
             <div className='user-attribute'>
               <label className='user-attribute-label-left'>Email</label>
-              {isEditMode ? (
-                <input
-                  type="text"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                />
-              ) : (
-                <label className='user-attribute-label-right'>{email}</label>
-              )}
+              <label className='user-attribute-label-right'>{email}</label>
             </div>
             
-            <div className='user-attribute'>
-              {emailNeedsVerification ? (
-                <>
-                  <input 
-                    type="text" 
-                    placeholder="Verification Code"
-                    onChange={e => setVerificationCode(e.target.value)}
-                  />
-                  <button onClick={handleVerifyEmail}>Verify Email</button>
-                </>
-              ) : (
-                <></>
-              )}
-            </div>
             <div>
               <button className="change-profile-image-button" onClick={triggerFileInput}>Change Picture</button>
               <input 
@@ -229,14 +161,7 @@ export default function Account({signout}) {
               />
             </div>
             <div>
-            {isEditMode ? (
-              <button onClick={handleSubmit}>Submit</button>
-            ) : (
-              <button onClick={toggleEditMode}>Change Email</button>
-            )}
-            <div>
-            <button onClick={changePassword}>Change Password</button>
-            </div>
+              <button onClick={changePassword}>Change Password</button>
             </div>
             <div>
               <button className="sign-out-button" onClick={signout}>Sign Out</button>

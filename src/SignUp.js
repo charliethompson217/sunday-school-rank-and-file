@@ -112,7 +112,7 @@ export default function SignUp() {
         
         try {
             const newId = makeId(7);
-            let response = await Auth.signUp({
+            const { userSub } = await Auth.signUp({
                 username: email,
                 password: password,
                 attributes: {
@@ -122,15 +122,22 @@ export default function SignUp() {
                     'custom:playerId': newId,
                 }
             });
-            await API.post('playerApi', `/player/add-player`,{
+            const sub = userSub;
+            let response = await API.post('playerApi', `/player/add-player`,{
                 body: {
                     playerId: newId,
                     email: email,
                     teamName: teamName,
                     fullName: fullName,
+                    sub: sub,
                 }
             });
-            navigate('/verifyemail');
+            if (response === 'Player Added!')
+                navigate('/verifyemail');
+            else {
+                setWarning('An error occurred while signing up.');
+                console.error('error signing up:', response);
+            }
         } catch (error) {
             console.error('error signing up:', error);
             setWarning('An error occurred while signing up.');

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/player/{playerId}": {
+      "name": "/player/{playerId}",
+      "lambdaFunction": "sundaySchoolAuthorized",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}
