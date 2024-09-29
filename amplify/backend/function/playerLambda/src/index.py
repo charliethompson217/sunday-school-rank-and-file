@@ -126,6 +126,10 @@ def handler(event, context):
             'email': body.get('email'),
             'fullName': body.get('fullName'),
             'sub': body.get('sub'),
+            'FileWins': '0',
+            'PlayoffsBucks': '0',
+            'RankPoints': '0',
+            'TotalDollarPayout': '$0.00',
         }
         table.put_item(Item=item)
         return {

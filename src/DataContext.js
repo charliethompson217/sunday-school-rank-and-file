@@ -13,11 +13,11 @@ export const DataContext = createContext();
 // Provider Component
 export const DataProvider = ({ user, children }) => {
     const fetchedCurWeek = useCurrentWeek();
+    const fetchedMatchupsResponse = useMatchups(fetchedCurWeek);
+    const { fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks } = useUserPicks(user, fetchedCurWeek);
     const fetchedPlayers = usePlayers();
     const fetchedSubmissions = useSubmissions();
     const fetchedGameResults = useGameResults();
-    const fetchedMatchupsResponse = useMatchups(fetchedCurWeek);
-    const { fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks } = useUserPicks(user, fetchedCurWeek);
     const fetchedWeeklyLeaderboards = useWeeklyLeaderboards();
 
     return (

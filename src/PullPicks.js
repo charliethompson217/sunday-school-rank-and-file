@@ -35,7 +35,8 @@ export default function PullPicks() {
             Authorization: `Bearer ${idToken}`
           },
         });
-        const sortedPlayers = [...response].sort(compareByTeamName);
+        const sortedPlayers = [...response].sort(compareByTeamName)
+        .filter(player => player.RankPoints !== null && player.RankPoints !== undefined);
         setPlayers(sortedPlayers);
       } catch (error) {
         console.error('Error fetching players:', error);

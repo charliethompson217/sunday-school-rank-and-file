@@ -12,7 +12,8 @@ const PlayerTable = ({ fetchedPlayers }) => {
   const [sortedPlayers, setSortedPlayers] = useState([]);
 
   useEffect(() => {
-    const playersToSort = [...fetchedPlayers];
+    const playersToSort = fetchedPlayers
+      .filter(player => player.rankroints !== null && player.RankPoints !== undefined);
     playersToSort.sort((a, b) => {
       let aValue = a['fullName'].toLowerCase();
       let bValue = b['fullName'].toLowerCase();

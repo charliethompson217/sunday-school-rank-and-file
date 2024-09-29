@@ -16,8 +16,7 @@ const SeasonLeaderboard = () => {
   useEffect(() => {
     if (fetchedPlayers && fetchedPlayers.length > 0) {
       const playersToSort = fetchedPlayers
-      .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
-      .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
+      .filter(player => player.RankPoints !== null && player.RankPoints !== undefined);
       
       playersToSort.sort((a, b) => {
         let aValue = parseFloat(a['RankPoints']);
