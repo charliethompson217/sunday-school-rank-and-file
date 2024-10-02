@@ -5,7 +5,7 @@ import QuestionWithThreeButtons from './QuestionWithThreeButtons';
 import { DataContext } from './DataContext';
 
 const LivePicks = () => {
-    const { fetchedCurWeek, fetchedGameResults } = useContext(DataContext);
+    const { fetchedCurWeek, fetchedGameResults, fetchedPreviousMatchupsResponse, fetchedMatchupsResponse } = useContext(DataContext);
     const [rankPicks, setRankPicks] = useState([]);
     const [rankMatchups, setRankMatchups] = useState([]);
     const [filePicks, setFilePicks] = useState([]);
@@ -29,19 +29,22 @@ const LivePicks = () => {
             else{
                 setWeek(curWeek);
             }
-    
-            if (!fetchedGameResults) {
-                console.warn('fetchedGameResults is undefined or null');
-                return; 
-            }
             try {
-                const matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
-                    body: {
-                        week: `${curWeek}`,
-                    },
-                });
+                let matchupsResponse = [];
+                if(curWeek === decrementLastNumber(fetchedCurWeek)){
+                    matchupsResponse = fetchedPreviousMatchupsResponse;
+                }
+                else if(curWeek === fetchedCurWeek) {
+                    matchupsResponse = fetchedMatchupsResponse;
+                }
+                else {
+                    matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+                        body: {
+                            week: `${curWeek}`,
+                        },
+                    });
+                }
                 const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
-        
                 setRankMatchups(fetchedRankMatchups);
                 setFileMatchups(fetchedFileMatchups);
             
@@ -68,10 +71,10 @@ const LivePicks = () => {
             }
         };
     
-        if (fetchedGameResults && fetchedCurWeek) {
+        if (fetchedGameResults && fetchedCurWeek && fetchedMatchupsResponse && fetchedPreviousMatchupsResponse) {
             setData();
         }
-    }, [week, fetchedCurWeek, fetchedGameResults]);
+    }, [week, fetchedCurWeek, fetchedGameResults, fetchedMatchupsResponse, fetchedPreviousMatchupsResponse]);
 
     const onRankPicksChange = (index, value) => {
         setRankPicks((prevRankPicks) =>
@@ -150,7 +153,6 @@ const LivePicks = () => {
                     </select>
                 </div>
                 <button onClick={sendToServer}>Update With Local Values</button>
-                <button>Update With Google API (todo)</button>
             </div>
             <div className='Result-Games'>
                 {rankMatchups?.length > 0 && rankMatchups.map((data, index) => (

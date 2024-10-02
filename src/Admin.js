@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import UpdateMatchups from './UpdateMatchups';
@@ -7,47 +7,22 @@ import PlayerTable from './PlayerTable';
 import UpdateSeasonLeaderboard from './UpdateSeasonLeaderboard';
 import UpdateWeeklyLeaderboard from './UpdateWeeklyLeaderboard';
 import GameResults from './Game-Results';
+import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
 export default function Admin() {
 
-  const [players, setPlayers] = useState([]);
-
-  const compareByTeamName = (a, b) => {
-    if (a.teamName < b.teamName) return -1;
-    if (a.teamName > b.teamName) return 1;
-    return 0;
-  };
-  
-  useEffect( () => {
-    const fetchPlayers = async () => {
-      try {
-        const session = await Auth.currentSession();
-        const idToken = session.getIdToken().getJwtToken();
-        const response = await API.get('ssAdmin', '/admin/get-players',{
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          },
-        });
-        const sortedPlayers = [...response].sort(compareByTeamName);
-        setPlayers(sortedPlayers);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
-      
-    }
-    fetchPlayers();
-  }, []);
+  const { fetchedAdminPlayers } = useContext(DataContext);
 
   return (
     <div style={{ minWidth: '800px' }}>
       <div  style={{ display: 'flex', marginBottom: '20px' }}>
         <div className='Admin' style={{ width: '30%' }}>
           <UpdateMatchups />
-          <UpdateSeasonLeaderboard players={players} />
-          <UpdateWeeklyLeaderboard players={players} />
-          <PullPicks players={players} />
+          <UpdateSeasonLeaderboard players={fetchedAdminPlayers} />
+          <UpdateWeeklyLeaderboard players={fetchedAdminPlayers} />
+          <PullPicks players={fetchedAdminPlayers} />
         </div>
         <div>
           <GameResults />
@@ -55,7 +30,7 @@ export default function Admin() {
       </div>
 
       <div style={{ width: '100%' }}>
-        <PlayerTable fetchedPlayers={players} />
+        <PlayerTable fetchedPlayers={fetchedAdminPlayers} />
       </div>
     </div>
   );

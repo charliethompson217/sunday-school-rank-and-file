@@ -114,7 +114,7 @@ export default function UpdateSeasonLeaderboard({players}) {
 
     return (
         <div>
-            <h2>Update Season Leaderboard</h2>
+            <h2>Season Leaderboard</h2>
             <form onSubmit={handleSubmit}>
 
                 <div>

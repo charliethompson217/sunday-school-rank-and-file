@@ -113,6 +113,10 @@ body{
   color: white;
 }
 
+.option-button.tie {
+  background-color: rgb(200, 160, 0);
+}
+
 .option-button.selected span {
   color: white;
 }
@@ -859,3 +863,13 @@ Mobile specific CSS
   padding: 3%;
 }
 
+.middle-buttons{
+  display: flex;
+  flex-direction:row;
+}
+
+.middle-buttons button{
+  width: 50%;
+  text-align: center;
+  padding-bottom: 5px;
+}

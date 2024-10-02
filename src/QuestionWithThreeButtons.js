@@ -99,7 +99,7 @@ const QuestionWithThreeButtons = ({ question, label1, label2, answer, onInputCha
             <button
             type="button"
             onClick={() => handleOptionClick(label1)}
-            className={`option-button ${selectedOption === label1 ? 'selected' : ''} ${selectedOption === label2 ? 'unselected' : ''}`}
+            className={`option-button ${selectedOption === label1 ? 'selected' : ''} ${selectedOption === label2 ? 'unselected' : ''}  ${selectedOption === "Tie" ? 'tie' : ''}`}
             >
             <img
                 src={logoMap[keepLastWord(label1)]}
@@ -109,12 +109,18 @@ const QuestionWithThreeButtons = ({ question, label1, label2, answer, onInputCha
             </button>
         </div>
 
-        <div className='game-results-option'>
+        <div className='game-results-option middle-buttons'>
             <button
-            className={`option-button ${selectedOption === "Tie" ? 'selected' : ''} tie-button`}
+            className={`option-button ${selectedOption === "Tie" ? 'tie' : ''} ${(selectedOption && (selectedOption === label2 || selectedOption === label1)) ? 'unselected' : ''}  tie-button `}
             type="button"
             onClick={() => handleOptionClick('Tie')}>
                 Tie
+            </button>
+            <button
+            className={`option-button`}
+            type="button"
+            onClick={() => handleOptionClick('')}>
+                Reset
             </button>
         </div>
 
@@ -122,7 +128,7 @@ const QuestionWithThreeButtons = ({ question, label1, label2, answer, onInputCha
             <button
             type="button"
             onClick={() => handleOptionClick(label2)}
-            className={`option-button ${selectedOption === label2 ? 'selected' : ''} ${selectedOption === label1 ? 'unselected' : ''}`}
+            className={`option-button ${selectedOption === label2 ? 'selected' : ''} ${selectedOption === label1 ? 'unselected' : ''}  ${selectedOption === "Tie" ? 'tie' : ''}`}
             >
             <img
                 src={logoMap[keepLastWord(label2)]}

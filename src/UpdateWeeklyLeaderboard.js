@@ -1,17 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
+import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
 export default function UpdateWeeklyLeaderboard({players}) {
-    const [file, setFile] = useState(null);
+    const { fetchedCurWeek } = useContext(DataContext);
     const [warning, setWarning] = useState('');
     const [status, setStatus] = useState('');
     const [week, setWeek] = useState('Choose week');
     const weekOptions = [
         'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
     ];
+
+    function decrementLastNumber(str) {
+        return str.replace(/\d+$/, (num) => parseInt(num, 10) - 1);
+    }
+
+    useEffect(() => {
+        if(fetchedCurWeek)
+            setWeek(decrementLastNumber(fetchedCurWeek));
+    }, [fetchedCurWeek]);
 
     const findPlayerId = (teamName) => {
         for(const player of players){
@@ -37,6 +47,7 @@ export default function UpdateWeeklyLeaderboard({players}) {
             setStatus(`${week} Leaderboard Updated!`);
         } catch (error) {
             console.error('Error uploading matchups:', error);
+            setWarning(`Error Updating ${week} Leaderboard!`);
         }
     };
 

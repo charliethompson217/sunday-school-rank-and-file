@@ -6,6 +6,8 @@ import { useGameResults } from './hooks/useGameResults';
 import { useMatchups } from './hooks/useMatchups';
 import { useUserPicks } from './hooks/useUserPicks';
 import { useWeeklyLeaderboards } from './hooks/useWeeklyLeaderboards';
+import { usePreviousMatchups } from './hooks/usePreviousMatchups';
+import { useAdminPlayers } from './hooks/useAdminPlayers';
 
 // Create a Data Context
 export const DataContext = createContext();
@@ -15,10 +17,12 @@ export const DataProvider = ({ user, children }) => {
     const fetchedCurWeek = useCurrentWeek();
     const fetchedMatchupsResponse = useMatchups(fetchedCurWeek);
     const { fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks } = useUserPicks(user, fetchedCurWeek);
+    const fetchedPreviousMatchupsResponse = usePreviousMatchups(fetchedCurWeek);
     const fetchedPlayers = usePlayers();
     const fetchedSubmissions = useSubmissions();
     const fetchedGameResults = useGameResults();
     const fetchedWeeklyLeaderboards = useWeeklyLeaderboards();
+    const fetchedAdminPlayers = useAdminPlayers(user);
 
     return (
         <DataContext.Provider value={{
@@ -33,6 +37,8 @@ export const DataProvider = ({ user, children }) => {
             fetchedFilePicks,
             setNewPicks,
             fetchedWeeklyLeaderboards,
+            fetchedPreviousMatchupsResponse,
+            fetchedAdminPlayers,
         }}>
             {children}
         </DataContext.Provider>
