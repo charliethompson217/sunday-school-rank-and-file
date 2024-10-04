@@ -139,7 +139,7 @@ const LivePicks = () => {
         )
     }
     return (
-        <div className="">
+        <div className="Admin">
             <div className='Game-Results'>
                 <h2>Game-Results</h2>
                 <div>

@@ -159,12 +159,14 @@ const FormContainer = ( {User}) => {
     }
     setWarning("");
     setCurrentStep((prevStep) => prevStep + 1);
+    window.scrollTo(0, 0);
   };
 
   const prevStep = () => {
     setRankedRanks(newrankedRanks);
     setWarning("");
     setCurrentStep((prevStep) => prevStep - 1);
+    window.scrollTo(0, 0);
   };
   
   const sendToServer = async () => {
@@ -227,7 +229,7 @@ const FormContainer = ( {User}) => {
       <Navbar></Navbar>
       <div className='navbar-offset-container'>
         <div className='FormContainer'>
-          <h1>Sunday School {week}</h1>
+          <h1>{week}</h1>
           <Countdown targetDate={closeTime}></Countdown>
           <form onSubmit={handleSubmit}>
             <CurrentStepComponent

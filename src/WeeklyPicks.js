@@ -215,7 +215,7 @@ const WeeklyPicks = () => {
     if(submissions?.[weekOptions.indexOf(value)])
       setWeek(value);
   };
-
+  const secondaryButtonColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-button-color').trim();
   return (
     <div>
       <select className="week-select" value={week} onChange={(e) => changeWeek(e.target.value)}>
@@ -230,9 +230,9 @@ const WeeklyPicks = () => {
         <table className="weekly-picks">
           <thead>
             <tr>
-              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '10px 0px 0px 10px', height: '30px'}}>Team (maximum points)</th>
-              <th className="primary-btn-color" style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 0px 0px 0px', height: '30px'}}>Rank Picks</th>
-              <th className="primary-btn-color" style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', borderRadius: '0px 10px 10px 0px', height: '30px'}}>File Picks</th>
+              <th style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '10px 0px 0px 10px', height: '30px', border: 'none'}}>Team (points)</th>
+              <th style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 0px 0px 0px', height: '30px', border: 'none'}}>Rank Picks</th>
+              <th style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 10px 10px 0px', height: '30px', border: 'none'}}>File Picks</th>
             </tr>
           </thead>
           <tbody>
@@ -248,7 +248,7 @@ const WeeklyPicks = () => {
 
                 return (
                   <tr key={player.playerId}>
-                    <td className="primary-btn-color"
+                    <td
                     style={{ 
                         textAlign: 'right', 
                         verticalAlign: 'middle', 
@@ -260,6 +260,7 @@ const WeeklyPicks = () => {
                         height: '30px',
                         borderRadius: '10px 0px 0px 10px',
                         fontSize: '12px',
+                        backgroundColor: `${secondaryButtonColor}`,
                     }}>
                       {player?.teamName}  <span style={{
                                               color: 'black',
@@ -298,7 +299,7 @@ const WeeklyPicks = () => {
                                   backgroundColor: 'rgba(0,0,0,0.45)',
                                   borderStyle: 'none',
                                   borderRadius: '10px',
-                                  color: 'rgba(255,255,255,0.5)',
+                                  color: 'rgba(255,255,255,0.35)',
                                   padding: '3px',
                                   marginRight: '3px',
                                   fontSize: '8px',

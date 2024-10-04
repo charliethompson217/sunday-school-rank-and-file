@@ -30,7 +30,6 @@ const PlayerRankGraph = () => {
     return weekOptions.length - 1;
   };
 
-const primaryButtonColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-button-color').trim();
 
   useEffect(() => {
     if (fetchedPlayers && fetchedPlayers.length > 0) {
@@ -122,13 +121,13 @@ const lineOptions = {
             size: 16,
           },
           padding: 20,
-          color: 'black',
+          color: 'white',
         },
       },
       title: {
         display: true,
         text: 'Players\' Standings throughout the Season',
-        color: 'black', 
+        color: 'white', 
         font: {
           size: 20,
           family: 'Arial',
@@ -140,49 +139,48 @@ const lineOptions = {
         title: {
           display: true,
           text: 'Weeks',
-          color: 'black',
+          color: 'white',
           font: {
             family: 'Arial',
             size: 14,
           },
         },
         ticks: {
-          color: 'black',
+          color: 'white',
         },
         grid: {
-          color: 'black',
+          color: 'rgba(255, 255, 255, 0.5)',
         },
       },
       y: {
         title: {
           display: true,
           text: 'Position',
-          color: 'black',
+          color: 'white',
           font: {
             family: 'Arial',
             size: 14,
           },
         },
         ticks: {
-          color: 'black',
+          color: 'white',
           stepSize: 1,
           beginAtZero: false,
         },
         grid: {
-          color: 'black',
+          color: 'rgba(255, 255, 255, 0.5)',
         },
         reverse: true,
       },
     },
     elements: {
       line: {
-        borderColor: primaryButtonColor,
-        borderWidth: 3,
+        borderColor: 'white',
+        borderWidth: 2,
       },
       point: {
-        radius: 4,
+        radius: 3,
         hoverRadius: 7,
-        backgroundColor: primaryButtonColor,
       },
     },
   };

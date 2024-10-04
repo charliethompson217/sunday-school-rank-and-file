@@ -117,7 +117,7 @@ const QuestionWithThreeButtons = ({ question, label1, label2, answer, onInputCha
                 Tie
             </button>
             <button
-            className={`option-button`}
+            className={`option-button reset-button`}
             type="button"
             onClick={() => handleOptionClick('')}>
                 Reset

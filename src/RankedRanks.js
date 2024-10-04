@@ -144,7 +144,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                     p.fill(0, 130, 6);
                     var w = p.textWidth(rankedOptions.length - this.index);
                     p.rect(this.x, this.y-40, w+10, 30);
-                    p.fill(0, 0, 0);
+                    p.fill(255, 255, 255);
                     p.textSize(15);
                     p.text(this.words, this.x+15+w, this.y-20);
                     p.fill(255, 255, 255);

@@ -21,9 +21,11 @@ const Leaderboard = () => {
     if (event.key === 'ArrowRight') {
       const nextIndex = (currentIndex + 1) % tabs.length;
       setActiveChart(tabs[nextIndex]);
+      window.scrollTo(0, 0);
     } else if (event.key === 'ArrowLeft') {
       const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
       setActiveChart(tabs[prevIndex]);
+      window.scrollTo(0, 0);
     }
   };
 

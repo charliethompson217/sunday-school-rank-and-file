@@ -86,7 +86,6 @@ const PlayerPointsGraph = () => {
     }
   }, [sortedPlayers, fetchedWeeklyLeaderboards, fetchedCurWeek]);
   
-const primaryButtonColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-button-color').trim();
 
 const lineOptions = {
   responsive: true,
@@ -99,13 +98,13 @@ const lineOptions = {
           size: 16,
         },
         padding: 20,
-        color: 'black',
+        color: 'white',
       },
     },
     title: {
       display: true,
       text: 'Players\' Rank Points throughout the Season',
-      color: 'black',
+      color: 'white',
       font: {
         size: 20,
         family: 'Arial',
@@ -117,34 +116,34 @@ const lineOptions = {
       title: {
         display: true,
         text: 'Weeks',
-        color: 'black',
+        color: 'white',
         font: {
           family: 'Arial',
           size: 14,
         },
       },
       grid: {
-        color: ' black',
+        color: ' rgba(255, 255, 255, 0.7)',
       },ticks: {
-        color: 'black',
+        color: 'rgba(255, 255, 255, 0.7)',
       }
     },
     y: {
       title: {
         display: true,
         text: 'Cumulative RankPoints',
-        color: 'black',
+        color: 'white',
         font: {
           family: 'Arial',
           size: 14,
         },
       },
       grid: {
-        color: 'black',
+        color: 'rgba(255, 255, 255, 0.7)',
       },
       beginAtZero: true,
       ticks: {
-        color: 'black',
+        color: 'white',
         stepSize: 50,
         callback: function(value) {
           if (value % 50 === 0) {
@@ -156,13 +155,12 @@ const lineOptions = {
   },
   elements: {
     line: {
-      borderColor: primaryButtonColor,
-      borderWidth: 3,
+      borderColor: 'white',
+      borderWidth: 2,
     },
     point: {
-      radius: 4,
+      radius: 3,
       hoverRadius: 7,
-      backgroundColor: primaryButtonColor,
     },
   },
 };

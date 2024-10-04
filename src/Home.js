@@ -30,7 +30,7 @@ export default function Home() {
           </div>
           {week && (
             <div className="countdown-container">
-              <h1>Sunday School {week} Kicks Off In:</h1>
+              <h1>{week} Kicks Off In:</h1>
               <Countdown targetDate={closeTime} />
             </div>
           )}

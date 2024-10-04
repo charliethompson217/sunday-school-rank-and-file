@@ -15,6 +15,7 @@ export default function Admin() {
 
   const { fetchedAdminPlayers } = useContext(DataContext);
 
+
   return (
     <div style={{ minWidth: '800px' }}>
       <div  style={{ display: 'flex', marginBottom: '20px' }}>
