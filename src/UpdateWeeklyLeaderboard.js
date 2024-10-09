@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useContext  } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
 import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
-export default function UpdateWeeklyLeaderboard({players}) {
+export default function UpdateWeeklyLeaderboard({ players }) {
     const { fetchedCurWeek } = useContext(DataContext);
     const [warning, setWarning] = useState('');
     const [status, setStatus] = useState('');
     const [week, setWeek] = useState('Choose week');
     const weekOptions = [
-        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
     ];
 
     function decrementLastNumber(str) {
@@ -19,24 +19,24 @@ export default function UpdateWeeklyLeaderboard({players}) {
     }
 
     useEffect(() => {
-        if(fetchedCurWeek)
+        if (fetchedCurWeek)
             setWeek(decrementLastNumber(fetchedCurWeek));
     }, [fetchedCurWeek]);
 
     const findPlayerId = (teamName) => {
-        for(const player of players){
-            if(teamName===player.teamName){
+        for (const player of players) {
+            if (teamName === player.teamName) {
                 return player.playerId;
             }
         }
         return false;
-    }
+    };
 
     const sendToServer = async (data) => {
         try {
             const session = await Auth.currentSession();
             const idToken = session.getIdToken().getJwtToken();
-            const response = await API.put('ssAdmin', `/admin/edit-${week}leaderboard`, {
+            await API.put('ssAdmin', `/admin/edit-${week}leaderboard`, {
                 headers: {
                     Authorization: `Bearer ${idToken}`
                 },
@@ -73,13 +73,13 @@ export default function UpdateWeeklyLeaderboard({players}) {
         newRow.push("playoffsBucksEarned");
         newRow.push("weeklyPayout");
         newRows.push(newRow);
-        for (let item of response){
-            if(item[0] === "" || item[0] === "Weekly Leaderboard" || item[0] === "Team"){
+        for (let item of response) {
+            if (item[0] === "" || item[0] === "Weekly Leaderboard" || item[0] === "Team") {
                 continue;
             }
             newRow = [];
             newRow.push(findPlayerId(item[0]));
-            for(let i = 2; i<item.length; i++){
+            for (let i = 2; i < item.length; i++) {
                 newRow.push(item[i]);
             }
             newRows.push(newRow);
@@ -95,7 +95,7 @@ export default function UpdateWeeklyLeaderboard({players}) {
                 <select id="weekly-leaderboard-weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
                     {weekOptions.map((option) => (
                         <option key={option} value={option}>
-                        {option}
+                            {option}
                         </option>
                     ))}
                 </select>
@@ -106,5 +106,5 @@ export default function UpdateWeeklyLeaderboard({players}) {
                 <button onClick={fetchGoogleSheetData}>Update with google API</button>
             </div>
         </div>
-    )
-}
+    );
+};

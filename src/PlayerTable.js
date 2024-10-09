@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
-Amplify.configure(awsExports);
-
-const PlayerTable = ({ fetchedPlayers }) => {
+export default function PlayerTable({ fetchedPlayers }) {
   const [sortConfig, setSortConfig] = useState({ key: 'fullName', direction: 'ascending' });
   const [sortedPlayers, setSortedPlayers] = useState([]);
 
@@ -28,7 +24,7 @@ const PlayerTable = ({ fetchedPlayers }) => {
       direction = 'descending';
     }
 
-    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks'){
+    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks') {
       direction = 'descending';
       if (sortConfig.key === key && sortConfig.direction === 'descending') {
         direction = 'ascending';
@@ -133,5 +129,3 @@ const PlayerTable = ({ fetchedPlayers }) => {
     </div>
   );
 };
-
-export default PlayerTable;

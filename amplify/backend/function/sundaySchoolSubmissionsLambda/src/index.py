@@ -28,7 +28,6 @@ def handler(event, context):
     print('received event:')
     print(event)
     method = event['httpMethod']
-    path_parameters = event['pathParameters']
     env = os.environ.get('ENV')
     table_name = f'submissions-{env}'
     table = dynamodb.Table(table_name)
@@ -74,7 +73,6 @@ def handler(event, context):
                 week_data.append(latest_submission)
             result.append(week_data)
         result = convert_decimals(result)
-        print(json.dumps(result, indent=2))
         return {
             'statusCode': 200,
             'headers': {

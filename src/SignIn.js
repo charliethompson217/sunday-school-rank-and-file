@@ -19,18 +19,18 @@ export default function SignIn() {
             console.error(error);
             if (error.code === 'UserNotConfirmedException') {
                 setWarning('Please verify your email before signing in.');
-            } else if(error.code==='NotAuthorizedException'){
+            } else if (error.code === 'NotAuthorizedException') {
                 setWarning('Incorect Email or Password.');
             } else {
                 setWarning('An error occurred while signing in.');
             }
 
         }
-    }
+    };
 
     const forgotPassword = () => {
         navigate('/forgotpassword');
-    }
+    };
 
     return (
         <div>
@@ -49,5 +49,5 @@ export default function SignIn() {
                 <button onClick={forgotPassword}>Forgot Password</button>
             </form>
         </div>
-    )
-}
+    );
+};

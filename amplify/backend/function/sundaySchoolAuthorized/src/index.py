@@ -11,7 +11,6 @@ from decimal import Decimal
 dynamodb = boto3.resource('dynamodb')
 
 def verifyToken(payload_json):
-    print(payload_json)
     tokenPlayerId = payload_json.get('custom:playerId')
     tokenSub = payload_json.get('sub')
     tokenTeamName = payload_json.get('custom:team_name')
@@ -60,7 +59,7 @@ def handler(event, context):
         return {
             'statusCode': 403,
             'headers': {
-                        'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Headers': '*',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
             },
@@ -76,6 +75,7 @@ def handler(event, context):
         body = json.loads(event['body'])
         operation = body.get('operation')
         # submit-picks
+            # still needs to be sanatized
         if operation == 'submit-picks':
             serverTimestamp = int(time.time())
             env = os.environ.get('ENV')
@@ -97,7 +97,7 @@ def handler(event, context):
                     closeTime = item['closeTime']
                     dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
                     unix_closeTime = int(dt_object.timestamp())
-            grace_period = 300  # 5 minutes in seconds
+            grace_period = 660  # 11 minutes in seconds
             curWeekStillOpen = serverTimestamp < (unix_closeTime + grace_period)
             if(curWeekStillOpen):
                 env = os.environ.get('ENV')
@@ -196,7 +196,7 @@ def handler(event, context):
             except Exception as e:
                 print({'error': str(e)})
                 return {
-                    'statusCode': 400,
+                    'statusCode': 500,
                         'headers': {
                         'Access-Control-Allow-Headers': '*',
                         'Access-Control-Allow-Origin': '*',
@@ -205,7 +205,7 @@ def handler(event, context):
                     'body': json.dumps('error')
                 }
         return {
-            'statusCode': 400,
+            'statusCode': 404,
             'headers': {
                 'Access-Control-Allow-Headers': '*',
                 'Access-Control-Allow-Origin': '*',

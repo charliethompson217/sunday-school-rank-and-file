@@ -5,19 +5,19 @@ import awsExports from './aws-exports';
 
 Amplify.configure(awsExports);
 
-export default function UpdateSeasonLeaderboard({players}) {
+export default function UpdateSeasonLeaderboard({ players }) {
     const [file, setFile] = useState(null);
     const [warning, setWarning] = useState('');
     const [status, setStatus] = useState('');
 
     const findPlayerId = (teamName) => {
-        for(const player of players){
-            if(teamName===player.teamName){
+        for (const player of players) {
+            if (teamName === player.teamName) {
                 return player.playerId;
             }
         }
         return false;
-    }
+    };
 
     const sendToServer = async (players) => {
         try {
@@ -41,13 +41,13 @@ export default function UpdateSeasonLeaderboard({players}) {
         e.preventDefault();
         if (!file) {
             setWarning('Please choose a file.');
-            return; 
+            return;
         }
         setWarning('');
         if (file) {
             var newPlayers = [];
             Papa.parse(file, {
-                beforeFirstChunk: function(chunk) {
+                beforeFirstChunk: function (chunk) {
                     var rows = chunk.split(/\r\n|\r|\n/);
                     var headers = rows[1];
                     rows.splice(0, 2);
@@ -57,7 +57,7 @@ export default function UpdateSeasonLeaderboard({players}) {
                     for (const row of result.data) {
                         var player = row['Player'];
                         player = findPlayerId(player);
-                        if(player){
+                        if (player) {
                             var rankPoints = row['Rank Points'];
                             var fileWins = row['File Wins'];
                             var playoffsBucks = row['Playoffs Bucks'];
@@ -79,7 +79,7 @@ export default function UpdateSeasonLeaderboard({players}) {
                 skipEmptyLines: true,
             });
         }
-        
+
     };
 
     const handleFileChange = (e) => {
@@ -96,12 +96,12 @@ export default function UpdateSeasonLeaderboard({players}) {
             }
         });
         let newPlayers = [];
-        for(let item of response){
-            if(item[0] === "" || item[0] === "Player"){
+        for (let item of response) {
+            if (item[0] === "" || item[0] === "Player") {
                 continue;
             }
             let newRow = [];
-            
+
             newRow.push(findPlayerId(item[0]));
             newRow.push(item[2]);
             newRow.push(item[3]);
@@ -121,7 +121,7 @@ export default function UpdateSeasonLeaderboard({players}) {
                     <label htmlFor="fileInput">Season LeaderBoard:</label>
                     <input type="file" id="fileInput" onChange={handleFileChange} />
                 </div>
-                
+
                 <p className='warning'>{warning}</p>
                 <p>{status}</p>
                 <div>
@@ -132,5 +132,5 @@ export default function UpdateSeasonLeaderboard({players}) {
                 <button onClick={fetchGoogleSheetData}>Update with google API</button>
             </div>
         </div>
-    )
-}
+    );
+};

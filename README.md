@@ -9,7 +9,7 @@ The site has an admin console where admins configure the weekly matchups and dow
 Instructions are for MacOS    
 Linux should be the same exept for aws cli install    
 Instructions can be found [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
-- Be sure you have Python@3.8 and Node installed on your machine
+- Be sure you have Python@3.12 and Node installed on your machine
 - Create an aws account
 - Install the aws cli and log in
 
@@ -45,7 +45,7 @@ npm install
 ```
 - Create virtual env
 ```
-python3.8 -m venv venv
+python3.12 -m venv venv
 ```
 - Activate virtual environment
 ```

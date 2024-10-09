@@ -1,14 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
 
-const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
+export default function RankedRanks({ rankedRanks, rankPicks, onRankChange }) {
     const sketchRef = useRef();
+
     function keepLastWord(inputString) {
-    if (typeof inputString !== 'string' || inputString.trim() === '') {
-        return '';
-    }
-    const words = inputString.split(' ');
-    return words[words.length - 1];
+        if (typeof inputString !== 'string' || inputString.trim() === '') {
+            return '';
+        }
+        const words = inputString.split(' ');
+        return words[words.length - 1];
     };
 
     useEffect(() => {
@@ -16,7 +17,7 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
             let rankedOptions = rankedRanks;
             let canvas;
             const canvasWidth = 310;
-            const canvasHeight = rankedOptions.length*55+5;
+            const canvasHeight = rankedOptions.length * 55 + 5;
             let x;
             let y;
             let holding = false;
@@ -35,17 +36,17 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                     return game;
                 });
             };
-            
+
             const disableScroll = (event) => {
                 event.preventDefault();
             };
-            p.touchStarted = () =>{
+            p.touchStarted = () => {
                 dragStarted();
             };
-            p.touchMoved = () =>{
+            p.touchMoved = () => {
                 dragingOver();
             };
-            p.touchEnded = () =>{
+            p.touchEnded = () => {
                 dragStoped();
             };
             p.mousePressed = () => {
@@ -60,10 +61,10 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
 
             p.draw = () => {
                 p.clear();
-                for(let i=0; i<games.length; i++){
+                for (let i = 0; i < games.length; i++) {
                     games[i].update();
                 }
-                if (holding&&itemHeld!==-1){
+                if (holding && itemHeld !== -1) {
                     games[itemHeld].update();
                 }
             };
@@ -71,30 +72,30 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
             const dragStarted = () => {
                 x = Math.floor(p.mouseX);
                 y = Math.floor(p.mouseY);
-                if(x<0||y<0||x>canvasWidth||y>canvasHeight){
+                if (x < 0 || y < 0 || x > canvasWidth || y > canvasHeight) {
                     return;
                 }
                 holding = true;
-                let item = Math.floor((y-5)/55);
-                itemHeld=item;
-                if(item<0){
-                    item=0;
+                let item = Math.floor((y - 5) / 55);
+                itemHeld = item;
+                if (item < 0) {
+                    item = 0;
                 }
-                if(item>=games.length){
-                    item=games.length-1;
+                if (item >= games.length) {
+                    item = games.length - 1;
                 }
                 games[item].startDrag();
-                
+
             };
             const dragingOver = () => {
-                if(holding){
+                if (holding) {
                     y = Math.floor(p.mouseY);
-                    if(y<0||y>canvasHeight){
+                    if (y < 0 || y > canvasHeight) {
                         return;
                     }
-                    let overItem = Math.floor((y-5)/55);
-                    if(overItem<0){
-                        overItem=0;
+                    let overItem = Math.floor((y - 5) / 55);
+                    if (overItem < 0) {
+                        overItem = 0;
                     }
                     if (itemHeld !== overItem && draggedOverItem !== -1) {
                         const oldHoldIndex = itemHeld;
@@ -106,58 +107,58 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
                         games[overItem] = temp;
                         itemHeld = overItem;
                     }
-                    draggedOverItem=overItem;
+                    draggedOverItem = overItem;
                 }
             };
             const dragStoped = () => {
                 holding = false;
-                if(itemHeld!==-1){
+                if (itemHeld !== -1) {
                     games[itemHeld].endDrag();
-                    itemHeld=-1;
+                    itemHeld = -1;
                 }
-                draggedOverItem=-1;
+                draggedOverItem = -1;
                 const integerArray = games.map((game) => game.gameCode);
                 onRankChange(integerArray);
             };
 
             class RankOption {
-                constructor(words, index, gameCode){
+                constructor(words, index, gameCode) {
                     this.gameCode = gameCode;
                     this.index = index;
                     this.words = words;
-                    this.x=0;
+                    this.x = 0;
                     this.r = 255;
                     this.g = 255;
                     this.b = 255;
                     this.a = 255;
                     this.dragging = false;
                 };
-                update(){
-                    if(this.dragging){
-                        this.y=y-this.offset;
+                update() {
+                    if (this.dragging) {
+                        this.y = y - this.offset;
                     }
                     else {
-                        this.y=(this.index+1)*55;
+                        this.y = (this.index + 1) * 55;
                     }
                     p.fill(this.r, this.g, this.b, this.a);
                     p.noStroke();
                     p.fill(0, 130, 6);
                     var w = p.textWidth(rankedOptions.length - this.index);
-                    p.rect(this.x, this.y-40, w+10, 30);
+                    p.rect(this.x, this.y - 40, w + 10, 30);
                     p.fill(255, 255, 255);
                     p.textSize(15);
-                    p.text(this.words, this.x+15+w, this.y-20);
+                    p.text(this.words, this.x + 15 + w, this.y - 20);
                     p.fill(255, 255, 255);
-                    p.text(rankedOptions.length - this.index, this.x+5, this.y-20);
+                    p.text(rankedOptions.length - this.index, this.x + 5, this.y - 20);
                 }
-                startDrag(){
+                startDrag() {
                     this.r = 200;
                     this.g = 200;
                     this.b = 200;
                     this.dragging = true;
-                    this.offset=y-this.y;
+                    this.offset = y - this.y;
                 }
-                endDrag(){
+                endDrag() {
                     this.r = 255;
                     this.g = 255;
                     this.b = 255;
@@ -176,13 +177,11 @@ const RankedRanks = ({ rankedRanks, rankPicks, onRankChange }) => {
 
     return (
         <>
-        <h3>Rank Ordering</h3>
-        <p>
-            Now, you will rank your selected Rank winners. Rank your highest points at top and lowest points at bottom. The rank number next to each team is how many points you will earn if that team wins. This also means that your five picks closest from the bottom (picks 1 through 5) will be the teams that must win in order for you to earn the weekly bonus.
-        </p>
-        <div id="sketch-container" ref={sketchRef} style={{ display: 'flex', justifyContent: 'left', boxShadow: '2px 2px 2px 1px rgb(0 0 0 / 20%)', width: 'fit-content' }}></div>
+            <h3>Rank Ordering</h3>
+            <p>
+                Now, you will rank your selected Rank winners. Rank your highest points at top and lowest points at bottom. The rank number next to each team is how many points you will earn if that team wins. This also means that your five picks closest from the bottom (picks 1 through 5) will be the teams that must win in order for you to earn the weekly bonus.
+            </p>
+            <div id="sketch-container" ref={sketchRef} style={{ display: 'flex', justifyContent: 'left', boxShadow: '2px 2px 2px 1px rgb(0 0 0 / 20%)', width: 'fit-content' }}></div>
         </>
     );
 };
-
-export default RankedRanks;

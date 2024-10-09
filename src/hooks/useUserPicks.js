@@ -22,14 +22,15 @@ export const useUserPicks = (user, fetchedCurWeek) => {
                     },
                 });
                 setFetchedCurPicks(Fetched_Cur_Picks);
-
-                const fetchedRankPicks = parseJsonString(Fetched_Cur_Picks.rankPicks);
-                const fetchedRankedRanks = parseJsonString(Fetched_Cur_Picks.rankedRanks);
-                const fetchedFilePicks = parseJsonString(Fetched_Cur_Picks.filePicks);
-
-                setFetchedRankPicks(fetchedRankPicks);
-                setFetchedRankedRanks(fetchedRankedRanks);
-                setFetchedFilePicks(fetchedFilePicks);
+                if(Fetched_Cur_Picks.rankPicks && Fetched_Cur_Picks.rankedRanks && Fetched_Cur_Picks.filePicks){
+                    const fetchedRankPicks = parseJsonString(Fetched_Cur_Picks.rankPicks);
+                    const fetchedRankedRanks = parseJsonString(Fetched_Cur_Picks.rankedRanks);
+                    const fetchedFilePicks = parseJsonString(Fetched_Cur_Picks.filePicks);
+                    setFetchedRankPicks(fetchedRankPicks);
+                    setFetchedRankedRanks(fetchedRankedRanks);
+                    setFetchedFilePicks(fetchedFilePicks);
+                }
+                
             } catch (error) {
                 console.log(error);
             }

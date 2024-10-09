@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Auth, Amplify, API } from 'aws-amplify';
 import awsconfig from './aws-exports';
+import { DataContext } from './DataContext';
 Amplify.configure(awsconfig);
 
 export default function SignUp() {
@@ -15,44 +16,47 @@ export default function SignUp() {
     const [teamNameIsValid, setTeamNameIsValid] = useState(false);
     const [teams, setTeams] = useState([]);
     const [warning, setWarning] = useState('');
-
-    useEffect( () => {
-        const fetchPlayers = async () => {
-          try {
-            const response = await API.get('playerApi', '/player/get-players');
-            const players = response.map(team => team);
-            setTeams([...players]);
-          } catch (error) {
-            console.error('Error fetching taken team names:', error);
-          }
-        }
-        fetchPlayers();
-      }, []);
+    const { fetchedPlayers } = useContext(DataContext);
 
     useEffect(() => {
-        if(password!==''&&confirmPassword!==''){
+        const fetchPlayers = async () => {
+            try {
+                const players = fetchedPlayers.map(team => team);
+                setTeams([...players]);
+            } catch (error) {
+                console.error('Error fetching taken team names:', error);
+            }
+        }
+        fetchPlayers();
+    }, [fetchedPlayers]);
+
+    useEffect(() => {
+        if (password !== '' && confirmPassword !== '') {
             var passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{10,}$/;
-            if(password!==confirmPassword){
+            if (password !== confirmPassword) {
                 setWarning("Passwords do not match!");
-            } else if (password.length<10){
+            } else if (password.length < 10) {
                 setWarning("Password must be longer than 10 characters!");
-            } else if(!passwordRegex.test(password)){
+            } else if (!passwordRegex.test(password)) {
                 setWarning("Password must contain at least one special character, number, uppercase letter, and lowercase letter!");
-            } else { 
+            } else {
                 setWarning("");
                 setPasswordIsValid(true);
             }
-        } else { 
+        } else {
             setWarning("");
         }
     }, [password, confirmPassword]);
 
     useEffect(() => {
-        if(teamName!==''){
-            var teamNameRegex = /^[a-zA-Z0-9_\-.,:]+$/;
-            if(teamNameRegex.test(teamName)){
-                for(const team of teams) {
-                    if(team.teamName===teamName){
+        if (teamName !== '') {
+            var teamNameRegex = /^[a-zA-Z0-9_-]+$/;
+            if (teamName.length > 20) {
+                setWarning("Team Name cannot be longer than 20 characters!");
+                setTeamNameIsValid(false);
+            } else if (teamNameRegex.test(teamName)) {
+                for (const team of teams) {
+                    if (team.teamName === teamName) {
                         setWarning("Team Name Taken!");
                         setTeamNameIsValid(false);
                         break;
@@ -60,16 +64,16 @@ export default function SignUp() {
                     setWarning("");
                     setTeamNameIsValid(true);
                 }
-                if ( teams.length === 0 ){
+                if (teams.length === 0) {
                     setTeamNameIsValid(true);
                     setWarning("");
                 }
             }
-            else{
-                setWarning("Team Name can only contain alphanumeric characters, underscores, hyphens, periods, commas, and colons!");
+            else {
+                setWarning("Team Name can only contain alphanumeric characters, underscores, and hyphens!");
                 setTeamNameIsValid(false);
             }
-        } else { 
+        } else {
             setWarning("");
             setTeamNameIsValid(false);
         }
@@ -81,27 +85,28 @@ export default function SignUp() {
         const charactersLength = characters.length;
         let counter = 0;
         while (counter < length) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-          counter += 1;
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
         }
-        for(const player of teams){
-          if(result===player.playerId){
-            return makeId(length);
-          }
+        for (const player of teams) {
+            if (result === player.playerId) {
+                return makeId(length);
+            }
         }
         return result;
-      }
+    };
 
     const validateEmail = (email) => {
-        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return emailRegex.test(email);
-    }
+    };
+
     async function signUp(e) {
         e.preventDefault();
-        if(!teamNameIsValid){
+        if (!teamNameIsValid) {
             return;
         }
-        if(!passwordIsValid){
+        if (!passwordIsValid) {
             return;
         }
         if (!validateEmail(email)) {
@@ -109,7 +114,7 @@ export default function SignUp() {
             return;
         }
         setWarning("");
-        
+
         try {
             const newId = makeId(7);
             const { userSub } = await Auth.signUp({
@@ -123,7 +128,7 @@ export default function SignUp() {
                 }
             });
             const sub = userSub;
-            let response = await API.post('playerApi', `/player/add-player`,{
+            let response = await API.post('playerApi', `/player/add-player`, {
                 body: {
                     playerId: newId,
                     email: email,
@@ -141,9 +146,9 @@ export default function SignUp() {
         } catch (error) {
             console.error('error signing up:', error);
             setWarning('An error occurred while signing up.');
-            
+
         }
-    }
+    };
 
     return (
         <div>
@@ -170,5 +175,5 @@ export default function SignUp() {
                 <button type="submit">Sign Up</button>
             </form>
         </div>
-    )
-}
+    );
+};

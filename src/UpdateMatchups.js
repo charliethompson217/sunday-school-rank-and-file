@@ -14,44 +14,44 @@ export default function UpdateMatchups() {
     const [status2, setStatus2] = useState('');
     const [warning, setWarning] = useState('');
     const weekOptions = [
-        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
     ];
 
     const sendToServer = async (rankMatchups, fileMatchups) => {
-    try {
-        const session = await Auth.currentSession();
-        const idToken = session.getIdToken().getJwtToken();
-        await API.post('ssAdmin', '/admin/upload-matchups', {
-            headers: {
-                Authorization: `Bearer ${idToken}`
-            },
-            body: {
-                ClientId: 'matchups',
-                week: week,
-                closeTime: new Date(dateTime).toISOString(),
-                rankMatchups: rankMatchups,
-                fileMatchups: fileMatchups,
-            }
-        });
-        setStatus(`${week} 'Matchups Updated Succesfuly!`);
-    } catch (error) {
-        console.error('Error uploading matchups:', error);
-    }
+        try {
+            const session = await Auth.currentSession();
+            const idToken = session.getIdToken().getJwtToken();
+            await API.post('ssAdmin', '/admin/upload-matchups', {
+                headers: {
+                    Authorization: `Bearer ${idToken}`
+                },
+                body: {
+                    ClientId: 'matchups',
+                    week: week,
+                    closeTime: new Date(dateTime).toISOString(),
+                    rankMatchups: rankMatchups,
+                    fileMatchups: fileMatchups,
+                }
+            });
+            setStatus(`${week} 'Matchups Updated Succesfuly!`);
+        } catch (error) {
+            console.error('Error uploading matchups:', error);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!file) {
             setWarning('Please choose a file.');
-            return; 
+            return;
         }
         if (!dateTime) {
             setWarning('Please select a date and time.');
-            return; 
+            return;
         }
-        if (week==='Choose week') {
+        if (week === 'Choose week') {
             setWarning('Please select a week.');
-            return; 
+            return;
         }
         setWarning('');
         if (file) {
@@ -62,13 +62,13 @@ export default function UpdateMatchups() {
                     for (const row of result.data) {
                         var type = row['Type'];
                         var newRow = [];
-                        if(type==='Rank'){
+                        if (type === 'Rank') {
                             newRow.push(row['Away']);
                             newRow.push(row['Home']);
                             newRow.push(row['Description']);
                             rankMatchups.push(newRow);
                         }
-                        if(type==='File'||type==='Christmas File'||type==='Thanksgiving File'){
+                        if (type === 'File' || type === 'Christmas File' || type === 'Thanksgiving File') {
                             newRow.push(row['Away']);
                             newRow.push(row['Home']);
                             newRow.push(row['Description']);
@@ -112,7 +112,7 @@ export default function UpdateMatchups() {
                     <select id="Current-weekSelect" value={curWeek} onChange={(e) => setCurWeek(e.target.value)}>
                         {weekOptions.map((option) => (
                             <option key={option} value={option}>
-                            {option}
+                                {option}
                             </option>
                         ))}
                     </select>
@@ -123,7 +123,7 @@ export default function UpdateMatchups() {
                 </div>
             </form>
             <h2>Matchups</h2>
-                <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="fileInput">Matchups:</label>
                     <input type="file" id="fileInput" onChange={handleFileChange} />
@@ -141,11 +141,11 @@ export default function UpdateMatchups() {
                 <div>
                     <label htmlFor="Matchup-weekSelect">For Week:</label>
                     <select id="Matchup-weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
-                    {weekOptions.map((option) => (
-                        <option key={option} value={option}>
-                        {option}
-                        </option>
-                    ))}
+                        {weekOptions.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <p className='warning'>{warning}</p>
@@ -155,5 +155,5 @@ export default function UpdateMatchups() {
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};

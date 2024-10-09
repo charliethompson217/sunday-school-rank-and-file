@@ -1,51 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Auth, Amplify } from 'aws-amplify';
+import React from 'react';
 import SignUp from './SignUp';
 import SignIn from './SignIn';
-import awsconfig from './aws-exports';
 import Account from './Account';
 import Navbar from './Navbar';
-Amplify.configure(awsconfig);
 
-export default function AccountAuthWrapper({onSignOut}) {
-    const [user, setUser] = useState(null);
-    const checkAuthState = async () => {
-        try {
-            const currentUser = await Auth.currentAuthenticatedUser();
-            setUser(currentUser);
-        } catch (err) {
-            setUser(null);
-        }
-    };
-
-    useEffect(() => {
-        checkAuthState();
-    }, []);
-
-    const handleSignOut = async () => {
-        try {
-          await Auth.signOut();
-          setUser(null);
-        } catch (err) {
-          console.error('error signing out: ', err);
-        }
-        onSignOut();
-      };
+export default function AccountAuthWrapper({ onSignOut, user, theme, toggleTheme}) {
     if (user) {
         return (
-        <>
-            <Account signout = {handleSignOut}/>
-        </>
+            <>
+                <Account toggleTheme={toggleTheme} theme={theme} signout={onSignOut} user={user} />
+            </>
         );
-      }
-
-    return (
-    <>
-        <Navbar></Navbar>
-        <div className='navbar-offset-container'>
-            <SignIn/>
-            <SignUp/>
-        </div>
-    </>
-    )
+    } else {
+        return (
+            <>
+                <Navbar></Navbar>
+                <div className='navbar-offset-container'>
+                    <SignIn />
+                    <SignUp />
+                    <button style={{marginTop: '50px'}} onClick={toggleTheme}>
+                        Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode
+                    </button>
+                </div>
+            </>
+        );
+    }
 }

@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { API, Auth } from 'aws-amplify';
-import './App.css';
 import QuestionWithThreeButtons from './QuestionWithThreeButtons';
 import { DataContext } from './DataContext';
 
-const LivePicks = () => {
+export default function LivePicks() {
     const { fetchedCurWeek, fetchedGameResults, fetchedPreviousMatchupsResponse, fetchedMatchupsResponse } = useContext(DataContext);
     const [rankPicks, setRankPicks] = useState([]);
     const [rankMatchups, setRankMatchups] = useState([]);
@@ -23,22 +22,22 @@ const LivePicks = () => {
     useEffect(() => {
         const setData = async () => {
             let curWeek = decrementLastNumber(fetchedCurWeek);
-            if(week !== "Choose week"){
+            if (week !== "Choose week") {
                 curWeek = week;
             }
-            else{
+            else {
                 setWeek(curWeek);
             }
             try {
                 let matchupsResponse = [];
-                if(curWeek === decrementLastNumber(fetchedCurWeek)){
+                if (curWeek === decrementLastNumber(fetchedCurWeek)) {
                     matchupsResponse = fetchedPreviousMatchupsResponse;
                 }
-                else if(curWeek === fetchedCurWeek) {
+                else if (curWeek === fetchedCurWeek) {
                     matchupsResponse = fetchedMatchupsResponse;
                 }
                 else {
-                    matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups',{
+                    matchupsResponse = await API.put('sundaySchoolConfiguration', '/configuration/matchups', {
                         body: {
                             week: `${curWeek}`,
                         },
@@ -47,9 +46,9 @@ const LivePicks = () => {
                 const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
                 setRankMatchups(fetchedRankMatchups);
                 setFileMatchups(fetchedFileMatchups);
-            
+
                 const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[curWeek] || {};
-        
+
                 if (fetchedRankResults && fetchedFileResults) {
                     setRankPicks(fetchedRankResults);
                     setFilePicks(fetchedFileResults);
@@ -59,7 +58,7 @@ const LivePicks = () => {
                         value: null,
                     })) || [];
                     setRankPicks(initialRankPicks);
-        
+
                     const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
                         game: matchup,
                         value: null,
@@ -70,7 +69,7 @@ const LivePicks = () => {
                 console.error(error);
             }
         };
-    
+
         if (fetchedGameResults && fetchedCurWeek && fetchedMatchupsResponse && fetchedPreviousMatchupsResponse) {
             setData();
         }
@@ -116,27 +115,27 @@ const LivePicks = () => {
 
     useEffect(() => {
         setHasSubmit(false);
-    }, [ week]);
+    }, [week]);
 
-    if(hasSubmit){
+    if (hasSubmit) {
         return (
             <div className="">
-            <div className='Game-Results'>
-                <h2>Game-Results</h2>
-                <div>
-                    <label htmlFor="weekSelect">For Week:</label>
-                    <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
-                    {weekOptions.map((option) => (
-                        <option key={option} value={option}>
-                        {option}
-                        </option>
-                    ))}
-                    </select>
+                <div className='Game-Results'>
+                    <h2>Game-Results</h2>
+                    <div>
+                        <label htmlFor="weekSelect">For Week:</label>
+                        <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
+                            {weekOptions.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={refresh}>Succses &#x267A;</button>
                 </div>
-                <button onClick={refresh}>Succses &#x267A;</button>
             </div>
-        </div>
-        )
+        );
     }
     return (
         <div className="Admin">
@@ -145,11 +144,11 @@ const LivePicks = () => {
                 <div>
                     <label htmlFor="weekSelect">For Week:</label>
                     <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
-                    {weekOptions.map((option) => (
-                        <option key={option} value={option}>
-                        {option}
-                        </option>
-                    ))}
+                        {weekOptions.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <button onClick={sendToServer}>Update With Local Values</button>
@@ -179,5 +178,3 @@ const LivePicks = () => {
         </div>
     );
 };
-
-export default LivePicks;

@@ -1,6 +1,4 @@
-import React, { useContext } from 'react';
-import { API, Amplify, Auth } from 'aws-amplify';
-import awsExports from './aws-exports';
+import React, { useContext, useEffect } from 'react';
 import UpdateMatchups from './UpdateMatchups';
 import PullPicks from './PullPicks';
 import PlayerTable from './PlayerTable';
@@ -9,21 +7,21 @@ import UpdateWeeklyLeaderboard from './UpdateWeeklyLeaderboard';
 import GameResults from './Game-Results';
 import { DataContext } from './DataContext';
 
-Amplify.configure(awsExports);
-
 export default function Admin() {
-
   const { fetchedAdminPlayers } = useContext(DataContext);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div style={{ minWidth: '800px' }}>
-      <div  style={{ display: 'flex', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', marginBottom: '20px' }}>
         <div className='Admin' style={{ width: '30%' }}>
           <UpdateMatchups />
           <UpdateSeasonLeaderboard players={fetchedAdminPlayers} />
           <UpdateWeeklyLeaderboard players={fetchedAdminPlayers} />
-          <PullPicks players={fetchedAdminPlayers} />
+          <PullPicks />
         </div>
         <div>
           <GameResults />
@@ -35,4 +33,4 @@ export default function Admin() {
       </div>
     </div>
   );
-}
+};

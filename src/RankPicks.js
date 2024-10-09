@@ -1,7 +1,7 @@
 import React from 'react';
 import QuestionWithTwoButtons from './QuestionWithTwoButtons';
 
-const RankPicks = ({ rankMatchups = [], rankPicks = [], onRankPicksChange = () => {} }) => {
+export default function RankPicks({ rankMatchups = [], rankPicks = [], onRankPicksChange = () => { } }) {
   return (
     <>
       <h3>Rank Picks</h3>
@@ -14,7 +14,7 @@ const RankPicks = ({ rankMatchups = [], rankPicks = [], onRankPicksChange = () =
               label1={data[0]}
               label2={data[1]}
               description={data[2]}
-              answer={rankPicks[index]?.value || ''}  // Provide a fallback in case rankPicks[index] is undefined
+              answer={rankPicks[index]?.value || ''}
               onInputChange={(value) => onRankPicksChange(index, value)}
             />
           </div>
@@ -23,5 +23,3 @@ const RankPicks = ({ rankMatchups = [], rankPicks = [], onRankPicksChange = () =
     </>
   );
 };
-
-export default RankPicks;

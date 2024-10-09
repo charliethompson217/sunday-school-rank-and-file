@@ -1,8 +1,7 @@
 import React from 'react';
 import QuestionWithTwoButtons from './QuestionWithTwoButtons';
 
-
-const FilePicks = ({fileMatchups, filePicks, onFilePicksChange }) => {
+export default function FilePicks({ fileMatchups, filePicks, onFilePicksChange }) {
   return (
     <div>
       <h3>File Picks</h3>
@@ -21,5 +20,3 @@ const FilePicks = ({fileMatchups, filePicks, onFilePicksChange }) => {
     </div>
   );
 };
-
-export default FilePicks;

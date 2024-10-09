@@ -6,15 +6,14 @@ import Loading from './Loading';
 import RankPicks from './RankPicks';
 import RankRanks from './RankedRanks';
 import FilePicks from './FilePicks';
-import './App.css';
 import Countdown from './Countdown';
 import Navbar from './Navbar';
 import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
-const FormContainer = ( {User}) => {
-  const {fetchedMatchupsResponse, fetchedCurPicks, setNewPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks  } = useContext(DataContext);
+export default function FormContainer({ User }) {
+  const { fetchedMatchupsResponse, fetchedCurPicks, setNewPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks } = useContext(DataContext);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isClosed, setIsClosed] = useState(true);
@@ -42,11 +41,16 @@ const FormContainer = ( {User}) => {
       return false;
     }
   }
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const fetchMatchups = async () => {
       try {
-        
-        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId} = fetchedMatchupsResponse;
+
+        const { rankMatchups: fetchedRankMatchups, fileMatchups: fetchedFileMatchups, week: fetchedWeek, closeTime: fetchedCloseTime, Timestamp: fetchedConfigId } = fetchedMatchupsResponse;
         setRankMatchups(fetchedRankMatchups);
         setFileMatchups(fetchedFileMatchups);
         setWeek(fetchedWeek);
@@ -61,29 +65,29 @@ const FormContainer = ( {User}) => {
           setWarning('');
         }
         try {
-          if ((fetchedCurPicks!=null)&&(fetchedConfigId===fetchedCurPicks.configId)) {
+          if ((fetchedCurPicks != null) && (fetchedConfigId === fetchedCurPicks.configId)) {
             setRankPicks([...fetchedRankPicks]);
             setRankedRanks([...fetchedRankedRanks]);
             setNewRankedRanks([...fetchedRankedRanks]);
             setFilePicks([...fetchedFilePicks]);
-          } else if(fetchedRankMatchups && fetchedFileMatchups && fetchedRankMatchups) {
+          } else if (fetchedRankMatchups && fetchedFileMatchups && fetchedRankMatchups) {
             const initialRankPicks = fetchedRankMatchups.map((matchup) => ({
               game: matchup,
               value: null,
             }));
             setRankPicks(initialRankPicks);
-    
+
             const initialFilePicks = fetchedFileMatchups.map((matchup) => ({
               game: matchup,
               value: null,
             }));
             setFilePicks(initialFilePicks);
-    
+
             const initialRankRanks = fetchedRankMatchups.map((item, index) => index + 1);
             setRankedRanks(initialRankRanks);
             setNewRankedRanks(initialRankRanks);
           }
-          if(!isBeforeCurrentUTC){
+          if (!isBeforeCurrentUTC) {
             setCurrentStep(2);
           }
         } catch (error) {
@@ -93,7 +97,8 @@ const FormContainer = ( {User}) => {
         console.error('Error fetching matchups:', error);
       }
     };
-    fetchMatchups();
+    if (fetchedCurPicks && fetchedRankPicks && fetchedRankedRanks && fetchedFilePicks && fetchedMatchupsResponse)
+      fetchMatchups();
   }, [User, fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, fetchedMatchupsResponse]);
 
   const steps = [
@@ -127,23 +132,23 @@ const FormContainer = ( {User}) => {
   const checkTime = async () => {
     try {
       const isAfterClose = await isDateTimeBeforeCurrentUTC(closeTime);
-      if(!closeUpdated&&isAfterClose&&!isClosed){
-        const newCloseTime = new Date(closeTime).getTime()+600000;
+      if (!closeUpdated && isAfterClose && !isClosed) {
+        const newCloseTime = new Date(closeTime).getTime() + 600000;
         setCloseTime(newCloseTime);
         setCloseUpdated(true);
       }
       const newIsClosed = await isDateTimeBeforeCurrentUTC(closeTime);
       setIsClosed(newIsClosed);
-    } catch(error) {
+    } catch (error) {
       console.error('Error checking time:', error);
     }
-    
+
   };
-  
+
   const nextStep = () => {
     setRankedRanks(newrankedRanks);
     checkTime();
-    if(isClosed){
+    if (isClosed) {
       setWarning(`The deadline has passed to submit picks for ${week}.`);
       return;
     }
@@ -168,7 +173,7 @@ const FormContainer = ( {User}) => {
     setCurrentStep((prevStep) => prevStep - 1);
     window.scrollTo(0, 0);
   };
-  
+
   const sendToServer = async () => {
     try {
       const session = await Auth.currentSession();
@@ -188,18 +193,18 @@ const FormContainer = ( {User}) => {
     } catch (error) {
       console.error('Error submitting picks:', error);
     }
-  }
-  
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    if(isClosed){
+    if (isClosed) {
       setWarning(`The deadline has passed to submit picks for ${week}.`);
       return;
     }
     else {
       setWarning('');
     }
-    
+
     if (currentStep === 4) {
       const hasIncompleteValues = filePicks.some(pick => pick.value === null);
       if (hasIncompleteValues) {
@@ -213,7 +218,7 @@ const FormContainer = ( {User}) => {
     sendToServer();
   };
 
-  if(!fetchedMatchupsResponse || !rankPicks || !filePicks || !rankedRanks ){
+  if (!fetchedMatchupsResponse || !rankPicks || !filePicks || !rankedRanks) {
     <>
       <Navbar></Navbar>
       <div className='navbar-offset-container'>
@@ -244,7 +249,7 @@ const FormContainer = ( {User}) => {
             />
             <p className='warning'>{warning}</p>
             <div className='picks-form-nav'>
-              {currentStep > 2 &&<button type="button" onClick={prevStep}>Previous</button>}
+              {currentStep > 2 && <button type="button" onClick={prevStep}>Previous</button>}
               {currentStep < steps.length && <button type="button" onClick={nextStep}>Next</button>}
               {currentStep === steps.length && <button type="submit">Submit</button>}
             </div>
@@ -252,8 +257,6 @@ const FormContainer = ( {User}) => {
         </div>
       </div>
     </>
-    
+
   );
 };
-
-export default FormContainer;

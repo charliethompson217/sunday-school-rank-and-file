@@ -1,18 +1,60 @@
 :root {
-  --main-bg-color: #000000;
+  --main-bg-color: var(--main-bg-color-dark);
+  --primary-button-color: var(--primary-button-color-dark);
+  --secondary-button-color: var(--secondary-button-color-dark);
+  --primary-txt-color: var(--primary-txt-color-dark);
+  --navbar-txt-color: var(--navbar-txt-color-dark);
+  --secondary-txt-color: var(--secondary-txt-color-dark);
+  --primary-border: var(--primary-border-dark);
+  --empty-picks-color: var(--empty-picks-color-dark);
+  --selected-picks-color: var(--selected-picks-color-dark);
+  --unselected-picks-color: var(--unselected-picks-color-dark);
+  --tie-picks-color: var(--tie-picks-color-dark);
+  --navbar-bg-color: var(--navbar-bg-color-dark);
+  --account-bg-color: var(--account-bg-color-dark);
+  --weekly-picks-correct: var(--weekly-picks-correct-dark);
+  --weekly-picks-incorrect: var(--weekly-picks-incorrect-dark);
+  --weekly-picks-undecided: var(--weekly-picks-undecided-dark);
+  --weekly-picks-tie: var(--weekly-picks-tie-dark);
+ 
+  --main-bg-color-dark: #111111;
+  --primary-button-color-dark: #202020;
+  --secondary-button-color-dark: #414444;
+  --primary-txt-color-dark: #CCCCCC;
+  --navbar-txt-color-dark: #CCCCCC;
+  --secondary-txt-color-dark: #000000;
+  --primary-border-dark: 1px solid rgba(200, 200, 200, 0.3);
+  --empty-picks-color-dark: #1f1f1f;
+  --selected-picks-color-dark: rgba(0, 120, 0, 0.88);
+  --unselected-picks-color-dark: rgba(120, 0, 0, 0.88);
+  --tie-picks-color-dark: rgba(200, 160, 0, 0.88);
+  --navbar-bg-color-dark: rgba(0, 0, 0, 0.5);
+  --account-bg-color-dark: #1e1e1e;
+  --weekly-picks-correct-dark: rgba(0, 120, 0, 0.6);
+  --weekly-picks-incorrect-dark:  rgba(190, 5, 5, 0.6);
+  --weekly-picks-undecided-dark: var(--empty-picks-color);
+  --weekly-picks-tie-dark: rgb(200, 160, 0);
 
-  --primary-button-color: #171616;
-  --secondary-button-color:   #414444;
-
-  --primary-txt-color:    #e0e0e0;
-  --secondary-txt-color: #000000;
-
-  --primary-border: 1px solid var(--primary-txt-color);
-
-  --empty-picks-color:  #171616;
+  --main-bg-color-light: #68a13d;
+  --primary-button-color-light: rgba(0, 120, 0, 0.5);
+  --secondary-button-color-light: #9bac39;
+  --primary-txt-color-light: #000000;
+  --navbar-txt-color-light: #CCCCCC;
+  --secondary-txt-color-light: #333333;
+  --primary-border-light: none;
+  --empty-picks-color-light: #9bac39;
+  --selected-picks-color-light: rgb(0, 120, 0);
+  --unselected-picks-color-light: rgb(150, 0, 0);
+  --tie-picks-color-light: rgb(200, 160, 0);
+  --navbar-bg-color-light: rgba(0, 0, 0, 0.9);
+  --account-bg-color-light: #77AA4F;
+  --weekly-picks-correct-light:  rgb(0, 120, 0);
+  --weekly-picks-incorrect-light:  rgb(190, 5, 5);
+  --weekly-picks-undecided-light: var(--empty-picks-color);
+  --weekly-picks-tie-light:  rgb(200, 160, 0);
 }
 
-body{
+body {
   background-size: cover;
   background-color: var(--main-bg-color);
   color: var(--primary-txt-color);
@@ -29,14 +71,25 @@ body{
   margin-bottom: 5%;
 }
 
-.Admin button, select, input[type=file]::file-selector-button, input[type="datetime-local"] {
+.Admin {
+  margin-left: 20px;
+}
+
+.Admin button,
+select,
+input[type=file]::file-selector-button,
+input[type="datetime-local"] {
   background-color: var(--primary-button-color);
   color: var(--primary-txt-color);
   border: var(--primary-border);
   padding: 10px;
   margin: 5px;
 }
-.Admin button:hover, select:hover, input[type=file]::file-selector-button:hover, input[type="datetime-local"]:hover {
+
+.Admin button:hover,
+select:hover,
+input[type=file]::file-selector-button:hover,
+input[type="datetime-local"]:hover {
   background-color: var(--secondary-button-color);
   color: var(--secondary-txt-color);
 }
@@ -93,7 +146,7 @@ body{
   border-radius: 12px;
   width: 190px;
   margin-left: 2px;
-  color:  var(--primary-txt-color);
+  color: var(--primary-txt-color);
 }
 
 .option-button {
@@ -103,56 +156,60 @@ body{
   background-color: var(--empty-picks-color);
   cursor: pointer;
   padding-bottom: 10px;
-  color:  white;
-  
+  color: var(--primary-txt-color);
 }
 
 .option-button:hover {
-  background-color: rgba(0, 120, 0, 0.99);
-  color:  white;
+  background-color: rgba(0, 120, 0, 0.88);
+  color: white;
   border: none;
+
 }
+
 .Admin .option-button:hover {
-  background-color: rgba(0, 120, 0, 0.99);
+  background-color: var(--selected-picks-color);
 }
 
 .Admin .reset-button:hover {
-  background-color: rgba(255, 255, 255, 0.99);
+  background-color: rgba(255, 255, 255, 0.88);
 }
 
 .Admin .tie-button:hover {
-  background-color:  rgb(200, 160, 0);
+  background-color: var(--tie-picks-color);
 }
 
 .option-button.selected {
-  background-color: rgba(0, 120, 0, 0.99);
-  color:  white;
+  background-color: var(--selected-picks-color);
+  color: white;
   border: none;
 }
 
 .option-button.unselected {
-  background-color: rgba(120, 0, 0, 0.99);
-  color:  white;
+  background-color: var(--unselected-picks-color);
+  color: white;
   border: none;
 }
 
 .option-button.tie {
-  background-color: rgb(200, 160, 0);
+  background-color: var(--tie-picks-color);
   color: #000000;
   border: none;
 }
 
 .option-button span {
-  color:  white;
+  color:  var(--primary-txt-color);
 }
 
+.option-button:hover span {
+  color: white;
+}
 
 .option-button.selected span {
-  color:  white;
+  color: white;
 }
 
 .option-button.unselected span {
-  color:  white;
+  color: white;
 }
 
 .option-button img {
@@ -167,7 +224,7 @@ body{
   flex-wrap: wrap;
 }
 
-.Matchup{
+.Matchup {
   display: flex;
   margin-right: 10px;
 }
@@ -200,26 +257,21 @@ body{
   border-radius: 12px;
 }
 
-.ranked-ranks li.dragged {
-  background-color:var(--primary-button-color);
-  color: var(--primary-txt-color);
-  opacity: 0.7;
-}
-
 .ranked-ranks li.empty {
   background-color: transparent;
   border: none;
 }
 
 .warning {
-  color: rgb(255, 0, 0);
+  color: rgb(255, 0, 0) !important;
 }
 
 .player-table {
   border-collapse: collapse;
   width: 100%;
-  table-layout: fixed; /* Ensure fixed layout for table */
-  
+  table-layout: fixed;
+  /* Ensure fixed layout for table */
+
 }
 
 .player-table th {
@@ -231,28 +283,35 @@ body{
   color: var(--primary-txt-color);
 }
 
-.player-table th, .player-table td {
+.player-table th,
+.player-table td {
   padding: 8px;
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: hidden; /* Hide overflowed content */
-  text-overflow: ellipsis; /* Add ellipsis (...) when text overflows */
-  min-width: 150px; /* Set a minimum width for the columns */
-  max-width: 150px; /* Set a maximum width for the columns */
-  text-align: center; /* Ensure text is centered */
+  white-space: nowrap;
+  /* Prevent text wrapping */
+  overflow: hidden;
+  /* Hide overflowed content */
+  text-overflow: ellipsis;
+  /* Add ellipsis (...) when text overflows */
+  min-width: 150px;
+  /* Set a minimum width for the columns */
+  max-width: 150px;
+  /* Set a maximum width for the columns */
+  text-align: center;
+  /* Ensure text is centered */
 }
 
-.first-th{
+.first-th {
   border-radius: 15px 0px 0px 0px;
   border: none;
 }
 
-.last-th{
+.last-th {
   border-radius: 0px 15px 0px 0px;
   border: none;
 }
 
 
-.weekly-leaderboard{
+.weekly-leaderboard {
   min-width: 1400px;
 }
 
@@ -264,9 +323,12 @@ body{
   border: 1px solid var(--secondary-button-color);
   min-width: 150px;
   max-width: 150px;
-  white-space: nowrap; /* Prevent text wrapping */
-  overflow: hidden; /* Hide overflowed content */
-  text-overflow: ellipsis; /* Add ellipsis (...) when text overflows */
+  white-space: nowrap;
+  /* Prevent text wrapping */
+  overflow: hidden;
+  /* Hide overflowed content */
+  text-overflow: ellipsis;
+  /* Add ellipsis (...) when text overflows */
 }
 
 
@@ -275,7 +337,10 @@ body{
   padding-bottom: 300px;
 }
 
-.rules p, .rules span, .rules a, .rules ul{
+.rules p,
+.rules span,
+.rules a,
+.rules ul {
   font-family: 'Roboto Sans';
 }
 
@@ -365,6 +430,7 @@ body{
   flex-direction: column;
 
 }
+
 .profile-picture {
   flex: 1;
   display: flex;
@@ -382,7 +448,7 @@ body{
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin-top: 150px;
   border: var(--primary-border);
-  background-color: #1e1e1e;
+  background-color: var(--account-bg-color);
 }
 
 
@@ -423,6 +489,7 @@ body{
   text-align: left;
   text-wrap: nowrap;
 }
+
 .profile-picture .user-attribute-label-right {
   margin-right: 30%;
 }
@@ -458,7 +525,7 @@ body{
 
 .account button:hover {
   background-color: var(--secondary-button-color);
-  color:  var(--secondary-txt-color);
+  color: var(--secondary-txt-color);
   border: none;
 }
 
@@ -491,19 +558,23 @@ body{
 .verification-container button:hover {
   background-color: var(--secondary-button-color);
 }
-.weekly-leaderboard .table-header, .player-table .table-header{
+
+.weekly-leaderboard .table-header,
+.player-table .table-header {
   height: 50px;
   white-space: wrap;
   padding: 0px;
 }
+
 /* Mobile Responsive */
 @media (max-width: 600px) {
-  
+
   .account {
     padding: 20px;
     margin: 20px;
     flex-direction: column;
   }
+
   .account img {
     height: auto;
     width: 100%;
@@ -607,21 +678,25 @@ body{
 
 .left-section,
 .right-section {
-  width: 48%; /* Adjust width as needed, ensuring they don't add up to more than 100% */
+  width: 48%;
+  /* Adjust width as needed, ensuring they don't add up to more than 100% */
 }
 
 .bottom-section {
-  width: 100%; /* Full width */
+  width: 100%;
+  /* Full width */
 }
 
 /* Add some additional styling to clearly see the layout */
 .left-section,
 .right-section,
 .bottom-section {
-  border: 1px solid #ccc; /* Just for visibility */
+  border: 1px solid #ccc;
+  /* Just for visibility */
   padding: 10px;
   box-sizing: border-box;
 }
+
 .matchups-container {
   display: flex;
   justify-content: space-around;
@@ -636,10 +711,11 @@ body{
 
 @media (max-width: 768px) {
   .matchups-container {
-      flex-direction: column;
+    flex-direction: column;
   }
+
   .matchup-column {
-      width: 100%;
+    width: 100%;
   }
 }
 
@@ -776,11 +852,13 @@ Mobile specific CSS
 .Game-Results {
   margin-left: 50px;
 }
+
 .Game-Results button {
   background-color: var(--primary-button-color);
   padding: 10px;
   margin: 5px;
 }
+
 .Game-Results button:hover {
   background-color: var(--secondary-button-color);
   margin: 5px;
@@ -803,6 +881,7 @@ Mobile specific CSS
     margin-right: 30px;
   }
 }
+
 .weekly-picks {
   margin-right: 40px;
   margin-left: 20px;
@@ -818,7 +897,7 @@ Mobile specific CSS
   margin: 0;
   padding: 0;
   border-spacing: 0;
-  
+
 }
 
 .weekly-picks div {
@@ -827,26 +906,26 @@ Mobile specific CSS
 }
 
 .correct {
-  background-color: rgba(0, 120, 0, 0.6);
+  background-color: var(--weekly-picks-correct);
 }
 
 .incorrect {
-  background-color: rgba(190, 5, 5, 0.6);
+  background-color: var(--weekly-picks-incorrect);
 }
 
 .undecided {
-  background-color: var(--empty-picks-color);
+  background-color: var(--weekly-picks-undecided);
 }
 
 .tie {
-  background-color: rgb(200, 160, 0);
+  background-color: var(--weekly-picks-tie);
 }
 
 .tie-button {
   width: 10px;
 }
 
-.game-results-option{
+.game-results-option {
   margin: 5px;
 }
 
@@ -861,12 +940,12 @@ Mobile specific CSS
   padding: 3%;
 }
 
-.middle-buttons{
+.middle-buttons {
   display: flex;
-  flex-direction:row;
+  flex-direction: row;
 }
 
-.middle-buttons button{
+.middle-buttons button {
   width: 50%;
   text-align: center;
   padding-bottom: 5px;

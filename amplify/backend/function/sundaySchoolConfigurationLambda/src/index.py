@@ -10,11 +10,9 @@ from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
 
-# Custom JSON encoder to handle Decimal types
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, Decimal):
-            # Convert Decimal to float or int, depending on the value
             return float(obj) if obj % 1 else int(obj)
         return super(DecimalEncoder, self).default(obj)
     
@@ -78,16 +76,13 @@ def handler(event, context):
     elif method == 'PUT':
         body = json.loads(event['body'])
         week = body.get("week")
-        # Query to fetch items for the given ClientId, sorted by Timestamp in descending order
         response = table.query(
             KeyConditionExpression=Key('ClientId').eq(client_id),
-            ScanIndexForward=False  # Fetches items in descending order of Timestamp
+            ScanIndexForward=False
         )
 
-        # Iterate over the items to find the first one that matches the given week
         for item in response.get('Items', []):
             if item.get('week') == week:
-                # Found the most recent item for the specified week
                 if 'Timestamp' in item:
                     item['Timestamp']=str(item['Timestamp'])
                 return {
@@ -99,8 +94,6 @@ def handler(event, context):
                     },
                     'body': json.dumps(item)
                 }
-        # No matching item found
-        print("No matching entries found for the specified week.")
         return {
             'statusCode': 404,
             'headers': {

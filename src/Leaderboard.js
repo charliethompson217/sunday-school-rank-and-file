@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import {Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
-
 import SeasonLeaderboard from './SeasonLeaderboard';
 import WeeklyPicks from './WeeklyPicks';
 import WeeklyLeaderboard from './WeeklyLeaderboard';
 import PlayerPointsGraph from './PlayerPointsGraph';
 import PlayerRankGraph from './PlayerRankGraph';
+import PlayerWeeklyStandingsgraph from './PlayerWeeklyStandingsgraph';
 
-Amplify.configure(awsExports);
 
-const Leaderboard = () => {
+export default function Leaderboard() {
   const [activeChart, setActiveChart] = useState('seasonleaderboard');
-
   const tabs = ['seasonleaderboard', 'weeklyleaderboard', 'weeklypicks', 'graphs'];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleKeyDown = (event) => {
     const currentIndex = tabs.indexOf(activeChart);
@@ -35,32 +35,32 @@ const Leaderboard = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [activeChart]);
+  });
 
   return (
     <div className='Leaderboard'>
       <div className='chart-tabs'>
-        <button onClick={() => setActiveChart('seasonleaderboard')} className={activeChart === 'seasonleaderboard' ? 'active' : ''}> 
-          Season Leaderboard 
+        <button onClick={() => setActiveChart('seasonleaderboard')} className={activeChart === 'seasonleaderboard' ? 'active' : ''}>
+          Season Leaderboard
         </button>
-        <button onClick={() => setActiveChart('weeklyleaderboard')} className={activeChart === 'weeklyleaderboard' ? 'active' : ''}> 
-          Weekly Leaderboard 
+        <button onClick={() => setActiveChart('weeklyleaderboard')} className={activeChart === 'weeklyleaderboard' ? 'active' : ''}>
+          Weekly Leaderboard
         </button>
-        <button onClick={() => setActiveChart('weeklypicks')} className={activeChart === 'weeklypicks' ? 'active' : ''}> 
-          Weekly Picks 
+        <button onClick={() => setActiveChart('weeklypicks')} className={activeChart === 'weeklypicks' ? 'active' : ''}>
+          Weekly Picks
         </button>
-        <button onClick={() => setActiveChart('graphs')} className={activeChart === 'graphs' ? 'active' : ''}> 
-          Graphs 
+        <button onClick={() => setActiveChart('graphs')} className={activeChart === 'graphs' ? 'active' : ''}>
+          Graphs
         </button>
       </div>
 
-      
+
       <div className={activeChart}>
         {activeChart === 'seasonleaderboard' && (
           <SeasonLeaderboard></SeasonLeaderboard>
         )}
       </div>
-      
+
       <div className={activeChart}>
         {activeChart === 'weeklypicks' && (
           <WeeklyPicks></WeeklyPicks>
@@ -75,18 +75,22 @@ const Leaderboard = () => {
 
       <div className={activeChart}>
         {activeChart === 'graphs' && (
-            <PlayerRankGraph></PlayerRankGraph>
+          <PlayerRankGraph></PlayerRankGraph>
         )}
       </div>
 
       <div className={activeChart}>
         {activeChart === 'graphs' && (
-            <PlayerPointsGraph></PlayerPointsGraph>
+          <PlayerWeeklyStandingsgraph></PlayerWeeklyStandingsgraph>
+        )}
+      </div>
+
+      <div className={activeChart}>
+        {activeChart === 'graphs' && (
+          <PlayerPointsGraph></PlayerPointsGraph>
         )}
       </div>
 
     </div>
   );
 };
-
-export default Leaderboard;

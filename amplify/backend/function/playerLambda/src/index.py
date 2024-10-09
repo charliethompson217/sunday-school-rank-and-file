@@ -69,7 +69,6 @@ def handler(event, context):
                     'body': json.dumps("no weekly leaderboards found!")
                 }
         else:
-            print(playerId)
             response = table.scan()
             players = response['Items']
             for player in players:
@@ -119,10 +118,74 @@ def handler(event, context):
                 },
                 'body': json.dumps("Error")
             }
+        
+        teamName = body.get('teamName')
+        teamNameValid = False
+        teamNameRegex = r'^[a-zA-Z0-9_\-]+$'
+        if teamName and re.match(teamNameRegex, teamName) and len(teamName) <= 20:
+            teamNameValid = True
+        if not teamNameValid:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps("Invalid teamName")
+            }
+
+        playerId = body.get('playerId')
+        playerIdValid = False
+        playerIdRegex = r'^SSP[a-zA-Z0-9]{4}$'
+        if playerId and re.match(playerIdRegex, playerId):
+            playerIdValid = True
+        if not playerIdValid:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps("Invalid playerId")
+            }
+
+        email = body.get('email')
+        emailValid = False
+        emailRegex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if email and re.match(emailRegex, email):
+            emailValid = True
+        if not emailValid:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps("Invalid email")
+            }
+        
+        fullName = body.get('fullName')
+        fullNameValid = False
+        fullNameRegex = r'^[a-zA-Z\s\-]+$'
+        if fullName and re.match(fullNameRegex, fullName) and len(fullName) <= 100:
+            fullNameValid = True
+        if not fullNameValid:
+            return {
+                'statusCode': 400,
+                'headers': {
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                },
+                'body': json.dumps("Invalid fullName")
+            }
         item = {
-            'playerId': body.get('playerId'),
+            'playerId': playerId,
             'Timestamp': timestamp,
-            'teamName': body.get('teamName'),
+            'teamName': teamName,
             'email': body.get('email'),
             'fullName': body.get('fullName'),
             'sub': body.get('sub'),

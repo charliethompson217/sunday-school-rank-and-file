@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
-import './App.css';
 import Countdown from './Countdown';
 import Navbar from './Navbar';
 import logo from './assets/logo.svg';
 import { DataContext } from './DataContext';
 
-Amplify.configure(awsExports);
 
 export default function Home() {
   const { fetchedCurWeek, fetchedMatchupsResponse } = useContext(DataContext);
   const [closeTime, setCloseTime] = useState("");
   const [week, setWeek] = useState();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const { closeTime: fetchedCloseTime, week: fetchedWeek } = fetchedMatchupsResponse;
@@ -38,4 +38,4 @@ export default function Home() {
       </div>
     </>
   );
-}
+};

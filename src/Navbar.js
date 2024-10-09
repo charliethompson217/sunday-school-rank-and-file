@@ -12,25 +12,26 @@ export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navbarRef = useRef(null);
     const [isAdmin, setIsAdmin] = useState(false);
+
     const checkAuthState = async () => {
         try {
             const currentUser = await Auth.currentAuthenticatedUser();
             const idToken = currentUser.signInUserSession.idToken.jwtToken;
             const decodedToken = jwtDecode(idToken);
-        
+
             if (decodedToken['cognito:groups'] && decodedToken['cognito:groups'].includes('Admin')) {
-                setIsAdmin(true); 
+                setIsAdmin(true);
             } else {
-                setIsAdmin(false); 
+                setIsAdmin(false);
             }
         } catch (error) {
             return;
         }
     };
+
     useEffect(() => {
         checkAuthState();
     }, []);
-
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -53,7 +54,7 @@ export default function Navbar() {
             document.removeEventListener('click', handleClickOutside);
         };
     }, []);
-    
+
     return (
         <nav ref={navbarRef} className={`navbar ${isMenuOpen ? 'open' : ''}`}>
             <div className="navbar-container">
@@ -73,9 +74,9 @@ export default function Navbar() {
                     <Link to={"/rules"}><li>Rules</li></Link>
                     {isAdmin ? (
                         <Link to={"/admin"}><li>Admin</li></Link>
-                    ):(<></>)}
+                    ) : (<></>)}
                 </ul>
             </div>
         </nav>
     );
-}
+};

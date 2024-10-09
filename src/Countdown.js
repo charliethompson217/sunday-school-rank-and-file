@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { differenceInMilliseconds } from 'date-fns';
 import './Countdown.css';
 
-const Countdown = ({ targetDate }) => {
-  
-
+export default function Countdown({ targetDate, onExpire }) {
   const nowUTC = new Date().toISOString();
   const initialRemainingTime = differenceInMilliseconds(new Date(targetDate), new Date(nowUTC));
   const [remainingTime, setRemainingTime] = useState(initialRemainingTime);
@@ -13,22 +11,28 @@ const Countdown = ({ targetDate }) => {
     if (targetDate) {
       const interval = setInterval(() => {
         const nowUTC = new Date().toISOString();
-        setRemainingTime(differenceInMilliseconds(new Date(targetDate), new Date(nowUTC)));
+        const newRemainingTime = differenceInMilliseconds(new Date(targetDate), new Date(nowUTC));
+        setRemainingTime(newRemainingTime);
+
+        if (newRemainingTime <= 0) {
+          if (onExpire) {
+            onExpire();
+          }
+        }
       }, 1000);
 
       return () => {
         clearInterval(interval);
       };
     }
-  }, [targetDate]);
+  }, [targetDate, onExpire]);
+
   const isNegative = remainingTime < 0;
   const absRemainingTime = Math.abs(remainingTime);
-
   const days = Math.floor(absRemainingTime / (1000 * 60 * 60 * 24));
   const hours = Math.floor((absRemainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((absRemainingTime % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((absRemainingTime % (1000 * 60)) / 1000);
-
   const countdownClass = remainingTime < 0 ? 'countdown countdown-zero' : 'countdown';
 
   return (
@@ -51,8 +55,4 @@ const Countdown = ({ targetDate }) => {
       </div>
     </div>
   );
-  
-  
 };
-
-export default Countdown;

@@ -1,23 +1,23 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { DataContext } from './DataContext';
 
-Amplify.configure(awsExports);
-
-const SeasonLeaderboard = () => {
+export default function SeasonLeaderboard() {
   const { fetchedPlayers } = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: 'RankPoints', direction: 'descending' });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (fetchedPlayers && fetchedPlayers.length > 0) {
       const playersToSort = fetchedPlayers
-      .filter(player => player.RankPoints !== null && player.RankPoints !== undefined);
-      
+        .filter(player => player.RankPoints !== null && player.RankPoints !== undefined);
+
       playersToSort.sort((a, b) => {
         let aValue = parseFloat(a['RankPoints']);
         let bValue = parseFloat(b['RankPoints']);
@@ -33,7 +33,7 @@ const SeasonLeaderboard = () => {
       direction = 'descending';
     }
 
-    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks'){
+    if (key === 'TotalDollarPayout' || key === 'FileWins' || key === 'RankPoints' || key === 'PlayoffsBucks') {
       direction = 'descending';
       if (sortConfig.key === key && sortConfig.direction === 'descending') {
         direction = 'ascending';
@@ -74,10 +74,10 @@ const SeasonLeaderboard = () => {
 
   return (
     <div>
-      <select style={{visibility: 'hidden'}} >
-          <option>
-            Hide
-          </option>
+      <select style={{ visibility: 'hidden' }} >
+        <option>
+          Hide
+        </option>
       </select>
       <table className='player-table'>
         <thead>
@@ -120,5 +120,3 @@ const SeasonLeaderboard = () => {
     </div>
   );
 };
-
-export default SeasonLeaderboard;

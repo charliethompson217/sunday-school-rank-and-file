@@ -1,11 +1,38 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
 import { DataContext } from './DataContext';
+import logoMap from './assets/logos';
 
-Amplify.configure(awsExports);
+function keepLastWord(inputString) {
+  if (typeof inputString !== 'string' || inputString.trim() === '') {
+    return '';
+  }
+  const words = inputString.split(' ');
+  return words[words.length - 1];
+};
 
-const WeeklyPicks = () => {
+const isPickCorrect = (game, results, gameIndex) => {
+  if (!results?.[gameIndex]?.value) {
+    return 'undecided';
+  }
+
+  const playerPick = keepLastWord(game?.value);
+  const resultPick = keepLastWord(results?.[gameIndex]?.value);
+
+  if (playerPick === resultPick) {
+    return 'correct';
+  } if (resultPick === 'Tie') {
+    return 'tie';
+  } else {
+    return 'incorrect';
+  }
+};
+
+const weekOptions = [
+  'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
+  'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+];
+
+export default function WeeklyPicks() {
   const { fetchedCurWeek, fetchedPlayers, fetchedSubmissions, fetchedGameResults } = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
   const [submissions, setSubmissions] = useState([]);
@@ -13,10 +40,9 @@ const WeeklyPicks = () => {
   const [week, setWeek] = useState('Choose week');
   const [gameResults, setGameResults] = useState([]);
 
-  const weekOptions = [
-    'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
-    'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
-  ];
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleKeyDown = (event) => {
     event.preventDefault();
@@ -24,11 +50,11 @@ const WeeklyPicks = () => {
 
     if (event.key === 'ArrowDown') {
       const nextIndex = (currentIndex + 1) % weekOptions.length;
-      if(submissions?.[nextIndex])
+      if (submissions?.[nextIndex])
         setWeek(weekOptions[nextIndex]);
     } else if (event.key === 'ArrowUp') {
       const prevIndex = (currentIndex - 1 + weekOptions.length) % weekOptions.length;
-      if(submissions?.[prevIndex])
+      if (submissions?.[prevIndex])
         setWeek(weekOptions[prevIndex]);
     }
   };
@@ -39,13 +65,13 @@ const WeeklyPicks = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [week]);
+  });
 
-  const fixRankedRanks = (array) =>{
+  const fixRankedRanks = (array) => {
     array.reverse();
     let newArray = [...array];
     for (let i = 0; i < newArray.length; i++) {
-        newArray[array[i]-1] = i+1;
+      newArray[array[i] - 1] = i + 1;
     }
     return newArray;
   };
@@ -59,12 +85,12 @@ const WeeklyPicks = () => {
       const playersToSort = fetchedPlayers
         .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
         .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
-        setSortedPlayers(playersToSort);
+      setSortedPlayers(playersToSort);
     }
     else {
       setSortedPlayers(fetchedPlayers || []);
     }
-    
+
     setSubmissions(fetchedSubmissions || []);
     setWeek(decrementLastNumber(fetchedCurWeek));
     setGameResults(fetchedGameResults || []);
@@ -74,15 +100,15 @@ const WeeklyPicks = () => {
     if (week !== 'Choose week') {
       const weekNumber = week.split(' ')[1];
       const weekIndex = parseInt(weekNumber, 10) - 1;
-  
+
       const weekSubmissions = submissions?.[weekIndex] || [];
-  
+
       const submissionsByPlayer = weekSubmissions.reduce((acc, submission) => {
         if (submission?.playerId) {
           const rankRanks = submission?.rankedRanks ? JSON.parse(submission.rankedRanks) : [];
-  
+
           const fixedRankedRanks = fixRankedRanks(rankRanks);
-  
+
           acc[submission.playerId] = {
             ...submission,
             rankedRanks: JSON.stringify(fixedRankedRanks)
@@ -90,20 +116,10 @@ const WeeklyPicks = () => {
         }
         return acc;
       }, {});
-  
+
       setFilteredSubmissions(submissionsByPlayer);
     }
   }, [week, submissions]);
-  
-
-  function keepLastWord(inputString) {
-    if (typeof inputString !== 'string' || inputString.trim() === '') {
-      return '';
-    }
-    const words = inputString.split(' ');
-    return words[words.length - 1];
-  };
-  
 
   const calculateMaxColumnWidths = (players) => {
     if (!Array.isArray(players) || players.length === 0) {
@@ -138,81 +154,84 @@ const WeeklyPicks = () => {
 
   const { maxRankWidths, maxFileWidths } = calculateMaxColumnWidths(sortedPlayers);
 
-  const getWidth = (length) => `${length * 8}px`;
+  const getWidth = () => '80px';
 
-  const calculatePoints = (submission, currentWeekResults) => {
-    const rankPicks = submission?.rankPicks ? JSON.parse(submission.rankPicks) : [];
-    const rankRanks = submission?.rankedRanks ? JSON.parse(submission.rankedRanks) : [];
-    const rankResults = currentWeekResults?.rankResults || [];
+  useEffect(() => {
+    const calculatePoints = (submission, currentWeekResults) => {
+      const rankPicks = submission?.rankPicks ? JSON.parse(submission.rankPicks) : [];
+      const rankRanks = submission?.rankedRanks ? JSON.parse(submission.rankedRanks) : [];
+      const rankResults = currentWeekResults?.rankResults || [];
 
-    let totalPoints = 0;
+      let totalPoints = 0;
 
-    rankPicks.forEach((game, gameIndex) => {
-      if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'tie' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
-        totalPoints += parseInt(rankRanks?.[gameIndex], 10) || 0;
-      }
-    });
-
-    // check for bonus
-    let checkBonus = 0;
-    rankPicks.forEach((game, gameIndex) => {
-        if (parseInt(rankRanks?.[gameIndex], 10)>5)
-            return;
-        if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
-            checkBonus++;
+      rankPicks.forEach((game, gameIndex) => {
+        if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'tie' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
+          totalPoints += parseInt(rankRanks?.[gameIndex], 10) || 0;
         }
-    });
-    if (checkBonus===5)
-        totalPoints += 20;
+      });
 
-    // check perfect sunday
-    checkBonus = 0;
-    rankPicks.forEach((game, gameIndex) => {
+      // check for bonus
+      let checkBonus = 0;
+      let bonusGames = [];
+      rankPicks.forEach((game, gameIndex) => {
+        if (parseInt(rankRanks?.[gameIndex], 10) > 5)
+          return;
+        if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
+          checkBonus++;
+          bonusGames.push(gameIndex);
+        }
+      });
+      if (checkBonus === 5)
+        totalPoints += 20;
+      else
+        bonusGames = [];
+
+      // check perfect sunday
+      checkBonus = 0;
+      rankPicks.forEach((game, gameIndex) => {
         if (isPickCorrect(game, rankResults, gameIndex) === 'correct' || isPickCorrect(game, rankResults, gameIndex) === 'undecided') {
           checkBonus++;
         }
-    });
-    if (checkBonus===rankPicks.length && rankPicks.length>0)
+      });
+      if (checkBonus === rankPicks.length && rankPicks.length > 0)
         totalPoints += 40;
 
 
-    return totalPoints;
-  };
+      return { totalPoints, bonusGames };
+    };
 
-  useEffect(() => {
     if (filteredSubmissions && gameResults?.[week]) {
-      const currentWeekResults = gameResults?.[week] || {};
+      setSortedPlayers((prevSortedPlayers) => {
+        const currentWeekResults = gameResults?.[week] || {};
+        const playersWithPoints = prevSortedPlayers.map(player => {
+          const submission = filteredSubmissions?.[player?.playerId];
+          const { totalPoints, bonusGames } = calculatePoints(submission, currentWeekResults);
+          return { ...player, totalPoints, bonusGames };
+        });
+        return playersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
+      });
+    }
+    else if (filteredSubmissions && !gameResults?.[week]) {
 
-      const playersWithPoints = sortedPlayers.map(player => {
-        const submission = filteredSubmissions?.[player?.playerId];
-        const totalPoints = calculatePoints(submission, currentWeekResults);
-        return { ...player, totalPoints };
+      setSortedPlayers((prevSortedPlayers) => {
+        return prevSortedPlayers.map(player => {
+          const ranks = filteredSubmissions?.[player?.playerId]?.rankedRanks ? JSON.parse(filteredSubmissions?.[player?.playerId]?.rankedRanks) : [];
+          let totalPoints = 0;
+          for (let i = 0; i < ranks.length; i++) {
+            totalPoints += (i + 1);
+          }
+          totalPoints += 60;
+          return { ...player, totalPoints };
+        });
       });
 
-      const sortedByPoints = playersWithPoints.sort((a, b) => b.totalPoints - a.totalPoints);
-      setSortedPlayers(sortedByPoints);
     }
   }, [filteredSubmissions, gameResults, week]);
 
-  const isPickCorrect = (game, results, gameIndex) => {
-    if (!results?.[gameIndex]?.value) {
-      return 'undecided';
-    }
 
-    const playerPick = keepLastWord(game?.value);
-    const resultPick = keepLastWord(results?.[gameIndex]?.value);
 
-    if (playerPick === resultPick) {
-      return 'correct';
-    } if (resultPick === 'Tie'){
-      return 'tie';
-    } else {
-      return 'incorrect';
-    }
-  };
-
-  function changeWeek(value)  {
-    if(submissions?.[weekOptions.indexOf(value)])
+  function changeWeek(value) {
+    if (submissions?.[weekOptions.indexOf(value)])
       setWeek(value);
   };
   const secondaryButtonColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-button-color').trim();
@@ -230,9 +249,9 @@ const WeeklyPicks = () => {
         <table className="weekly-picks">
           <thead>
             <tr>
-              <th style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '10px 0px 0px 10px', height: '30px', border: 'none'}}>Team (points)</th>
-              <th style={{ padding: '10px',  whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 0px 0px 0px', height: '30px', border: 'none'}}>Rank Picks</th>
-              <th style={{ paddingRight: '65px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 10px 10px 0px', height: '30px', border: 'none'}}>File Picks</th>
+              <th style={{ padding: '10px', whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '10px 0px 0px 10px', height: '30px', border: 'none' }}>Team (points)</th>
+              <th style={{ padding: '10px', whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 0px 0px 0px', height: '30px', border: 'none' }}>Rank Picks</th>
+              <th style={{ paddingRight: '100px', paddingLeft: '65px', whiteSpace: 'nowrap', color: 'black', backgroundColor: `${secondaryButtonColor}`, borderRadius: '0px 10px 10px 0px', height: '30px', border: 'none' }}>File Picks</th>
             </tr>
           </thead>
           <tbody>
@@ -249,26 +268,32 @@ const WeeklyPicks = () => {
                 return (
                   <tr key={player.playerId}>
                     <td
-                    style={{ 
-                        textAlign: 'right', 
-                        verticalAlign: 'middle', 
-                        fontWeight: 'bold', 
-                        whiteSpace: 'nowrap', 
+                      style={{
+                        verticalAlign: 'middle',
+                        fontWeight: 'bold',
+                        whiteSpace: 'nowrap',
                         paddingRight: '10px',
                         paddingLeft: '10px',
                         color: 'black',
-                        height: '30px',
+                        height: '80px',
                         borderRadius: '10px 0px 0px 10px',
-                        fontSize: '12px',
+                        fontSize: '20px',
                         backgroundColor: `${secondaryButtonColor}`,
-                    }}>
-                      {player?.teamName}  <span style={{
-                                              color: 'black',
-                                              padding: '5px',
-                                              marginRight: '3px',
-                                              marginLeft: '5px',
-                                              fontSize: '12px',
-                                            }}>{player?.totalPoints}</span>
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}>
+                      <span style={{ marginLeft: '15px' }}> {player?.teamName} </span>
+                      <span style={{
+                        color: 'black',
+                        padding: '5px',
+                        marginRight: '3px',
+                        marginLeft: '5px',
+                        fontSize: '40px',
+                        textAlign: 'right'
+                      }}>
+                        {player?.totalPoints}
+                      </span>
                     </td>
                     <td>
                       {Array.isArray(rankPicks) && rankPicks.length > 0 ? (
@@ -279,31 +304,44 @@ const WeeklyPicks = () => {
                         }}>
                           {rankPicks.map((game, gameIndex) => {
                             const playerPick = keepLastWord(game?.value);
+                            const teamLogo = logoMap[playerPick];
+                            const isBonusGame = player?.bonusGames?.includes(gameIndex);
                             return (
                               <div
                                 key={gameIndex}
                                 className={isPickCorrect(game, rankResults, gameIndex)}
                                 style={{
                                   display: 'flex',
+                                  flexDirection: 'column',
                                   justifyContent: 'center',
                                   alignItems: 'center',
                                   width: getWidth(maxRankWidths[gameIndex]),
-                                  height: '30px',
+                                  height: '80px',
                                   color: 'rgb(0,0,0)',
                                   fontSize: '10px',
                                   fontWeight: '800',
                                   letterSpacing: '1px',
                                 }}
                               >
+                                <img
+                                  src={teamLogo}
+                                  alt={`${playerPick} logo`}
+                                  style={{ width: '40px', height: '40px', marginBottom: '5px' }}
+                                />
                                 <span style={{
-                                  backgroundColor: 'rgba(0,0,0,0.45)',
-                                  borderStyle: 'none',
+                                  backgroundColor: isBonusGame
+                                    ? 'rgba(0,0,0,0.35)'
+                                    : 'rgba(130, 130, 130, 0.35)',
                                   borderRadius: '10px',
-                                  color: 'rgba(255,255,255,0.35)',
+                                  color: isBonusGame
+                                    ? 'rgba(255,255,255,0.35)'
+                                    : 'rgba(0, 0, 0, 0.55)',
                                   padding: '3px',
-                                  marginRight: '3px',
-                                  fontSize: '8px',
-                                }}>{rankRanks?.[gameIndex]}</span>{playerPick}
+                                  marginBottom: '3px',
+                                  fontSize: '20px',
+                                }}>
+                                  {rankRanks?.[gameIndex]}
+                                </span>
                               </div>
                             );
                           })}
@@ -312,35 +350,40 @@ const WeeklyPicks = () => {
                         'No Picks'
                       )}
                     </td>
+
                     <td>
                       {Array.isArray(filePicks) && filePicks.length > 0 ? (
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: filePicks.map((_, gameIndex) => getWidth(maxFileWidths[gameIndex])).join(' '),
-                          gap: '23px',
-                          paddingLeft: '15px',
+                          gap: '2px',
                         }}>
                           {filePicks.map((game, gameIndex) => {
                             const playerPick = keepLastWord(game?.value);
+                            const teamLogo = logoMap[playerPick];
                             return (
                               <div
                                 key={gameIndex}
                                 className={isPickCorrect(game, fileResults, gameIndex)}
                                 style={{
                                   display: 'flex',
+                                  flexDirection: 'column',
                                   justifyContent: 'center',
                                   alignItems: 'center',
                                   width: getWidth(maxFileWidths[gameIndex]),
-                                  height: '30px',
+                                  height: '80px',
                                   color: 'rgb(0,0,0)',
-                                  fontSize: '12px',
+                                  fontSize: '10px',
                                   fontWeight: '800',
                                   letterSpacing: '1px',
-                                  paddingLeft: '10px',
-                                  paddingRight: '10px',
                                 }}
                               >
-                                {playerPick}
+                                <img
+                                  src={teamLogo}
+                                  alt={`${playerPick} logo`}
+                                  style={{ width: '40px', height: '40px', marginBottom: '5px' }}
+                                />
+
                               </div>
                             );
                           })}
@@ -349,6 +392,7 @@ const WeeklyPicks = () => {
                         'No Picks'
                       )}
                     </td>
+
                   </tr>
                 );
               })
@@ -363,5 +407,3 @@ const WeeklyPicks = () => {
     </div>
   );
 };
-
-export default WeeklyPicks;

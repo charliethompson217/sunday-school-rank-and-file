@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { API, Amplify, Auth } from 'aws-amplify';
 import awsExports from './aws-exports';
-import './App.css';
 import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
@@ -11,46 +10,33 @@ export default function PullPicks() {
   const [playerPicks, setPlayerPicks] = useState([]);
   const [unsubmittedPlayers, setUnsubmittedPlayers] = useState([]);
   const [week, setWeek] = useState('Choose week');
-  const {fetchedCurWeek } = useContext(DataContext);
+  const { fetchedCurWeek, fetchedAdminPlayers } = useContext(DataContext);
 
   const weekOptions = [
-      'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10','Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+    'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
   ];
 
-  const compareByTeamName = (a, b) => {
-    if (a.teamName < b.teamName) return -1;
-    if (a.teamName > b.teamName) return 1;
+  const compareByFullName = (a, b) => {
+    if (a.fullName < b.fullName) return -1;
+    if (a.fullName > b.fullName) return 1;
     return 0;
   };
 
-  useEffect( () => {
-    setWeek(fetchedCurWeek);
-    const fetchPlayers = async () => {
-      setPlayers([]);
-      try {
-        const session = await Auth.currentSession();
-        const idToken = session.getIdToken().getJwtToken();
-        const response = await API.get('ssAdmin', '/admin/get-players',{
-          headers: {
-            Authorization: `Bearer ${idToken}`
-          },
-        });
-        const sortedPlayers = [...response].sort(compareByTeamName)
+  useEffect(() => {
+    if (fetchedAdminPlayers && fetchedCurWeek) {
+      const sortedPlayers = [...fetchedAdminPlayers].sort(compareByFullName)
         .filter(player => player.RankPoints !== null && player.RankPoints !== undefined);
-        setPlayers(sortedPlayers);
-      } catch (error) {
-        console.error('Error fetching players:', error);
-      }
+      setPlayers(sortedPlayers);
+      setWeek(fetchedCurWeek);
     }
-    fetchPlayers();
-  }, [fetchedCurWeek]);
+  }, [fetchedCurWeek, fetchedAdminPlayers]);
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchPicksForPlayers = async (playersToFetchPicksFor) => {
       try {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        const response = await API.put('ssAdmin', `/admin/pull-picks`,{
+        const response = await API.put('ssAdmin', `/admin/pull-picks`, {
           headers: {
             Authorization: `Bearer ${idToken}`,
           },
@@ -61,28 +47,27 @@ export default function PullPicks() {
         });
         setPlayerPicks(response);
       } catch (error) {
-        console.error( 'Error fetching picks for players', error);
+        console.error('Error fetching picks for players', error);
       }
     }
     let playersToFetchPicksFor = [];
-    players.forEach((player) => {
-      playersToFetchPicksFor.push(player.teamName);
-    });
-    fetchPicksForPlayers(playersToFetchPicksFor);
+    if (players.length > 0 && week !== "Choose Week") {
+      players.forEach((player) => {
+        playersToFetchPicksFor.push(player.teamName);
+      });
+      fetchPicksForPlayers(playersToFetchPicksFor);
+    }
   }, [players, week]);
 
   useEffect(() => {
     if (!players || !playerPicks || !week) return;
-  
-    const filteredPlayers = players.filter(player => 
+
+    const filteredPlayers = players.filter(player =>
       !playerPicks.some(picks => picks.week === week && picks.team === player.teamName)
     );
-    
+
     setUnsubmittedPlayers(filteredPlayers);
   }, [players, playerPicks, week]);
-  
-  
-  
 
   function keepLastWord(inputString) {
     if (typeof inputString !== 'string' || inputString.trim() === '') {
@@ -92,14 +77,15 @@ export default function PullPicks() {
     return words[words.length - 1];
   };
 
-  const fixRankedRanks = (array) =>{
+  const fixRankedRanks = (array) => {
     array.reverse();
     let newArray = [...array];
     for (let i = 0; i < newArray.length; i++) {
-        newArray[array[i]-1] = i+1;
+      newArray[array[i] - 1] = i + 1;
     }
     return newArray;
   }
+
   const parseJsonString = (jsonString) => {
     try {
       return JSON.parse(jsonString);
@@ -108,7 +94,7 @@ export default function PullPicks() {
       return null;
     }
   };
-  
+
   const generateCsvData = (playerPicks) => {
     let csvData = '';
     csvData += '\n';
@@ -123,7 +109,7 @@ export default function PullPicks() {
       csvData += `File Pick ${i},`;
     }
     csvData += '\n';
-  
+
     playerPicks.forEach((picks) => {
       if (picks.week === week) {
         const team = picks.team || '';
@@ -136,27 +122,27 @@ export default function PullPicks() {
           const value = rankedPicks[i]?.value || '';
           csvData += keepLastWord(`${value},`);
         }
-  
+
         const fetchedRankedRanks = parseJsonString(picks.rankedRanks) || [];
         const rankedRanks = fixRankedRanks(fetchedRankedRanks);
         for (let i = 0; i < 16; i++) {
           const rank = rankedRanks[i] || '';
           csvData += `${rank},`;
         }
-  
+
         const filePicks = parseJsonString(picks.filePicks) || [];
         for (let i = 0; i < 4; i++) {
           const value = filePicks[i]?.value || '';
           csvData += keepLastWord(`${value},`);
         }
-  
+
         csvData += '\n';
       }
     });
-  
+
     return csvData;
   };
-  
+
   const downloadCsv = () => {
     const csvData = generateCsvData(playerPicks);
     if (csvData) {
@@ -170,35 +156,35 @@ export default function PullPicks() {
 
   const downloadPicks = () => {
     downloadCsv();
-  }
+  };
 
 
   return (
     <div>
-        <h2>Pull Picks</h2>
-        <div>
-          <label htmlFor="pullpicks-weekSelect">For Week:</label>
-          <select id="pullpicks-weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
+      <h2>Pull Picks</h2>
+      <div>
+        <label htmlFor="pullpicks-weekSelect">For Week:</label>
+        <select id="pullpicks-weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
           {weekOptions.map((option) => (
-              <option key={option} value={option}>
+            <option key={option} value={option}>
               {option}
-              </option>
+            </option>
           ))}
-          </select>
-        </div>
-        <div>
+        </select>
+      </div>
+      <div>
         <button onClick={() => downloadPicks()}>Download CSV</button>
-        </div>
-        <div>
-          <h4>The following {unsubmittedPlayers.length} players have not submited their picks:</h4>
-          <ul>
-            {unsubmittedPlayers.map(player => (
-              <li key={player.playerId}>
-                {player.fullName}
-              </li>
-            ))}
-          </ul>
-        </div>
+      </div>
+      <div>
+        <h4>The following {unsubmittedPlayers.length} players have not submited their picks:</h4>
+        <ul>
+          {unsubmittedPlayers.map(player => (
+            <li key={player.playerId}>
+              {player.fullName}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
-  )
-}
+  );
+};

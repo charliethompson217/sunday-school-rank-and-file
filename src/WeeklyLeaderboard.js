@@ -1,34 +1,36 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp, faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { DataContext } from './DataContext';
 
-Amplify.configure(awsExports);
 
-const WeeklyLeaderboard = () => {
+const weekOptions = [
+  'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
+  'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+];
+
+export default function WeeklyLeaderboard() {
   const { fetchedPlayers, fetchedWeeklyLeaderboards, fetchedCurWeek } = useContext(DataContext);
   const [sortedPlayers, setSortedPlayers] = useState([]);
   const [sortConfig, setSortConfig] = useState({ key: 'maximumPoints', direction: 'descending' });
   const [week, setWeek] = useState('Choose week');
-  const weekOptions = [
-    'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8',
-    'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
-  ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleKeyDown = (event) => {
     event.preventDefault();
     const currentIndex = weekOptions.indexOf(week);
-    
+
     if (event.key === 'ArrowDown') {
       const nextIndex = (currentIndex + 1) % weekOptions.length;
-      if(fetchedWeeklyLeaderboards?.[nextIndex])
+      if (fetchedWeeklyLeaderboards?.[nextIndex])
         setWeek(weekOptions[nextIndex]);
     } else if (event.key === 'ArrowUp') {
       const prevIndex = (currentIndex - 1 + weekOptions.length) % weekOptions.length;
-      if(fetchedWeeklyLeaderboards?.[prevIndex])
+      if (fetchedWeeklyLeaderboards?.[prevIndex])
         setWeek(weekOptions[prevIndex]);
     }
   };
@@ -39,23 +41,16 @@ const WeeklyLeaderboard = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [week]);
+  });
 
-  const getTeamName = (playerId) => {
-    const player = fetchedPlayers.find(p => p.playerId === playerId);
-    if (player) {
-      return player.teamName;
-    } else {
-      return null;
-    }
-  };
+
 
   useEffect(() => {
     if (fetchedPlayers && fetchedPlayers.length > 0) {
       const playersToSort = fetchedPlayers
-      .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
-      .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
-      
+        .filter(player => player.RankPoints !== null && player.RankPoints !== undefined)
+        .map(player => ({ ...player, RankPoints: parseFloat(player.RankPoints) }));
+
       playersToSort.sort((a, b) => {
         let aValue = parseFloat(a['RankPoints']);
         let bValue = parseFloat(b['RankPoints']);
@@ -70,12 +65,20 @@ const WeeklyLeaderboard = () => {
   };
 
   useEffect(() => {
-    if(fetchedCurWeek){
+    if (fetchedCurWeek) {
       setWeek(decrementLastNumber(fetchedCurWeek));
     }
   }, [fetchedCurWeek]);
 
   useEffect(() => {
+    const getTeamName = (playerId) => {
+      const player = fetchedPlayers.find(p => p.playerId === playerId);
+      if (player) {
+        return player.teamName;
+      } else {
+        return null;
+      }
+    };
     if (fetchedPlayers && fetchedPlayers.length > 0 && fetchedWeeklyLeaderboards && fetchedCurWeek) {
       const leaderboardForSelectedWeek = fetchedWeeklyLeaderboards.find(w => w.Week === week);
       if (leaderboardForSelectedWeek) {
@@ -102,27 +105,27 @@ const WeeklyLeaderboard = () => {
             return null;
           })
           .filter(player => player !== null);
-    
+
         const playersToSort = [...updatedLeaderboard];
-          playersToSort.sort((a, b) => {
-            let aValue = parseFloat(a['maximumPoints']);
-            let bValue = parseFloat(b['maximumPoints']);
-            return bValue - aValue;
-          });
-      
+        playersToSort.sort((a, b) => {
+          let aValue = parseFloat(a['maximumPoints']);
+          let bValue = parseFloat(b['maximumPoints']);
+          return bValue - aValue;
+        });
+
         setSortedPlayers(playersToSort);
       }
     }
   }, [fetchedPlayers, fetchedWeeklyLeaderboards, fetchedCurWeek, week]);
-  
-  
+
+
   const sortPlayers = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
 
-    if (key === 'maximumPoints' || key === 'missedPoints' || key === 'earnedPoints' || key === 'fileWins' || key === 'totalRankGamesWon' || key === 'playoffsBucksEarned' || key === 'weeklyPayout'){
+    if (key === 'maximumPoints' || key === 'missedPoints' || key === 'earnedPoints' || key === 'fileWins' || key === 'totalRankGamesWon' || key === 'playoffsBucksEarned' || key === 'weeklyPayout') {
       direction = 'descending';
       if (sortConfig.key === key && sortConfig.direction === 'descending') {
         direction = 'ascending';
@@ -161,9 +164,9 @@ const WeeklyLeaderboard = () => {
     ) : null
   );
 
-  function changeWeek(value)  {
-    if(fetchedWeeklyLeaderboards?.[weekOptions.indexOf(value)])
-    setWeek(value);
+  function changeWeek(value) {
+    if (fetchedWeeklyLeaderboards?.[weekOptions.indexOf(value)])
+      setWeek(value);
   };
 
   return (
@@ -243,5 +246,3 @@ const WeeklyLeaderboard = () => {
     </div>
   );
 };
-
-export default WeeklyLeaderboard;

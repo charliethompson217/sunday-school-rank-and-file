@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Auth, Amplify } from 'aws-amplify';
 import awsconfig from './aws-exports';
 import Navbar from './Navbar';
+
 Amplify.configure(awsconfig);
 
 export default function Forgotpassword() {
@@ -16,19 +17,23 @@ export default function Forgotpassword() {
     const [step, setStep] = useState(1);
 
     useEffect(() => {
-        if(newPassword!==''&&confirmPassword!==''){
+        window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
+        if (newPassword !== '' && confirmPassword !== '') {
             var passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{10,}$/;
-            if(newPassword!==confirmPassword){
+            if (newPassword !== confirmPassword) {
                 setWarning("Passwords do not match!");
-            } else if (newPassword.length<10){
+            } else if (newPassword.length < 10) {
                 setWarning("Password must be longer than 10 characters!");
-            } else if(!passwordRegex.test(newPassword)){
+            } else if (!passwordRegex.test(newPassword)) {
                 setWarning("Password must contain at least one special character, number, uppercase letter, and lowercase letter!");
-            } else { 
+            } else {
                 setWarning("");
                 setPasswordIsValid(true);
             }
-        } else { 
+        } else {
             setWarning("");
         }
     }, [newPassword, confirmPassword]);
@@ -36,29 +41,31 @@ export default function Forgotpassword() {
     const handleSubmitStep1 = async (e) => {
         e.preventDefault();
         try {
+            await Auth.signOut();
             Auth.forgotPassword(email);
             setStep(2);
         } catch (error) {
             console.error(error);
             setWarning('An error occurred while requesting verification code.');
         }
-    }
+    };
 
     const handleSubmitStep2 = async (e) => {
         e.preventDefault();
-        if(!passwordIsValid){
+        if (!passwordIsValid) {
             return;
         }
         try {
-            Auth.forgotPasswordSubmit(email, verificationCode, newPassword);
-            navigate('/');
+            await Auth.forgotPasswordSubmit(email, verificationCode, newPassword);
+            await Auth.signIn(email, newPassword);
+            navigate('/account');
         } catch (error) {
             console.error(error);
             setWarning('An error occurred while reseting your password.');
         }
-    }
+    };
 
-    if (step===1){
+    if (step === 1) {
         return (
             <>
                 <Navbar></Navbar>
@@ -75,19 +82,15 @@ export default function Forgotpassword() {
                     </form>
                 </div>
             </>
-        )
+        );
     }
-    else if (step===2){
+    else if (step === 2) {
         return (
             <>
                 <Navbar></Navbar>
                 <div className='navbar-offset-container'>
                     <form onSubmit={handleSubmitStep2} className="Forgotpassword">
                         <h1>Forgot Password</h1>
-
-                        <div>
-                            <input key="step-2-email" className="signin-form-control" placeholder="E-Mail" autoComplete="email" type="email" onChange={e => setEmail(e.target.value)} required />
-                        </div>
 
                         <div>
                             <input key="step-2-code" className="signin-form-control" placeholder="Verification Code" onChange={e => setVerificationCode(e.target.value)} required />
@@ -107,6 +110,6 @@ export default function Forgotpassword() {
                     </form>
                 </div>
             </>
-        )
+        );
     }
-}
+};
