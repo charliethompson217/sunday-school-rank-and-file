@@ -11,7 +11,6 @@ import re
 dynamodb = boto3.resource('dynamodb')
 
 def get_secret():
-
     secret_name = "sundayschoolrankandfile_googlesheet"
     region_name = "us-east-2"
 
@@ -34,268 +33,185 @@ def get_secret():
             return json.loads(secret)
         raise Exception("Secret not found or is not a string.")
 
-def handler(event, context):
-    print('received event:')
-    print(event)
-    method = event['httpMethod']
-    headers = event['headers']
-    path_parameters = event['pathParameters']
-    action = path_parameters['action']
+def update_configuration_table(env, client_id, data):
+    table = dynamodb.Table(f'configuration-{env}')
+    timestamp = int(time.time())
+    item = {
+        'ClientId': client_id,
+        'Timestamp': timestamp,
+        **data
+    }
+    table.put_item(Item=item)
+
+def get_player_submissions(env, players, week):
+    table = dynamodb.Table(f'submissions-{env}')
+    most_recent_entries = []
+
+    for player in players:
+        response = table.query(
+            KeyConditionExpression='team = :tid',
+            ExpressionAttributeValues={
+                ':tid': player
+            },
+            ScanIndexForward=False
+        )
+        
+        if 'Items' in response and len(response['Items']) > 0:
+            week_entries = [entry for entry in response['Items'] if entry.get('week') == week]
+            if week_entries:
+                most_recent_entry = week_entries[0]
+                if 'Timestamp' in most_recent_entry:
+                    most_recent_entry['Timestamp'] = str(most_recent_entry['Timestamp'])
+                most_recent_entries.append(most_recent_entry)
+    
+    return most_recent_entries
+
+def update_season_leaderboard(env, player_updates):
+    table = dynamodb.Table(f'sundaySchoolPlayers-{env}')
+    
+    for player in player_updates:
+        playerId, rankPoints, fileWins, playoffsBucks, totalDollarPayout = player
+        
+        try:
+            table.update_item(
+                Key={'playerId': playerId},
+                UpdateExpression='SET RankPoints = :rankPoints, FileWins = :fileWins, PlayoffsBucks = :playoffsBucks, TotalDollarPayout = :totalDollarPayout',
+                ExpressionAttributeValues={
+                    ':rankPoints': rankPoints,
+                    ':fileWins': fileWins,
+                    ':playoffsBucks': playoffsBucks,
+                    ':totalDollarPayout': totalDollarPayout,
+                }
+            )
+        except Exception as e:
+            print(f"Error updating player {playerId}: {e}")
+            raise
+
+def get_all_players(env):
+    table = dynamodb.Table(f'sundaySchoolPlayers-{env}')
+    response = table.scan()
+    players = response['Items']
+    
+    for player in players:
+        if 'Timestamp' in player:
+            player['Timestamp'] = str(player['Timestamp'])
+    
+    return players
+
+def update_weekly_leaderboard(env, week_number, data):
+    table = dynamodb.Table(f'weeklyLeaderboards-{env}')
+    timestamp = int(time.time())
+    item = {
+        'Timestamp': timestamp,
+        'Week': f'Week {week_number}',
+        'data': data,
+    }
+    table.put_item(Item=item)
+
+def get_google_sheet_data(sheet_name):
+    creds = get_secret()
+    creds_json = json.dumps(creds)
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(
+        json.loads(creds_json),
+        ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+    )
+    gc = gspread.authorize(credentials)
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1sLEqJF3xtKneBczD37eaMvMexlHCC1INcOlQZeacJOQ/edit"
+    return gc.open_by_url(spreadsheet_url).worksheet(sheet_name).get_values()
+
+def create_response(status_code, body):
+    return {
+        'statusCode': status_code,
+        'headers': {
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+        },
+        'body': json.dumps(body)
+    }
+
+def validate_admin(headers):
     jwt_token = headers['Authorization'].split(' ')[1]
     parts = jwt_token.split('.')
     payload = parts[1]
     decoded_payload = base64.b64decode(payload + "===").decode()
     payload_json = json.loads(decoded_payload)
     groups = payload_json.get('cognito:groups', [])
+    return 'Admin' in groups
+
+def handler(event, context):
+    print('received event:', event)
+    
+    method = event['httpMethod']
+    headers = event['headers']
+    path_parameters = event['pathParameters']
+    action = path_parameters['action']
     env = os.environ.get('ENV')
-    is_admin = 'Admin' in groups
-    if is_admin:
+
+    if not validate_admin(headers):
+        return create_response(403, 'Unauthorized!')
+
+    try:
         if method == 'POST':
-            if(action == "set-cur-week"):
-                table_name = f'configuration-{env}'
-                table = dynamodb.Table(table_name)
-                timestamp = int(time.time())
-                body = json.loads(event['body'])
-                item = {
-                    'ClientId': "cur-week",
-                    'Timestamp': timestamp,
-                    'week': body.get('week'),
-                }
-                table.put_item(Item=item)
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Current Week Updated!')
-                }
-            if(action == "upload-game-results"):
-                table_name = f'configuration-{env}'
-                table = dynamodb.Table(table_name)
-                timestamp = int(time.time())
-                body = json.loads(event['body'])
-                item = {
-                    'ClientId': "game-results",
-                    'Timestamp': timestamp,
+            body = json.loads(event['body'])
+            
+            if action == "set-cur-week":
+                update_configuration_table(env, "cur-week", {'week': body.get('week')})
+                return create_response(200, 'Current Week Updated!')
+                
+            elif action == "upload-game-results":
+                update_configuration_table(env, "game-results", {
                     'week': body.get('week'),
                     'rankResults': body.get('rankResults'),
-                    'fileResults':body.get('fileResults'),
-                }
-                table.put_item(Item=item)
-
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Matchups Updated!')
-                }
-            if(action == "upload-matchups"):
-                table_name = f'configuration-{env}'
-                table = dynamodb.Table(table_name)
-                timestamp = int(time.time())
-                body = json.loads(event['body'])
-                item = {
-                    'ClientId': body.get('ClientId'),
-                    'Timestamp': timestamp,
+                    'fileResults': body.get('fileResults')
+                })
+                return create_response(200, 'Matchups Updated!')
+                
+            elif action == "upload-matchups":
+                update_configuration_table(env, body.get('ClientId'), {
                     'week': body.get('week'),
                     'closeTime': body.get('closeTime'),
                     'rankMatchups': body.get('rankMatchups'),
-                    'fileMatchups':body.get('fileMatchups'),
-                }
-                table.put_item(Item=item)
+                    'fileMatchups': body.get('fileMatchups')
+                })
+                return create_response(200, 'Matchups Updated!')
 
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps('Matchups Updated!')
-                }
         elif method == 'PUT':
-            if(action == "pull-picks"):
-                table_name = f'submissions-{env}'
-                table = dynamodb.Table(table_name)
-                body = json.loads(event['body'])
-                players = body.get('players')
-                week = body.get('week')
-                most_recent_entries = []
-
-                for player in players:
-                    response = table.query(
-                        KeyConditionExpression='team = :tid',
-                        ExpressionAttributeValues={
-                            ':tid': player
-                        },
-                        ScanIndexForward=False
-                    )
-                    
-                    if 'Items' in response and len(response['Items']) > 0:
-                        week_entries = [entry for entry in response['Items'] if entry.get('week') == week]
-                        if week_entries:
-                            most_recent_entry = week_entries[0]
-                            if 'Timestamp' in most_recent_entry:
-                                most_recent_entry['Timestamp'] = str(most_recent_entry['Timestamp'])
-                            most_recent_entries.append(most_recent_entry)
-
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps(most_recent_entries)
-                }
-
-            elif(action == "edit-player-stats"):
-                table_name = f'sundaySchoolPlayers-{env}'
-                table = dynamodb.Table(table_name)
-                body = json.loads(event['body'])
-                players = body.get('players')
-                for player in players:
-                    playerId = player[0]
-                    rankPoints = player[1]
-                    fileWins = player[2]
-                    playoffsBucks = player[3]
-                    totalDollarPayout = player[4]
-
-                    try:
-                        response = table.update_item(
-                            Key={
-                                'playerId': playerId,
-                            },
-                            UpdateExpression='SET RankPoints = :rankPoints, FileWins = :fileWins, PlayoffsBucks = :playoffsBucks, TotalDollarPayout = :totalDollarPayout',
-                            ExpressionAttributeValues={
-                                ':rankPoints': rankPoints,
-                                ':fileWins': fileWins,
-                                ':playoffsBucks': playoffsBucks,
-                                ':totalDollarPayout': totalDollarPayout,
-                            },
-                            ReturnValues='UPDATED_NEW'
-                        )
-                    except Exception as e:
-                        print(f"Error updating player {playerId}: {e}")
-                        raise
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps("Player Stats Updated!")
-                }
+            body = json.loads(event['body'])
+            
+            if action == "pull-picks":
+                entries = get_player_submissions(env, body.get('players'), body.get('week'))
+                return create_response(200, entries)
+                
+            elif action == "edit-season-leaderboard":
+                update_season_leaderboard(env, body.get('players'))
+                return create_response(200, "Player Stats Updated!")
+                
             else:
                 pattern = r"^edit-Week%20(\d{1,2})leaderboard$"
                 match = re.match(pattern, action)
                 if match:
                     week_number = match.group(1)
-                    table_name = f'weeklyLeaderboards-{env}'
-                    table = dynamodb.Table(table_name)
-                    timestamp = int(time.time())
-                    body = json.loads(event['body'])
-                    item = {
-                        'Timestamp': timestamp,
-                        'Week': f'Week {week_number}',
-                        'data': body.get('data'),
-                    }
-                    table.put_item(Item=item)
-                    return {
-                        'statusCode': 200,
-                        'headers': {
-                            'Access-Control-Allow-Headers': '*',
-                            'Access-Control-Allow-Origin': '*',
-                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                        },
-                        'body': json.dumps(f'Week {week_number} leaderboard updated')
-                    }
+                    update_weekly_leaderboard(env, week_number, body.get('data'))
+                    return create_response(200, f'Week {week_number} leaderboard updated')
 
         elif method == 'GET':
-            if(action == "get-players"):
-                table_name = f'sundaySchoolPlayers-{env}'
-                table = dynamodb.Table(table_name)
-                response = table.scan()
-                players = response['Items']
-                for player in players:
-                    if 'Timestamp' in player:
-                        player['Timestamp']=str(player['Timestamp'])
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps(players)
-                }
-            elif(action == 'update-leaderboard'):
-                # Retrieve the secret
-                creds = get_secret()
-                # Authorize with the Google Sheets and Drive API
-                creds_json = json.dumps(creds)  # gspread requires credentials as a file-like object
-                credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(creds_json), [
-                    'https://www.googleapis.com/auth/spreadsheets',
-                    'https://www.googleapis.com/auth/drive',
-                ])
-                # Use creds to create a client to interact with the Google Drive API
-                gc = gspread.authorize(credentials)
-                # Make sure you use the right url here.
-                spreadsheet_url = "https://docs.google.com/spreadsheets/d/1sLEqJF3xtKneBczD37eaMvMexlHCC1INcOlQZeacJOQ/edit"
-                sheet = gc.open_by_url(spreadsheet_url).worksheet('Season Leaderboard')
-
-                list_of_values = sheet.get_values()
-                return {
-                    'statusCode': 200,
-                    'headers': {
-                        'Access-Control-Allow-Headers': '*',
-                        'Access-Control-Allow-Origin': '*',
-                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                    },
-                    'body': json.dumps(list_of_values)
-                }
+            if action == "get-players":
+                players = get_all_players(env)
+                return create_response(200, players)
+                
+            elif action == 'fetch-season-leaderboard':
+                data = get_google_sheet_data('Season Leaderboard')
+                return create_response(200, data)
+                
             else:
                 pattern = r"^fetch-Week%20(\d{1,2})leaderboard$"
                 match = re.match(pattern, action)
                 if match:
                     week_number = match.group(1)
-                    # Retrieve the secret
-                    creds = get_secret()
-                    # Authorize with the Google Sheets and Drive API
-                    creds_json = json.dumps(creds)  # gspread requires credentials as a file-like object
-                    credentials = ServiceAccountCredentials.from_json_keyfile_dict(json.loads(creds_json), [
-                        'https://www.googleapis.com/auth/spreadsheets',
-                        'https://www.googleapis.com/auth/drive',
-                    ])
-                    # Use creds to create a client to interact with the Google Drive API
-                    gc = gspread.authorize(credentials)
-                    # Make sure you use the right url here.
-                    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1sLEqJF3xtKneBczD37eaMvMexlHCC1INcOlQZeacJOQ/edit"
-                    sheet = gc.open_by_url(spreadsheet_url).worksheet(f'Week {week_number} Leaderboard')
+                    data = get_google_sheet_data(f'Week {week_number} Leaderboard')
+                    return create_response(200, data)
 
-                    list_of_values = sheet.get_values()
-                    return {
-                        'statusCode': 200,
-                        'headers': {
-                            'Access-Control-Allow-Headers': '*',
-                            'Access-Control-Allow-Origin': '*',
-                            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-                        },
-                        'body': json.dumps(list_of_values)
-                    }
-    else:
-        return {
-            'statusCode': 403,
-            'headers': {
-                'Access-Control-Allow-Headers': '*',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
-            },
-            'body': json.dumps('Unautherized!')
-        }
+    except Exception as e:
+        print(f"Error processing request: {e}")
+        return create_response(500, f"Internal server error: {str(e)}")

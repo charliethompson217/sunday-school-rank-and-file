@@ -137,7 +137,7 @@ def handler(event, context):
 
         playerId = body.get('playerId')
         playerIdValid = False
-        playerIdRegex = r'^SSP[a-zA-Z0-9]{4}$'
+        playerIdRegex = r'^SSP[a-zA-Z0-9]{7}$'
         if playerId and re.match(playerIdRegex, playerId):
             playerIdValid = True
         if not playerIdValid:
@@ -186,8 +186,8 @@ def handler(event, context):
             'playerId': playerId,
             'Timestamp': timestamp,
             'teamName': teamName,
-            'email': body.get('email'),
-            'fullName': body.get('fullName'),
+            'email': email,
+            'fullName': fullName,
             'sub': body.get('sub'),
             'FileWins': '0',
             'PlayoffsBucks': '0',
