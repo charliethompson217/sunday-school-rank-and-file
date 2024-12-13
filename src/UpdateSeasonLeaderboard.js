@@ -23,7 +23,7 @@ export default function UpdateSeasonLeaderboard({ players }) {
         try {
             const session = await Auth.currentSession();
             const idToken = session.getIdToken().getJwtToken();
-            await API.put('ssAdmin', '/admin/edit-player-stats', {
+            await API.put('ssAdmin', '/admin/edit-season-leaderboard', {
                 headers: {
                     Authorization: `Bearer ${idToken}`
                 },
@@ -90,7 +90,7 @@ export default function UpdateSeasonLeaderboard({ players }) {
     const fetchGoogleSheetData = async () => {
         const session = await Auth.currentSession();
         const idToken = session.getIdToken().getJwtToken();
-        let response = await API.get('ssAdmin', '/admin/update-leaderboard', {
+        let response = await API.get('ssAdmin', '/admin/fetch-season-leaderboard', {
             headers: {
                 Authorization: `Bearer ${idToken}`
             }

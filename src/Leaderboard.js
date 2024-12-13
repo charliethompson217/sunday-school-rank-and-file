@@ -5,6 +5,7 @@ import WeeklyLeaderboard from './WeeklyLeaderboard';
 import PlayerPointsGraph from './PlayerPointsGraph';
 import PlayerRankGraph from './PlayerRankGraph';
 import PlayerWeeklyStandingsgraph from './PlayerWeeklyStandingsgraph';
+import WeeklyPointsGraph from './WeeklyPointsGraph';
 
 
 export default function Leaderboard() {
@@ -88,6 +89,12 @@ export default function Leaderboard() {
       <div className={activeChart}>
         {activeChart === 'graphs' && (
           <PlayerPointsGraph></PlayerPointsGraph>
+        )}
+      </div>
+
+      <div className={activeChart}>
+        {activeChart === 'graphs' && (
+          <WeeklyPointsGraph></WeeklyPointsGraph>
         )}
       </div>
 
