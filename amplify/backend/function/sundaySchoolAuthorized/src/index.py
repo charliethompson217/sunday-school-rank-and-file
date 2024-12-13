@@ -74,9 +74,9 @@ def handler(event, context):
         
         body = json.loads(event['body'])
         operation = body.get('operation')
-        # submit-picks
-            # still needs to be sanatized
-        if operation == 'submit-picks':
+        # submit-regular-season-picks
+            # still needs to be sanitized
+        if operation == 'submit-regular-season-picks':
             serverTimestamp = int(time.time())
             env = os.environ.get('ENV')
             table_name = f'configuration-{env}'
@@ -137,6 +137,56 @@ def handler(event, context):
                         'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
                     },
                     'body': json.dumps('The deadline has passed!')
+                }
+        if operation == 'submit-playoffs-picks':
+            serverTimestamp = int(time.time())
+            env = os.environ.get('ENV')
+            table_name = f'configuration-{env}'
+            table = dynamodb.Table(table_name)
+            response = table.query(
+                KeyConditionExpression=Key('ClientId').eq("cur-week"),
+                ScanIndexForward=False,
+                Limit=1
+            )
+            most_recent_entry = response['Items'][0]
+            curWeek = most_recent_entry['week']
+            response = table.query(
+                KeyConditionExpression=Key('ClientId').eq('matchups'),
+                ScanIndexForward=False
+            )
+            for item in response.get('Items', []):
+                if item.get('week') == curWeek:
+                    closeTime = item['closeTime']
+                    dt_object = datetime.strptime(closeTime, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    unix_closeTime = int(dt_object.timestamp())
+            grace_period = 660  # 11 minutes in seconds
+            curWeekStillOpen = serverTimestamp < (unix_closeTime + grace_period)
+            if(curWeekStillOpen):
+                env = os.environ.get('ENV')
+                table_name = f'submissions-{env}'
+                table = dynamodb.Table(table_name)
+                body = json.loads(event['body'])
+                tokenPlayerId = payload_json.get('custom:playerId')
+                tokenTeamName = payload_json.get('custom:team_name')
+                tokenName = payload_json.get('name')
+                item = {
+                    'team': tokenTeamName,
+                    'fullName': tokenName,
+                    'playerId': tokenPlayerId,
+                    'Timestamp': serverTimestamp,
+                    'week': curWeek,
+                    'configId': body.get('configId'),
+                    # rest of playffs picks data
+                }
+                table.put_item(Item=item)
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Headers': '*',
+                        'Access-Control-Allow-Origin': '*',
+                        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+                    },
+                    'body': json.dumps('Picks inserted secsesfully!')
                 }
         # get-picks-for-player
         if operation == 'get-picks-for-player':

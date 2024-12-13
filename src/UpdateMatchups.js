@@ -14,10 +14,10 @@ export default function UpdateMatchups() {
     const [status2, setStatus2] = useState('');
     const [warning, setWarning] = useState('');
     const weekOptions = [
-        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18', 'Wild Card Round', 'Divisional Round', 'Conference Round', 'Super Bowl', 'Post-Season'
     ];
 
-    const sendToServer = async (rankMatchups, fileMatchups) => {
+    const sendToServer = async (payload) => {
         try {
             const session = await Auth.currentSession();
             const idToken = session.getIdToken().getJwtToken();
@@ -29,8 +29,7 @@ export default function UpdateMatchups() {
                     ClientId: 'matchups',
                     week: week,
                     closeTime: new Date(dateTime).toISOString(),
-                    rankMatchups: rankMatchups,
-                    fileMatchups: fileMatchups,
+                    data: payload,
                 }
             });
             setStatus(`${week} 'Matchups Updated Succesfuly!`);
@@ -54,33 +53,65 @@ export default function UpdateMatchups() {
             return;
         }
         setWarning('');
-        if (file) {
-            var rankMatchups = [];
-            var fileMatchups = [];
-            Papa.parse(file, {
-                complete: (result) => {
-                    for (const row of result.data) {
-                        var type = row['Type'];
-                        var newRow = [];
-                        if (type === 'Rank') {
-                            newRow.push(row['Away']);
-                            newRow.push(row['Home']);
-                            newRow.push(row['Description']);
-                            rankMatchups.push(newRow);
-                        }
-                        if (type === 'File' || type === 'Christmas File' || type === 'Thanksgiving File') {
-                            newRow.push(row['Away']);
-                            newRow.push(row['Home']);
-                            newRow.push(row['Description']);
-                            fileMatchups.push(newRow);
-                        }
-                    }
-                    sendToServer(rankMatchups, fileMatchups);
-                },
-                header: true,
-            });
+
+        try {
+            const payload = await parseFile(file, week);
+            await sendToServer(payload);
+            setStatus(`${week} Matchups Updated Successfully!`);
+        } catch (error) {
+            console.error('Error parsing file:', error);
+            setWarning('Failed to parse the file. Please check the file format.');
         }
     };
+
+    const parseFile = (file, week) => {
+        return new Promise((resolve, reject) => {
+            let rankMatchups = [];
+            let fileMatchups = [];
+    
+            Papa.parse(file, {
+                complete: (result) => {
+                    try {
+                        const weekNumber = week ? parseInt(week.split(' ')[1]) : NaN;
+                        if (!isNaN(weekNumber)) {
+                            for (const row of result.data) {
+                                let type = row['Type'];
+                                let newRow = [];
+                                if (type === 'Rank') {
+                                    newRow.push(row['Away']);
+                                    newRow.push(row['Home']);
+                                    newRow.push(row['Description']);
+                                    rankMatchups.push(newRow);
+                                }
+                                if (type === 'File' || type === 'Christmas File' || type === 'Thanksgiving File') {
+                                    newRow.push(row['Away']);
+                                    newRow.push(row['Home']);
+                                    newRow.push(row['Description']);
+                                    fileMatchups.push(newRow);
+                                }
+                            }
+        
+                            const payload = {
+                                rankMatchups,
+                                fileMatchups,
+                            };
+        
+                            resolve(payload);
+                        } else { 
+                            // Parse Playoffs Matchup File
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                },
+                header: true,
+                error: (error) => {
+                    reject(error);
+                },
+            });
+        });
+    };
+    
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);

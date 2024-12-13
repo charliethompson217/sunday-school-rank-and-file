@@ -11,7 +11,7 @@ import SubmissionAuthWrapper from './SubmissionAuthWrapper';
 import Forgotpassword from './Forgotpassword';
 import VerifyEmail from './VerifyEmail';
 import AccountAuthWrapper from './AccountAuthWrapper';
-import FormContainer from './FormContainer';
+import PickFormDecider from './PickFormDecider';
 import EndOfForm from './EndOfForm';
 import { DataProvider } from './DataContext';
 import Cookies from 'js-cookie'; 
@@ -95,7 +95,7 @@ export default function App() {
             <Route
               path="/submitpicks"
               element={user ?
-                <FormContainer
+                <PickFormDecider
                   User={user}
                 /> : <SubmissionAuthWrapper />}
             />
