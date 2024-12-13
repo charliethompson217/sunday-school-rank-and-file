@@ -15,9 +15,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const { closeTime: fetchedCloseTime, week: fetchedWeek } = fetchedMatchupsResponse;
-    setCloseTime(fetchedCloseTime);
-    setWeek(fetchedWeek);
+    setCloseTime(fetchedMatchupsResponse.closeTime);
+    setWeek(fetchedCurWeek);
   }, [fetchedCurWeek, fetchedMatchupsResponse]);
 
   return (
@@ -28,7 +27,7 @@ export default function Home() {
           <div className="main-logo">
             <img className="homeLogo" src={logo} alt="Logo" />
           </div>
-          {week && (
+          {week !== "Post-Season" && (
             <div className="countdown-container">
               <h1>{week} Kicks Off In:</h1>
               <Countdown targetDate={closeTime} />

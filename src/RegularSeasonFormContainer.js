@@ -12,7 +12,7 @@ import { DataContext } from './DataContext';
 
 Amplify.configure(awsExports);
 
-export default function FormContainer({ User }) {
+export default function RegularSeasonFormContainer({ User }) {
   const { fetchedMatchupsResponse, fetchedCurPicks, setNewPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks } = useContext(DataContext);
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -178,7 +178,7 @@ export default function FormContainer({ User }) {
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolAuthorized', '/player/submit-picks', {
+      await API.post('sundaySchoolAuthorized', '/player/submit-regular-season-picks', {
         headers: {
           Authorization: `Bearer ${idToken}`
         },

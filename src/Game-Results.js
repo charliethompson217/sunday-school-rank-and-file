@@ -12,12 +12,25 @@ export default function LivePicks() {
     const [week, setWeek] = useState('Choose week');
     const [hasSubmit, setHasSubmit] = useState(false);
     const weekOptions = [
-        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18'
+        'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18', 'Wild Card Round', 'Divisional Round', 'Conference Round', 'Super Bowl'
     ];
 
-    function decrementLastNumber(str) {
-        return str.replace(/\d+$/, (num) => parseInt(num, 10) - 1);
-    }
+    function decrementLastNumber(week) {
+        const weekNumber = week ? parseInt(week.split(' ')[1]) : NaN;
+        if (!isNaN(weekNumber)) {
+            return week?.replace(/\d+$/, (num) => parseInt(num, 10) - 1) || 'Choose week';
+        } else if (week === 'Wild Card Round'){
+            return 'Week 18';
+        } else if (week === 'Divisional Round'){
+            return 'Wild Card Round';
+        } else if (week === 'Conference Round'){
+            return 'Divisional Round';
+        } else if (week === 'Super Bowl'){
+            return 'Conference Round';
+        } else if (week === 'Post-Season'){
+            return 'Super Bowl';
+        }
+    };
 
     useEffect(() => {
         const setData = async () => {

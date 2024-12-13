@@ -156,7 +156,7 @@ def handler(event, context):
             body = json.loads(event['body'])
             
             if action == "set-cur-week":
-                update_configuration_table(env, "cur-week", {'week': body.get('week')})
+                update_configuration_table(env, body.get('ClientId'), {'week': body.get('week')})
                 return create_response(200, 'Current Week Updated!')
                 
             elif action == "upload-game-results":
@@ -168,12 +168,23 @@ def handler(event, context):
                 return create_response(200, 'Matchups Updated!')
                 
             elif action == "upload-matchups":
-                update_configuration_table(env, body.get('ClientId'), {
-                    'week': body.get('week'),
-                    'closeTime': body.get('closeTime'),
-                    'rankMatchups': body.get('rankMatchups'),
-                    'fileMatchups': body.get('fileMatchups')
-                })
+                week = body.get('week')
+                data = body.get('data')
+                # regular season
+                if week and re.match(r"Week \d+$", week):
+                    update_configuration_table(env, body.get('ClientId'), {
+                        'week': week,
+                        'closeTime': body.get('closeTime'),
+                        'rankMatchups': data.get('rankMatchups'),
+                        'fileMatchups': data.get('fileMatchups'),
+                    })
+                # playoffs
+                else:
+                    update_configuration_table(env, body.get('ClientId'), {
+                        'week': week,
+                        'closeTime': body.get('closeTime'),
+                        # rest of playoffs data
+                    })
                 return create_response(200, 'Matchups Updated!')
 
         elif method == 'PUT':

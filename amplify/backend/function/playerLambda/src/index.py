@@ -76,8 +76,8 @@ def handler(event, context):
                     player['Timestamp']=str(player['Timestamp'])
                 if 'email' in player:
                     del player['email']
-                if 'fullname' in player:
-                    del player['fullname']
+                if 'fullName' in player:
+                    del player['fullName']
                 if 'sub' in player:
                     del player['sub']
             return {

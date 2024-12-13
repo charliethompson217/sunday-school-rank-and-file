@@ -102,8 +102,8 @@ export default function Rules() {
             for the season are thus $180. As outlined previously, the pool is <span className="bold-text">expected to be a
               season-long activity,</span>though players may join late and are not formally prohibited
             from dropping out. Any player who drops out is not eligible for the season or playoffs
-            pot. For simplicity’s sake,<span className="bold-text">it is preferable that each player pay in advance for the
-              season</span>(or at least $90, representing half of the season), but accommodations can be
+            pot. For simplicity’s sake,<span className="bold-text"> it is preferable that each player pay in advance for the
+              season</span> (or at least $90, representing half of the season), but accommodations can be
             made if necessary.
             <br></br><br></br>
             The pool will go forward no matter how many or how few players enter. The money
