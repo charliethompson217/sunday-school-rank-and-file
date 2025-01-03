@@ -176,7 +176,7 @@ def handler(event, context):
                     'Timestamp': serverTimestamp,
                     'week': curWeek,
                     'configId': body.get('configId'),
-                    # rest of playffs picks data
+                    'picks': body.get('picks'),
                 }
                 table.put_item(Item=item)
                 return {

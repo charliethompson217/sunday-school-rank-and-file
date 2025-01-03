@@ -15,6 +15,7 @@ import PickFormDecider from './PickFormDecider';
 import EndOfForm from './EndOfForm';
 import { DataProvider } from './DataContext';
 import Cookies from 'js-cookie'; 
+import EndOfPlayoffsForm from './EndOfPlayoffsForm';
 import './App.css';
 
 Amplify.configure(awsExports);
@@ -96,15 +97,11 @@ export default function App() {
               path="/submitpicks"
               element={user ?
                 <PickFormDecider
-                  User={user}
+                  user={user}
                 /> : <SubmissionAuthWrapper />}
             />
-            <Route
-              path="/endofform"
-              element={
-                <EndOfForm />
-              }
-            />
+            <Route path="/endofform" element={ <EndOfForm /> } />
+            <Route path="/endofplayoffsform" element={ <EndOfPlayoffsForm /> } />
           </Routes>
         </Router>
       </DataProvider>

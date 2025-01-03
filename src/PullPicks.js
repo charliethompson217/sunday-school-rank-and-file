@@ -11,6 +11,17 @@ export default function PullPicks() {
   const [unsubmittedPlayers, setUnsubmittedPlayers] = useState([]);
   const [week, setWeek] = useState('Choose week');
   const { fetchedCurWeek, fetchedAdminPlayers } = useContext(DataContext);
+  const [curWeek, setCurWeek] = useState(fetchedCurWeek);
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
+    useEffect(() => {
+      setCurWeek(fetchedCurWeek);
+    }, [fetchedCurWeek]);
+
+    const weekNumber = curWeek ? parseInt(curWeek.split(' ')[1]) : NaN;
 
   const weekOptions = [
     'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18', 'Wild Card Round', 'Divisional Round', 'Conference Round', 'Super Bowl'
@@ -95,7 +106,7 @@ export default function PullPicks() {
     }
   };
 
-  const generateCsvData = (playerPicks) => {
+  const generateRegularSeasonCsvData = (playerPicks) => {
     let csvData = '';
     csvData += '\n';
     csvData += 'Full Name,Team-Name,';
@@ -139,12 +150,37 @@ export default function PullPicks() {
         csvData += '\n';
       }
     });
+    return csvData;
+  };
 
+  const generatePlayoffsCsvData = (playerPicks) => {
+    let csvData = 'Full Name,Team,Player ID,Game #,Bet,Winner,Wager,Parlay,Parlay Winner,Parlay Wager\n';
+    playerPicks.forEach((pick) => {
+      if (pick.week === week) {
+        const picksArray = parseJsonString(pick.picks) || [];
+        picksArray.forEach((gamePick, idx) => {
+          const bet = gamePick.bet === 'true';
+          const parlay = gamePick.parlay === 'true';
+          csvData += `${pick.fullName},${pick.team},${pick.playerId},${idx + 1},${bet},${bet ? gamePick.winner : ''},${bet ? gamePick.wager : 0},${parlay},${parlay ? gamePick.parlayWinner : ''},`;
+          if (parlay && idx === 0) {
+            csvData += gamePick.parlayWager || '';
+          } else if (!parlay && idx === 0) {
+            csvData += 0;
+          }
+          csvData += '\n';
+        });
+      }
+    });
     return csvData;
   };
 
   const downloadCsv = () => {
-    const csvData = generateCsvData(playerPicks);
+    let csvData;
+    if (!isNaN(weekNumber)) {
+      csvData = generateRegularSeasonCsvData(playerPicks);
+    } else {
+      csvData = generatePlayoffsCsvData(playerPicks);
+    }
     if (csvData) {
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');

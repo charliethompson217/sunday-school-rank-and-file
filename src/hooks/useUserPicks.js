@@ -6,13 +6,14 @@ export const useUserPicks = (user, fetchedCurWeek) => {
     const [fetchedRankPicks, setFetchedRankPicks] = useState([]);
     const [fetchedRankedRanks, setFetchedRankedRanks] = useState([]);
     const [fetchedFilePicks, setFetchedFilePicks] = useState([]);
+    const [fetchedPlayoffsPicks, setFetchedPlayoffsPicks] = useState({});
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const session = await Auth.currentSession();
                 const idToken = session.getIdToken().getJwtToken();
-                const Fetched_Cur_Picks = await API.put('sundaySchoolAuthorized', '/player/get-picks-for-player', {
+                const Fetched_Cur_Picks = await API.put('authorizedPlayerAPI', '/player/get-picks-for-player', {
                     headers: {
                         Authorization: `Bearer ${idToken}`
                     },
@@ -29,10 +30,12 @@ export const useUserPicks = (user, fetchedCurWeek) => {
                     setFetchedRankPicks(fetchedRankPicks);
                     setFetchedRankedRanks(fetchedRankedRanks);
                     setFetchedFilePicks(fetchedFilePicks);
+                } else {
+                    setFetchedPlayoffsPicks(parseJsonString(Fetched_Cur_Picks.picks));
                 }
                 
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         };
 
@@ -53,12 +56,23 @@ export const useUserPicks = (user, fetchedCurWeek) => {
         }));
     };
 
+    const setNewPlayoffsPicks = (newPlayoffsPicks, newConfigId ) => { 
+        setFetchedPlayoffsPicks(newPlayoffsPicks)
+        setFetchedCurPicks(prevCurPicks => ({
+            ...prevCurPicks,
+            configId: newConfigId,
+            playoffsPicks: newPlayoffsPicks
+        }));
+    }
+
     return {
         fetchedCurPicks,
         fetchedRankPicks,
         fetchedRankedRanks,
         fetchedFilePicks,
         setNewPicks,
+        fetchedPlayoffsPicks,
+        setNewPlayoffsPicks,
     };
 };
 

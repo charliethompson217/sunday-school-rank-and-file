@@ -1,5 +1,19 @@
 {
   "api": {
+    "authorizedPlayerAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "sundaySchoolAuthorized"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "playerApi": {
       "dependsOn": [
         {
@@ -23,20 +37,6 @@
           ],
           "category": "function",
           "resourceName": "ssAdminLambda"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
-    "sundaySchoolAuthorized": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "sundaySchoolAuthorized"
         }
       ],
       "providerPlugin": "awscloudformation",

@@ -11,6 +11,10 @@ export default function LivePicks() {
     const [fileMatchups, setFileMatchups] = useState([]);
     const [week, setWeek] = useState('Choose week');
     const [hasSubmit, setHasSubmit] = useState(false);
+    const [isPlayoffs, setIsPlayoffs] = useState(false);
+    const [playoffsMatchups, setPlayoffsMatchups] = useState([]);
+    const [playoffsPicks, setPlayoffsPicks] = useState([]);
+
     const weekOptions = [
         'Choose week', 'Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Week 18', 'Wild Card Round', 'Divisional Round', 'Conference Round', 'Super Bowl'
     ];
@@ -34,6 +38,14 @@ export default function LivePicks() {
 
     useEffect(() => {
         const setData = async () => {
+            setRankMatchups([]);
+            setFileMatchups([]);
+            setRankPicks([]);
+            setFilePicks([]);
+            setIsPlayoffs(false);
+            setPlayoffsMatchups([]);
+            setPlayoffsPicks([]);
+            setHasSubmit(false);
             let curWeek = decrementLastNumber(fetchedCurWeek);
             if (week !== "Choose week") {
                 curWeek = week;
@@ -41,6 +53,7 @@ export default function LivePicks() {
             else {
                 setWeek(curWeek);
             }
+            const weekNumber = curWeek ? parseInt(curWeek.split(' ')[1]) : NaN;
             try {
                 let matchupsResponse = [];
                 if (curWeek === decrementLastNumber(fetchedCurWeek)) {
@@ -56,31 +69,49 @@ export default function LivePicks() {
                         },
                     });
                 }
-                const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
-                setRankMatchups(fetchedRankMatchups);
-                setFileMatchups(fetchedFileMatchups);
-
-                const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[curWeek] || {};
-
-                if (fetchedRankResults && fetchedFileResults) {
-                    setRankPicks(fetchedRankResults);
-                    setFilePicks(fetchedFileResults);
-                } else if (fetchedRankMatchups && fetchedFileMatchups) {
-                    const initialRankPicks = fetchedRankMatchups?.map((matchup) => ({
-                        game: matchup,
-                        value: null,
-                    })) || [];
-                    setRankPicks(initialRankPicks);
-
-                    const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
-                        game: matchup,
-                        value: null,
-                    })) || [];
-                    setFilePicks(initialFilePicks);
+                if (!isNaN(weekNumber)) {
+                    const { rankMatchups: fetchedRankMatchups = [], fileMatchups: fetchedFileMatchups = [] } = matchupsResponse || {};
+                    setRankMatchups(fetchedRankMatchups);
+                    setFileMatchups(fetchedFileMatchups);
+    
+                    const { rankResults: fetchedRankResults, fileResults: fetchedFileResults } = fetchedGameResults[curWeek] || {};
+    
+                    if (fetchedRankResults && fetchedFileResults) {
+                        setRankPicks(fetchedRankResults);
+                        setFilePicks(fetchedFileResults);
+                    } else if (fetchedRankMatchups && fetchedFileMatchups) {
+                        const initialRankPicks = fetchedRankMatchups?.map((matchup) => ({
+                            game: matchup,
+                            value: null,
+                        })) || [];
+                        setRankPicks(initialRankPicks);
+    
+                        const initialFilePicks = fetchedFileMatchups?.map((matchup) => ({
+                            game: matchup,
+                            value: null,
+                        })) || [];
+                        setFilePicks(initialFilePicks);
+                    }
+                } else {
+                    setIsPlayoffs(true);
+                    if(matchupsResponse?.matchups){
+                        setPlayoffsMatchups(matchupsResponse.matchups);
+                    }
+                    if(fetchedGameResults[curWeek]?.playoffsResults?.length > 0){
+                        setPlayoffsPicks(fetchedGameResults[curWeek].playoffsResults);
+                    } else {
+                        const initialPlayoffsPicks = matchupsResponse?.matchups?.map((matchup) => ({
+                            game: matchup,
+                            value: null,
+                        })) || [];
+                        setPlayoffsPicks(initialPlayoffsPicks);
+                    }
                 }
             } catch (error) {
                 console.error(error);
             }
+            
+            
         };
 
         if (fetchedGameResults && fetchedCurWeek && fetchedMatchupsResponse && fetchedPreviousMatchupsResponse) {
@@ -102,6 +133,15 @@ export default function LivePicks() {
             )
         );
     };
+
+    const onPlayoffsPickChange = (index, value) => {
+        setPlayoffsPicks((prevPlayoffsPicks) =>
+            prevPlayoffsPicks.map((pick, i) =>
+                i === index ? { ...pick, value } : pick
+            )
+        );
+    };
+
     const sendToServer = async () => {
         try {
             const session = await Auth.currentSession();
@@ -114,6 +154,7 @@ export default function LivePicks() {
                     week: week,
                     rankResults: rankPicks,
                     fileResults: filePicks,
+                    playoffsResults: playoffsPicks,
                 }
             });
             setHasSubmit(true);
@@ -149,45 +190,76 @@ export default function LivePicks() {
                 </div>
             </div>
         );
-    }
-    return (
-        <div className="Admin">
-            <div className='Game-Results'>
-                <h2>Game-Results</h2>
-                <div>
-                    <label htmlFor="weekSelect">For Week:</label>
-                    <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
-                        {weekOptions.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </select>
+    } else if (isPlayoffs) {
+        return (
+            <div className="Admin">
+                <div className='Game-Results'>
+                    <h2>Game-Results</h2>
+                    <div>
+                        <label htmlFor="weekSelect">For Week:</label>
+                        <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
+                            {weekOptions.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={sendToServer}>Update With Local Values</button>
                 </div>
-                <button onClick={sendToServer}>Update With Local Values</button>
+                <div className='Result-Games'>
+                    {playoffsMatchups?.length > 0 && playoffsMatchups.map((data, index) => (
+                        <QuestionWithThreeButtons
+                            key={index}
+                            label1={data.Home}
+                            label2={data.Away}
+                            answer={playoffsPicks?.[index]?.value}
+                            onInputChange={(value) => onPlayoffsPickChange(index, value)}
+                        />
+                    ))}
+                </div>
             </div>
-            <div className='Result-Games'>
-                {rankMatchups?.length > 0 && rankMatchups.map((data, index) => (
-                    <QuestionWithThreeButtons
-                        key={`rank-${index}`}
-                        label1={data[0]}
-                        label2={data[1]}
-                        description={data[2]}
-                        answer={rankPicks[index]?.value}
-                        onInputChange={(value) => onRankPicksChange(index, value)}
-                    />
-                ))}
-                {fileMatchups?.length > 0 && fileMatchups.map((data, index) => (
-                    <QuestionWithThreeButtons
-                        key={`file-${index}`}
-                        label1={data[0]}
-                        label2={data[1]}
-                        description={data[2]}
-                        answer={filePicks[index]?.value}
-                        onInputChange={(value) => onFilePicksChange(index, value)}
-                    />
-                ))}
+        )
+    } else {
+        return (
+            <div className="Admin">
+                <div className='Game-Results'>
+                    <h2>Game-Results</h2>
+                    <div>
+                        <label htmlFor="weekSelect">For Week:</label>
+                        <select id="weekSelect" value={week} onChange={(e) => setWeek(e.target.value)}>
+                            {weekOptions.map((option) => (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <button onClick={sendToServer}>Update With Local Values</button>
+                </div>
+                <div className='Result-Games'>
+                    {rankMatchups?.length > 0 && rankMatchups.map((data, index) => (
+                        <QuestionWithThreeButtons
+                            key={`rank-${index}`}
+                            label1={data[0]}
+                            label2={data[1]}
+                            description={data[2]}
+                            answer={rankPicks[index]?.value}
+                            onInputChange={(value) => onRankPicksChange(index, value)}
+                        />
+                    ))}
+                    {fileMatchups?.length > 0 && fileMatchups.map((data, index) => (
+                        <QuestionWithThreeButtons
+                            key={`file-${index}`}
+                            label1={data[0]}
+                            label2={data[1]}
+                            description={data[2]}
+                            answer={filePicks[index]?.value}
+                            onInputChange={(value) => onFilePicksChange(index, value)}
+                        />
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 };

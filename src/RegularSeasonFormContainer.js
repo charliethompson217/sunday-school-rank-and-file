@@ -178,12 +178,12 @@ export default function RegularSeasonFormContainer({ User }) {
     try {
       const session = await Auth.currentSession();
       const idToken = session.getIdToken().getJwtToken();
-      await API.post('sundaySchoolAuthorized', '/player/submit-regular-season-picks', {
+      await API.post('authorizedPlayerAPI', '/player/submit-regular-season-picks', {
         headers: {
           Authorization: `Bearer ${idToken}`
         },
         body: {
-          operation: 'submit-picks',
+          operation: 'submit-regular-season-picks',
           configId: configId,
           rankPicks: JSON.stringify(rankPicks),
           rankedRanks: JSON.stringify(rankedRanks),

@@ -97,8 +97,24 @@ export default function UpdateMatchups() {
                             };
         
                             resolve(payload);
-                        } else { 
-                            // Parse Playoffs Matchup File
+                        } else {
+                            let matchups = [];
+                            for (const row of result.data) {
+                                if (row.Home && row.Away && row.Odds) {
+                                    matchups.push({
+                                        Home: row.Home.trim(),
+                                        Away: row.Away.trim(),
+                                        Odds: row.Odds,
+                                    });
+                                }
+
+                            }
+        
+                            const payload = {
+                                matchups
+                            };
+        
+                            resolve(payload);
                         }
                     } catch (error) {
                         reject(error);
