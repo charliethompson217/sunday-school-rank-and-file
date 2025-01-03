@@ -3,7 +3,7 @@ import { DataContext } from './DataContext';
 import RegularSeasonFormContainer from './RegularSeasonFormContainer';
 import PlayoffsFormContainer from './PlayoffsFormContainer';
 
-export default function PickFormDecider() {
+export default function PickFormDecider({user}) {
     const { fetchedCurWeek } = useContext(DataContext);
     const [week, setWeek] = useState(fetchedCurWeek);
 
@@ -23,7 +23,7 @@ export default function PickFormDecider() {
         );
     } else {
         return (
-            <PlayoffsFormContainer />
+            <PlayoffsFormContainer user={user}/>
         );
-    }
+    } 
 }

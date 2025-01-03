@@ -163,7 +163,8 @@ def handler(event, context):
                 update_configuration_table(env, "game-results", {
                     'week': body.get('week'),
                     'rankResults': body.get('rankResults'),
-                    'fileResults': body.get('fileResults')
+                    'fileResults': body.get('fileResults'),
+                    'playoffsResults': body.get('playoffsResults'),
                 })
                 return create_response(200, 'Matchups Updated!')
                 
@@ -183,7 +184,7 @@ def handler(event, context):
                     update_configuration_table(env, body.get('ClientId'), {
                         'week': week,
                         'closeTime': body.get('closeTime'),
-                        # rest of playoffs data
+                        'matchups': data.get('matchups'),
                     })
                 return create_response(200, 'Matchups Updated!')
 

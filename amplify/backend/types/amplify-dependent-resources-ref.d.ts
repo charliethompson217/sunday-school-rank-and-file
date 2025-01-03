@@ -1,16 +1,16 @@
 export type AmplifyDependentResourcesAttributes = {
   "api": {
+    "authorizedPlayerAPI": {
+      "ApiId": "string",
+      "ApiName": "string",
+      "RootUrl": "string"
+    },
     "playerApi": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"
     },
     "ssAdmin": {
-      "ApiId": "string",
-      "ApiName": "string",
-      "RootUrl": "string"
-    },
-    "sundaySchoolAuthorized": {
       "ApiId": "string",
       "ApiName": "string",
       "RootUrl": "string"

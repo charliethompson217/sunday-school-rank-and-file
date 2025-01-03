@@ -16,7 +16,7 @@ export const DataContext = createContext();
 export const DataProvider = ({ user, children }) => {
     const fetchedCurWeek = useCurrentWeek();
     const fetchedMatchupsResponse = useMatchups(fetchedCurWeek);
-    const { fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks } = useUserPicks(user, fetchedCurWeek);
+    const { fetchedCurPicks, fetchedRankPicks, fetchedRankedRanks, fetchedFilePicks, setNewPicks, fetchedPlayoffsPicks, setNewPlayoffsPicks } = useUserPicks(user, fetchedCurWeek);
     const fetchedPreviousMatchupsResponse = usePreviousMatchups(fetchedCurWeek);
     const fetchedPlayers = usePlayers();
     const fetchedSubmissions = useSubmissions();
@@ -36,6 +36,8 @@ export const DataProvider = ({ user, children }) => {
             fetchedRankedRanks,
             fetchedFilePicks,
             setNewPicks,
+            fetchedPlayoffsPicks,
+            setNewPlayoffsPicks,
             fetchedWeeklyLeaderboards,
             fetchedPreviousMatchupsResponse,
             fetchedAdminPlayers,
