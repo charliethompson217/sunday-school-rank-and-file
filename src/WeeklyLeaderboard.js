@@ -177,7 +177,7 @@ export default function WeeklyLeaderboard() {
   );
 
   function changeWeek(value) {
-    if (fetchedWeeklyLeaderboards?.[weekOptions.indexOf(value)])
+    if (fetchedWeeklyLeaderboards?.[weekOptions.indexOf(value)-1])
       setWeek(value);
   };
 

@@ -62,7 +62,6 @@ export default function Leaderboard() {
           <SeasonLeaderboard></SeasonLeaderboard>
         )}
       </div>
-
       <div className={activeChart}>
         {activeChart === 'weeklypicks' && (
           <WeeklyPicks></WeeklyPicks>
@@ -104,7 +103,6 @@ export default function Leaderboard() {
           <PlayoffBucksGraph></PlayoffBucksGraph>
         )}
       </div>
-
     </div>
   );
 };

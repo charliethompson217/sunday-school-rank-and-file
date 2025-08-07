@@ -109,7 +109,8 @@ export default function WeeklyPicks() {
   }, [fetchedPlayers, fetchedSubmissions, fetchedCurWeek, fetchedGameResults]);
 
   useEffect(() => {
-    if (week !== 'Choose week') {
+    const weekNumber = week ? parseInt(week.split(' ')[1]) : NaN;
+    if (!isNaN(weekNumber)) {
       const weekNumber = week.split(' ')[1];
       const weekIndex = parseInt(weekNumber, 10) - 1;
 
@@ -243,7 +244,7 @@ export default function WeeklyPicks() {
 
 
   function changeWeek(value) {
-    if (submissions?.[weekOptions.indexOf(value)])
+    if (submissions?.[weekOptions.indexOf(value)-1])
       setWeek(value);
   };
   const secondaryButtonColor = getComputedStyle(document.documentElement).getPropertyValue('--secondary-button-color').trim();

@@ -50,9 +50,7 @@ export default function LivePicks() {
             if (week !== "Choose week") {
                 curWeek = week;
             }
-            else {
-                setWeek(curWeek);
-            }
+            setWeek(curWeek);
             const weekNumber = curWeek ? parseInt(curWeek.split(' ')[1]) : NaN;
             try {
                 let matchupsResponse = [];
