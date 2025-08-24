@@ -13,10 +13,10 @@ export default function Rules() {
       <div className='navbar-offset-container'>
         <div className='rules'>
           <h1>SUNDAY SCHOOL: RANK AND FILE</h1>
-          <h3>2024–25 Season Rules</h3>
+          <h3>2025–26 Season Rules</h3>
           <h2>Overview</h2>
           <p>
-            Hello and welcome (or welcome back) to year three of the <span className="italic-text">Sunday School: Rank and File</span> NFL pool! Last year, we enjoyed an excellent year with the introduction of our  proprietary picks-submission website, and we hope to build on that success this year.
+            Hello and welcome (or welcome back) to year four of the <span className="italic-text">Sunday School: Rank and File</span> NFL pool! Last year, we enjoyed an excellent year with the improvments to our proprietary picks-submission website, and we hope to build on that success this year.
             <br></br><br></br>
             A few important points for new members:
             <br></br>
@@ -179,7 +179,7 @@ export default function Rules() {
           <h2>Parting Thoughts and Dispute Resolution</h2>
           <p>
             The goal is that we all have a very fun and entertaining season as we have in years past.
-            Although the pool is now in its third year, there nonetheless may be considerations that
+            Although the pool is now in its fourth year, there nonetheless may be considerations that
             I have overlooked or forgotten to mention. All unforeseen scenarios will be judged in
             the Commissioner’s sole discretion with an eye towards fairness and after opportunity
             for notice and comment from the players. If you have any questions or suggestions,
