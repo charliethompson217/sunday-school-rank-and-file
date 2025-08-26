@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import SeasonLeaderboard from './SeasonLeaderboard';
 import WeeklyPicks from './WeeklyPicks';
 import WeeklyLeaderboard from './WeeklyLeaderboard';
@@ -7,15 +7,26 @@ import PlayerRankGraph from './PlayerRankGraph';
 import PlayerWeeklyStandingsgraph from './PlayerWeeklyStandingsgraph';
 import WeeklyPointsGraph from './WeeklyPointsGraph';
 import PlayoffBucksGraph from './PlayoffBucksGraph';
+import { DataContext } from './DataContext';
 
 
 export default function Leaderboard() {
+  const { fetchedCurWeek } = useContext(DataContext);
   const [activeChart, setActiveChart] = useState('seasonleaderboard');
   const tabs = ['seasonleaderboard', 'weeklyleaderboard', 'weeklypicks', 'graphs'];
+  const [isPlayoffs, setIsPlayoffs] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    if (fetchedCurWeek) {
+      const weekNumber = fetchedCurWeek ? parseInt(fetchedCurWeek.split(' ')[1]) : NaN;
+      if (isNaN(weekNumber)) {
+        setIsPlayoffs(true);
+      } else {
+        setIsPlayoffs(false);
+      }
+    }
+  }, [fetchedCurWeek]);
 
   const handleKeyDown = (event) => {
     const currentIndex = tabs.indexOf(activeChart);
@@ -93,13 +104,13 @@ export default function Leaderboard() {
       </div>
 
       <div className={activeChart}>
-        {activeChart === 'graphs' && (
+        {activeChart === 'graphs' && !isPlayoffs && (
           <WeeklyPointsGraph></WeeklyPointsGraph>
         )}
       </div>
 
       <div className={activeChart}>
-        {activeChart === 'graphs' && (
+        {activeChart === 'graphs' && isPlayoffs && (
           <PlayoffBucksGraph></PlayoffBucksGraph>
         )}
       </div>
